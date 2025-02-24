@@ -2,6 +2,8 @@ package com.yam.customer.member.domain;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,6 +37,7 @@ public class Member {
     private String customerEmail;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate customerBirthDate;
 
     @Column(nullable = false, length = 1)

@@ -6,4 +6,5 @@ import com.yam.customer.member.domain.Member;
 
 public interface MemberRepository extends JpaRepository<Member, String> { // <Entity, ID 타입>
     boolean existsByCustomerId(String customerId); // 아이디 중복 확인
+    boolean existsByCustomerNickname(String customerNickname); // 닉네임 중복 확인 쿼리 메서드
 }
