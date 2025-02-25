@@ -32,7 +32,7 @@ public class MemberController {
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
         model.addAttribute("memberSignupRequest", new MemberSignupRequest()); // DTO 사용
-        return "customer/signup";//
+        return "customer/signup";
     }
 
     /*@PostMapping("/signup")
