@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.repository.MemberRepository;
-import com.yam.customer.member.vo.MemberInfoRequest;
 import com.yam.customer.member.vo.MemberSignupRequest;
 
 import jakarta.transaction.Transactional;
@@ -59,21 +58,14 @@ public class MemberService {
          return false; // 닉네임 사용 가능
      }
     
-     @Transactional
-     public void updateMemberInfo(String customerId, MemberInfoRequest request) {
+     public void updatePassword(String customerId, String newPassword) {
          Member member = memberRepository.findById(customerId)
                  .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
 
-         // 비밀번호 변경 (값이 비어있지 않은 경우에만)
-         if (request.getCustomerPassword() != null && !request.getCustomerPassword().isEmpty()) {
-             member.setCustomerPassword(passwordEncoder.encode(request.getCustomerPassword()));
+         // 비밀번호 암호화 (새 비밀번호가 비어있지 않은 경우)
+         if (newPassword != null && !newPassword.isEmpty()) {
+             member.setCustomerPassword(passwordEncoder.encode(newPassword));
          }
-         
-         // 닉네임 변경 (값이 비어있지 않은 경우에만)
-         if (request.getCustomerNickname() != null && !request.getCustomerNickname().isEmpty()) {
-             member.setCustomerNickname(request.getCustomerNickname());
-         }
-         // 이메일 변경 로직 제거
-
+         // 변경된 내용은 트랜잭션 내에서 자동으로 저장됨 (save 호출 불필요)
      }
 }

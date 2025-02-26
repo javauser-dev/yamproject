@@ -19,8 +19,8 @@ import com.yam.customer.member.domain.CustomUserDetails;
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.email.service.EmailService;
 import com.yam.customer.member.service.MemberService;
-import com.yam.customer.member.vo.MemberInfoRequest;
 import com.yam.customer.member.vo.MemberSignupRequest; // DTO import
+import com.yam.customer.member.vo.PasswordChangeRequest;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -186,31 +186,31 @@ public class MemberController {
          return "customer/memberInfo"; // templates/customer/memberInfo.html
      }
      
-     @PostMapping("/updateMemberInfo")
-     public String updateMemberInfo(@ModelAttribute("memberInfoRequest") @Valid MemberInfoRequest request,
-                                    BindingResult bindingResult,
-                                    @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                    HttpSession session, Model model,
-                                    RedirectAttributes redirectAttributes) {
+     @PostMapping("/updatePassword")
+     public String updatePassword(@ModelAttribute("passwordChangeRequest") @Valid PasswordChangeRequest request, //DTO 사용
+                                   BindingResult bindingResult,
+                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                   RedirectAttributes redirectAttributes,
+                                    Model model) {
 
-         //현재 로그인한 member 객체 가져옴
-         Member member = customUserDetails.getMember();
-         model.addAttribute("member", member); //기존 정보 model에 다시 저장.
-
-	      //Valid 어노테이션을 통해 들어온 값에 문제가 있으면, 다시 memberInfo페이지로 리다이렉트
-	      if (bindingResult.hasErrors()) {
-	          return "customer/memberInfo"; // 유효성 검사 실패 시
-	      }
+         if (bindingResult.hasErrors()) {
+              Member member = customUserDetails.getMember();
+             model.addAttribute("member", member);
+             return "customer/memberInfo"; // 유효성 검사 실패 시
+         }
 
          try {
-             memberService.updateMemberInfo(customUserDetails.getMember().getCustomerId(), request);
-             redirectAttributes.addFlashAttribute("updateSuccess", true); // 성공 메시지 추가
-             return "redirect:/customer/myPage"; // 수정 성공 후 마이페이지로 리다이렉트
+             // 서비스 계층을 통해 비밀번호 변경
+             memberService.updatePassword(customUserDetails.getMember().getCustomerId(), request.getNewPassword());
+             redirectAttributes.addFlashAttribute("updateSuccess", true);
+             return "redirect:/customer/myPage"; // 성공 시 마이페이지로
 
          } catch (Exception e) {
-             // 예외 처리
-             model.addAttribute("errorMessage", "회원 정보 수정 중 오류 발생: " + e.getMessage());
-             return "customer/memberInfo"; // 오류 발생 시 다시 회원 정보 페이지로
+           // 예외 처리
+             model.addAttribute("errorMessage", "비밀번호 변경 중 오류 발생: " + e.getMessage());
+             Member member = customUserDetails.getMember();
+             model.addAttribute("member", member);
+             return "customer/memberInfo";
          }
      }
 }

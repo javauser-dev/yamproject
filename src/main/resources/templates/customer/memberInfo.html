@@ -3,47 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>회원 정보</title>
-     <!-- jQuery CDN -->
+    <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script th:src="@{/js/memberInfo.js}"></script>
+    <!-- memberInfo.css에 대한 참조 제거 -->
     <style>
         .error-message { color: red; }
-        .verified { /* 인증 완료 버튼 스타일 */
-            background-color: #ccc;
-            color: #666;
-            cursor: not-allowed;
-        }
         .input-info { /* 입력값 제약 조건 스타일 */
             font-size: 0.8em;
             color: #888;
         }
+         /* 수정 */
+        .edit-field {
+          display: none;
+        }
+        .form-group{
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-    <div class = "container">
+    
     <h1>회원 정보</h1>
 
-    <form id="memberInfoForm" th:action="@{/customer/updateMemberInfo}" method="post">
+    <form id="memberInfoForm" th:action="@{/customer/updatePassword}" method="post">
         <p>아이디: <span th:text="${member.customerId}"></span></p>
         <!--  hidden -->
         <input type="hidden" name="customerId" th:value="${member.customerId}" />
-        <div class = "form-group">
-            <label for="customerPassword">비밀번호:</label>
-            <input type="password" id="customerPassword" name="customerPassword"  placeholder="변경하려면 입력"/>
-            <span class = "input-info">영문(대소문자), 숫자, 특수문자, 8~15글자</span>
-            <span id="customerPasswordError" class = "error-message"></span>
-        </div>
-        <div class = "form-group">
-            <label for="customerNickname">닉네임:</label>
-            <input type="text" id="customerNickname" name="customerNickname" th:value="${member.customerNickname}" />
-            <span class = "input-info">영문(대소문자), 숫자, 특수문자, 한글, 2~8글자</span>
-             <span id="customerNicknameError" class = "error-message"></span>
+
+        <div>
+            <label for="newPassword">새 비밀번호:</label>
+            <input type="password" id="newPassword" name="newPassword"  placeholder="변경하려면 입력"/>
+            
+            <button type="submit">비밀번호 변경</button>
+            <span class="input-info">영문(대소문자), 숫자, 특수문자, 8~15글자</span>
+			
         </div>
         <div>
-            <label>이메일:</label>
-            <span th:text="${member.customerEmail}"></span>
+        	<!-- 안내 메시지 (빨간색) -->
+        	<span id="newPasswordError" class="error-message"></span>
         </div>
-        <div>
+        
+
+    <div>
             <label>이름:</label>
              <span th:text = "${member.customerName}"></span>
         </div>
@@ -64,7 +66,6 @@
         </div>
 
         <div class = "button-wrapper">
-        	<button type="submit" class = "form-button">수정하기</button>
         </div>
     </form>
 

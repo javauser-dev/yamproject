@@ -143,7 +143,9 @@ $(document).ready(function() {
             $("#customerEmailError").text("올바른 이메일 형식이 아닙니다.");
             return;
         }
-		alert("5초만 기다려주세요");
+		
+		alert("이메일 발송에 시간이 소요됩니다. 5초만 기다려주세요");
+		
         $.ajax({
             url: "/customer/sendVerificationCode",
             type: "POST",
