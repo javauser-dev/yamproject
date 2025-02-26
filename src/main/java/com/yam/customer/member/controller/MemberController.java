@@ -3,6 +3,7 @@ package com.yam.customer.member.controller;
 import java.util.Random;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,9 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.yam.customer.member.domain.CustomUserDetails;
+import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.email.service.EmailService;
 import com.yam.customer.member.service.MemberService;
+import com.yam.customer.member.vo.MemberInfoRequest;
 import com.yam.customer.member.vo.MemberSignupRequest; // DTO import
 
 import jakarta.servlet.http.HttpSession;
@@ -27,93 +32,82 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 
     private final MemberService memberService;
-    private final EmailService emailService; // EmailService 주입
+    private final EmailService emailService;
 
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
-        model.addAttribute("memberSignupRequest", new MemberSignupRequest()); // DTO 사용
+        model.addAttribute("memberSignupRequest", new MemberSignupRequest());
         return "customer/signup";
     }
 
-    /*@PostMapping("/signup")
-    public String signup(@ModelAttribute("memberSignupRequest") @Valid MemberSignupRequest request, // DTO 사용
-                         BindingResult bindingResult,
-                         Model model) {
-
-        if (bindingResult.hasErrors()) {
-            return "customer/signup";
-        }
-
-        try {
-            memberService.signup(request); // DTO를 서비스로 전달
-            return "redirect:/customer/signup-success";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "customer/signup";
-        }
-    }*/
-    
     @PostMapping("/signup")
     public String signup(@ModelAttribute("memberSignupRequest") @Valid MemberSignupRequest request,
-            BindingResult bindingResult,
-            Model model, HttpSession session) { //HttpSession 추가
+                         BindingResult bindingResult,
+                         Model model, HttpSession session) {
 
         if (bindingResult.hasErrors()) {
             return "customer/signup";
         }
 
-        // 이메일 인증 여부 확인.
-        Boolean verified = (Boolean) session.getAttribute("verified");
-			if (verified == null || !verified) {
-			    model.addAttribute("errorMessage", "이메일 인증이 필요합니다.");
-			    return "customer/signup"; // 다시 signup 페이지로
-			}
+		// 이메일 인증 여부 확인.
+		Boolean verified = (Boolean) session.getAttribute("verified");
+		if (verified == null || !verified) {
+			model.addAttribute("errorMessage", "이메일 인증이 필요합니다.");
+			return "customer/signup"; // 다시 signup 페이지로
+		}
 
-			//인증된 이메일 주소와 입력한 이메일 주소가 같은지 확인
-			String email = (String)session.getAttribute("verifiedEmail");
-			if(!email.equals(request.getCustomerEmail())) {
-			    model.addAttribute("errorMessage", "인증받은 이메일 주소와 일치하지 않습니다.");
-				return  "customer/signup";
-			}
-
+		//인증된 이메일 주소와 입력한 이메일 주소가 같은지 확인
+		String email = (String)session.getAttribute("verifiedEmail");
+		if(!email.equals(request.getCustomerEmail())) {
+			model.addAttribute("errorMessage", "인증받은 이메일 주소와 일치하지 않습니다.");
+		    return  "customer/signup";
+		}
 
         try {
             memberService.signup(request);
             session.removeAttribute("verified"); //세션에서 인증 정보 삭제
             session.removeAttribute("verifiedEmail");
-            return "redirect:/customer/signup-success";
+            //return "redirect:/customer/login";
+            model.addAttribute("customerName", request.getCustomerName()); // 가입자 이름 추가.
+            return "customer/signupSuccess"; // signupSuccess.html로 이동
+            
         } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "customer/signup";
         }
     }
 
-    
-    @GetMapping("/checkId") // ID 중복검사
-    @ResponseBody // AJAX 요청에 대한 응답으로 사용
-    public ResponseEntity<String> checkId(@RequestParam("customerId") String customerId) {
-        boolean isDuplicated = memberService.isCustomerIdDuplicated(customerId);
-
-        if (isDuplicated) {
-            return ResponseEntity.ok("duplicated"); // 중복됨
-        } else {
-            return ResponseEntity.ok("available"); // 사용 가능
-        }
+    @GetMapping("/signup-success")
+    public String signupSuccess() {
+        return "customer/signupSuccess";
     }
-    
-    @GetMapping("/checkNickname") // 닉네임 중복검사
+
+    @GetMapping("/checkId")
     @ResponseBody
-    public ResponseEntity<String> checkNickname(@RequestParam("customerNickname") String customerNickname) {
-        boolean isDuplicated = memberService.isCustomerNicknameDuplicated(customerNickname);
+    public ResponseEntity<String> checkId(@RequestParam("customerId") String customerId){
+         boolean isDuplicated = memberService.isCustomerIdDuplicated(customerId);
+
+         if(isDuplicated){
+             return  ResponseEntity.ok("duplicated");
+         }else {
+             return  ResponseEntity.ok("available");
+         }
+    }
+
+    @GetMapping("/checkNickname")
+    @ResponseBody
+    public ResponseEntity<String> checkNickname(@RequestParam("customerNickname") String customerNickname,
+            @RequestParam(value = "currentCustomerId", required = false) String currentCustomerId) {
+        boolean isDuplicated = memberService.isCustomerNicknameDuplicated(customerNickname, currentCustomerId);
 
         if (isDuplicated) {
-            return ResponseEntity.ok("duplicated"); // 중복
+            return ResponseEntity.ok("duplicated");
         } else {
-            return ResponseEntity.ok("available"); // 사용 가능
+            return ResponseEntity.ok("available");
         }
     }
-    
-    // 인증 번호 발송
+
+     // 인증 번호 발송
     @PostMapping("/sendVerificationCode")
     @ResponseBody
     public ResponseEntity<String> sendVerificationCode(@RequestParam("customerEmail") String customerEmail,
@@ -135,28 +129,88 @@ public class MemberController {
         }
     }
 
-     // 인증 번호 확인
-	 @PostMapping("/verifyCode")
-	 @ResponseBody
-	 public ResponseEntity<String> verifyCode(@RequestParam("inputCode") String inputCode,
-	                                          HttpSession session) {
-	     String storedCode = (String) session.getAttribute("verificationCode");
-	     String email = (String)session.getAttribute("verifiedEmail");//인증메일을 보낸 이메일 주소 불러옴
-	
-	     if (storedCode != null && storedCode.equals(inputCode)) {
-	         // 인증 성공
-	         session.removeAttribute("verificationCode"); // 인증 성공했으므로 세션에서 제거.
-	         session.setAttribute("verified", true);       // 인증 성공 여부를 세션에 저장
-	
-	         return ResponseEntity.ok("verified");
-	     } else {
-	       // 인증 실패
-	         return ResponseEntity.ok("failed");
-	     }
-	 }
+    // 인증 번호 확인
+     @PostMapping("/verifyCode")
+     @ResponseBody
+     public ResponseEntity<String> verifyCode(@RequestParam("inputCode") String inputCode,
+                                              HttpSession session) {
+         String storedCode = (String) session.getAttribute("verificationCode");
+         String email = (String)session.getAttribute("verifiedEmail");//인증메일을 보낸 이메일 주소 불러옴
 
-    @GetMapping("/signup-success")
-    public String signupSuccess() {
-        return "customer/signupSuccess";
-    }
+         if (storedCode != null && storedCode.equals(inputCode)) {
+             // 인증 성공
+             session.removeAttribute("verificationCode"); // 인증 성공했으므로 세션에서 제거.
+             session.setAttribute("verified", true);       // 인증 성공 여부를 세션에 저장
+
+             return ResponseEntity.ok("verified");
+         } else {
+           // 인증 실패
+             return ResponseEntity.ok("failed");
+         }
+     }
+     
+     @GetMapping("/login")
+     public String showLoginForm() {
+         return "customer/login"; // templates/customer/login.html
+     }
+     
+     @GetMapping("/myPage")
+     public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+
+         if (userDetails != null) {
+             Member member = userDetails.getMember();
+
+             // 프로필 이미지 URL 설정 (null 체크)
+             String profileImageUrl = member.getCustomerProfileImage();
+             if (profileImageUrl == null || profileImageUrl.isEmpty()) {
+                 profileImageUrl = "/upload/customer_image_default.png";  // 기본 이미지 경로 (상대 경로)
+             }
+
+             model.addAttribute("profileImageUrl", profileImageUrl);
+             model.addAttribute("customerName", member.getCustomerName()); //이름 추가
+
+         } else {  // userDetails가 null인 경우 (로그인 X)
+             // 로그인 페이지로 리다이렉트하거나, 다른 적절한 처리
+             return "redirect:/customer/login"; // 예시: 로그인 페이지로 리다이렉트
+         }
+
+         return "customer/myPage";
+     }
+     
+     @GetMapping("/memberInfo")
+     public String showMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, Model model) {
+         // 필요한 정보(예: 회원 정보)를 Model에 추가
+         // customUserDetails에서 member객체를 가져올 수 있음
+         Member member = customUserDetails.getMember();
+         model.addAttribute("member", member); //예시
+         return "customer/memberInfo"; // templates/customer/memberInfo.html
+     }
+     
+     @PostMapping("/updateMemberInfo")
+     public String updateMemberInfo(@ModelAttribute("memberInfoRequest") @Valid MemberInfoRequest request,
+                                    BindingResult bindingResult,
+                                    @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                    HttpSession session, Model model,
+                                    RedirectAttributes redirectAttributes) {
+
+         //현재 로그인한 member 객체 가져옴
+         Member member = customUserDetails.getMember();
+         model.addAttribute("member", member); //기존 정보 model에 다시 저장.
+
+	      //Valid 어노테이션을 통해 들어온 값에 문제가 있으면, 다시 memberInfo페이지로 리다이렉트
+	      if (bindingResult.hasErrors()) {
+	          return "customer/memberInfo"; // 유효성 검사 실패 시
+	      }
+
+         try {
+             memberService.updateMemberInfo(customUserDetails.getMember().getCustomerId(), request);
+             redirectAttributes.addFlashAttribute("updateSuccess", true); // 성공 메시지 추가
+             return "redirect:/customer/myPage"; // 수정 성공 후 마이페이지로 리다이렉트
+
+         } catch (Exception e) {
+             // 예외 처리
+             model.addAttribute("errorMessage", "회원 정보 수정 중 오류 발생: " + e.getMessage());
+             return "customer/memberInfo"; // 오류 발생 시 다시 회원 정보 페이지로
+         }
+     }
 }

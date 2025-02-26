@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/myPage.css}">
+</head>
+<body>
+ <div class="container">
+    <h1>마이페이지</h1>
+     <!-- 사용자 이름, 로그아웃 버튼 -->
+      <div class="top-right-container">
+        <p><span th:text="${customerName}"></span>님 반갑습니다.</p>
+        <form th:action="@{/customer/logout}" method="post">
+            <button type="submit">로그아웃</button>
+        </form>
+    </div>
+
+    <!-- 회원 정보 수정 성공 메시지 -->
+    <!--  th:if="${updateSuccess}" -->
+        <div th:if="${updateSuccess}">
+            <script>
+                alert("회원정보가 수정되었습니다.")
+            </script>
+        </div>
+
+    <div class = "profile-image-container">
+          <!-- <h2>프로필 이미지</h2> -->
+          <img th:src="${profileImageUrl}" alt="프로필 이미지" class="profile-image"/>
+     </div>
+
+    <div class = "content-box">
+          <h2>찜 목록</h2>
+        <div th:replace="customer/wishList :: content"></div>
+     </div>
+
+    <div class = "content-box">
+      <h2>예약 목록</h2>
+      <div th:replace="customer/reserve :: content"></div>
+    </div>
+
+    <a th:href="@{/customer/memberInfo}"><button type="button">회원 정보</button></a>
+ </div>
+</body>
+</html>

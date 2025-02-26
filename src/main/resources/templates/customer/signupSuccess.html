@@ -2,11 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원가입 성공</title>
+    <title>회원 가입 성공</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/signupSuccess.css}">
 </head>
 <body>
-  <h1>회원가입을 축하드립니다!</h1>
-  <p>회원가입이 성공적으로 완료되었습니다.</p>
-  <a th:href="@{/}">메인 페이지로 이동</a>
+  <div class = "container">
+    <h1>회원 가입 성공</h1>
+    <p><span th:text="${customerName}"></span>님, 회원 가입을 축하드립니다!</p>
+
+    <a th:href="@{/customer/login}"><button type="button">로그인 화면으로 이동</button></a>
+  </div>
 </body>
 </html>

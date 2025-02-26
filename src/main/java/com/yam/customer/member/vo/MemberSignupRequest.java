@@ -17,7 +17,7 @@ public class MemberSignupRequest {
     @NotBlank(message = "아이디는 필수 입력값입니다.")
     @Pattern(regexp = "^[a-zA-Z0-9]{2,8}$", message = "아이디는 영문 대소문자, 숫자 2~8글자여야 합니다.")
     private String customerId;
-    
+
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
     @Pattern(regexp = "^(?:[a-zA-Z]{8,15}|[0-9]{8,15}|[@$!%*?&]{8,15})$", message = "비밀번호는 영문자, 숫자, 특수문자 중 하나 이상을 사용하여 8~15글자여야 합니다.")
     private String customerPassword;

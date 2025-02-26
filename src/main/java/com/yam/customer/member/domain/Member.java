@@ -22,14 +22,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "customer_manage") // 테이블 이름을 customer_manage로 변경
-@EntityListeners(AuditingEntityListener.class) //추가. JPA auditing 활성화
+@Table(name = "customer_manage")
+@EntityListeners(AuditingEntityListener.class) 
 public class Member {
 
     @Id
     private String customerId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 60)
     private String customerPassword;
 
     @Column(nullable = false)
@@ -47,14 +47,14 @@ public class Member {
 
     @Column(nullable = false, length = 1)
     private String customerGender;
-    
+
     @Column(nullable = false)
     private String customerApproval;
-    
+
     @Column
     private String customerProfileImage;
-    
-    @CreatedDate //자동으로 날짜가 주입.
-    @Column(updatable = false) // 업데이트(수정) 불가
-    private LocalDateTime customerRegDate; // 가입일 필드 추가
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime customerCreateDate; // 가입일 필드 추가
 }

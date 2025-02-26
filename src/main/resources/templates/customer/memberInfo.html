@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보</title>
+     <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script th:src="@{/js/memberInfo.js}"></script>
+    <style>
+        .error-message { color: red; }
+        .verified { /* 인증 완료 버튼 스타일 */
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+        .input-info { /* 입력값 제약 조건 스타일 */
+            font-size: 0.8em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class = "container">
+    <h1>회원 정보</h1>
+
+    <form id="memberInfoForm" th:action="@{/customer/updateMemberInfo}" method="post">
+        <p>아이디: <span th:text="${member.customerId}"></span></p>
+        <!--  hidden -->
+        <input type="hidden" name="customerId" th:value="${member.customerId}" />
+        <div class = "form-group">
+            <label for="customerPassword">비밀번호:</label>
+            <input type="password" id="customerPassword" name="customerPassword"  placeholder="변경하려면 입력"/>
+            <span class = "input-info">영문(대소문자), 숫자, 특수문자, 8~15글자</span>
+            <span id="customerPasswordError" class = "error-message"></span>
+        </div>
+        <div class = "form-group">
+            <label for="customerNickname">닉네임:</label>
+            <input type="text" id="customerNickname" name="customerNickname" th:value="${member.customerNickname}" />
+            <span class = "input-info">영문(대소문자), 숫자, 특수문자, 한글, 2~8글자</span>
+             <span id="customerNicknameError" class = "error-message"></span>
+        </div>
+        <div>
+            <label>이메일:</label>
+            <span th:text="${member.customerEmail}"></span>
+        </div>
+        <div>
+            <label>이름:</label>
+             <span th:text = "${member.customerName}"></span>
+        </div>
+        <div>
+              <label>생년월일:</label>
+              <span th:text = "${#temporals.format(member.customerBirthDate, 'yyyy-MM-dd')}"></span>
+         </div>
+        <div>
+            <label>성별:</label>
+            <span>
+                <span th:if="${member.customerGender == 'M'}">남성</span>
+                <span th:if="${member.customerGender == 'F'}">여성</span>
+            </span>
+        </div>
+         <div>
+            <label>가입일:</label>
+             <span th:text = "${#temporals.format(member.customerCreateDate, 'yyyy-MM-dd')}"></span>
+        </div>
+
+        <div class = "button-wrapper">
+        	<button type="submit" class = "form-button">수정하기</button>
+        </div>
+    </form>
+
+    <a th:href="@{/customer/myPage}"><button type = "button">마이페이지</button></a>
+    </div>
+</body>
+</html>
