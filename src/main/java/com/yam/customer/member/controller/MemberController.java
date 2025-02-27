@@ -19,7 +19,9 @@ import com.yam.customer.member.domain.CustomUserDetails;
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.email.service.EmailService;
 import com.yam.customer.member.service.MemberService;
+import com.yam.customer.member.vo.EmailVerificationRequest;
 import com.yam.customer.member.vo.MemberSignupRequest; // DTO import
+import com.yam.customer.member.vo.NicknameRequest;
 import com.yam.customer.member.vo.PasswordChangeRequest;
 
 import jakarta.servlet.http.HttpSession;
@@ -179,9 +181,20 @@ public class MemberController {
      
      @GetMapping("/memberInfo")
      public String showMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, Model model) {
-         // 필요한 정보(예: 회원 정보)를 Model에 추가
          // customUserDetails에서 member객체를 가져올 수 있음
-         Member member = customUserDetails.getMember();
+
+         // 1. 세션에서 가져오는 대신, DB에서 직접 조회
+         // Member member = customUserDetails.getMember(); // 이 부분 주석 처리 또는 제거
+
+         // 2. DB에서 회원 정보 다시 조회
+         String customerId = customUserDetails.getUsername(); // 또는 .getMember().getCustomerId() 사용
+         Member member = memberService.getMemberById(customerId); // MemberService에 getMemberById 메서드 필요
+
+         // 3. 조회된 회원 정보가 없으면 (예: 탈퇴한 회원), 로그인 페이지로 리다이렉트
+         if (member == null) {
+               return "redirect:/customer/login"; // 또는 적절한 에러 페이지
+         }
+
          model.addAttribute("member", member); //예시
          return "customer/memberInfo"; // templates/customer/memberInfo.html
      }
@@ -210,6 +223,87 @@ public class MemberController {
              model.addAttribute("errorMessage", "비밀번호 변경 중 오류 발생: " + e.getMessage());
              Member member = customUserDetails.getMember();
              model.addAttribute("member", member);
+             return "customer/memberInfo";
+         }
+     }
+     
+     //닉네임 변경
+     @PostMapping("/updateNickname")
+     public String updateNickname(@ModelAttribute("nicknameRequest") @Valid NicknameRequest request,
+                                  BindingResult bindingResult,
+                                  @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
+
+         // @Valid 유효성 검증 결과 확인
+         if (bindingResult.hasErrors()) {
+             Member member = customUserDetails.getMember(); // 현재 회원 정보
+              model.addAttribute("member", member); // 사용자가 입력한 값 + 기존 값 유지를 위해 모델에 다시 추가
+             return "customer/memberInfo"; // 유효성 검사 실패 시, 다시 회원 정보 페이지로
+         }
+
+         try {
+             memberService.updateNickname(customUserDetails.getMember().getCustomerId(), request.getCustomerNickname());
+             redirectAttributes.addFlashAttribute("updateSuccess", true); // 성공 메시지 추가
+             return "redirect:/customer/myPage"; // 성공 시 마이페이지로 리다이렉트
+
+         } catch (Exception e) {
+             // 예외 처리 (로그 기록, 사용자에게 친절한 에러 메시지 표시 등)
+              model.addAttribute("errorMessage", "닉네임 변경 중 오류 발생: " + e.getMessage());
+              Member member = customUserDetails.getMember();
+              model.addAttribute("member", member); // 사용자가 입력한 값 + 기존 값 유지를 위해 모델에 다시 추가
+             return "customer/memberInfo"; // 실패 시 다시 회원 정보 페이지로
+         }
+     }
+     
+     // 이메일 변경 요청 처리
+     @PostMapping("/updateEmail")
+     public String updateEmail(@ModelAttribute("emailVerificationRequest") @Valid EmailVerificationRequest request,
+     		                  BindingResult bindingResult,
+                               @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                               HttpSession session, Model model,
+                               RedirectAttributes redirectAttributes) {
+
+ 		 //Valid 어노테이션을 통해 들어온 값에 문제가 있으면, 다시 memberInfo페이지로 리다이렉트
+         if (bindingResult.hasErrors()) {
+              Member member = customUserDetails.getMember();
+               model.addAttribute("member", member);
+             return "customer/memberInfo"; // 다시 회원 정보 페이지로
+         }
+
+         // 세션에서 인증 정보 확인 (이미 이메일 변경 시에만 이 메서드가 호출되므로, 세션 확인은 굳이 필요 없을 수 있음)
+         Boolean verified = (Boolean) session.getAttribute("verified");
+         if (verified == null || !verified) {
+             model.addAttribute("errorMessage", "이메일 인증이 필요합니다.");
+              Member member = customUserDetails.getMember();
+               model.addAttribute("member", member);
+             return "customer/memberInfo";
+         }
+
+         String sessionEmail = (String) session.getAttribute("verifiedEmail");
+         if (!request.getCustomerEmail().equals(sessionEmail)) {
+              Member member = customUserDetails.getMember();
+               model.addAttribute("member", member);
+             model.addAttribute("errorMessage", "인증된 이메일과 일치하지 않습니다.");
+             return "customer/memberInfo";
+         }
+
+
+         try {
+             // 이메일 업데이트
+             memberService.updateEmail(customUserDetails.getMember().getCustomerId(), request.getCustomerEmail());
+
+             // 세션에서 인증 정보 삭제
+             session.removeAttribute("verified");
+             session.removeAttribute("verifiedEmail");
+
+             redirectAttributes.addFlashAttribute("updateSuccess", true);
+             return "redirect:/customer/myPage";
+
+         } catch (Exception e) {
+         	Member member = customUserDetails.getMember();
+             model.addAttribute("member", member); //model에 member객체를 다시 넣어줌.
+             model.addAttribute("errorMessage", "이메일 변경 중 오류 발생: " + e.getMessage());
              return "customer/memberInfo";
          }
      }

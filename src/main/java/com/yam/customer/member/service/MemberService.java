@@ -57,6 +57,10 @@ public class MemberService {
          }
          return false; // 닉네임 사용 가능
      }
+     
+     public Member getMemberById(String customerId) {
+         return memberRepository.findById(customerId).orElse(null);
+     }
     
      public void updatePassword(String customerId, String newPassword) {
          Member member = memberRepository.findById(customerId)
@@ -67,5 +71,20 @@ public class MemberService {
              member.setCustomerPassword(passwordEncoder.encode(newPassword));
          }
          // 변경된 내용은 트랜잭션 내에서 자동으로 저장됨 (save 호출 불필요)
+     }
+     
+     public void updateNickname(String customerId, String newNickname) {
+         Member member = memberRepository.findById(customerId)
+                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+         member.setCustomerNickname(newNickname);
+         // memberRepository.save(member); // @Transactional에 의해 자동 저장
+     }
+     
+     public void updateEmail(String customerId, String newEmail) {
+         Member member = memberRepository.findById(customerId)
+             .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+         member.setCustomerEmail(newEmail);
      }
 }
