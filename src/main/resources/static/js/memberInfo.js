@@ -222,4 +222,11 @@ $(document).ready(function() {
             reader.readAsDataURL(this.files[0]);
         }
     });
+	
+	$("#withdrawBtn").click(function() {
+        if (confirm("정말로 탈퇴하시겠습니까?")) {
+            // 탈퇴 사유 입력 페이지로 이동
+            window.location.href = "/customer/withdrawalForm";
+        }
+    });
 });

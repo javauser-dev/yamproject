@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -378,4 +379,37 @@ public class MemberController {
          return "redirect:/customer/myPage";
      }
 
+ 	@GetMapping("/withdrawalForm")
+    public String showWithdrawalForm() {
+        return "customer/withdrawalForm"; // withdrawalForm.html 뷰 반환
+    }
+
+    @PostMapping("/withdraw")
+    @Transactional // 트랜잭션 처리
+    public String withdraw(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                           @RequestParam("withdrawalReason") String withdrawalReason,
+                           RedirectAttributes redirectAttributes,
+                           HttpSession session) {
+
+        String customerId = customUserDetails.getUsername();
+
+        try {
+           // withdrawn_customer 테이블로 이동
+			memberService.moveToWithdrawn(customerId, withdrawalReason);
+
+            // customer_manage 테이블에서 삭제
+            memberService.deleteMember(customerId);
+
+
+            // 세션 무효화 (로그아웃 처리)
+            session.invalidate();
+
+            redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
+            return "redirect:/customer/login"; // 로그인 페이지 또는 메인 페이지
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴 처리 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/customer/memberInfo"; // 실패 시 회원 정보 페이지로
+        }
+    }
 }
