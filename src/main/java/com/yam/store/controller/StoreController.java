@@ -106,16 +106,4 @@ public class StoreController {
 
         return "redirect:/store/edit?success";
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody StoreDTO request) {
-//        Store store = storeService.findByEmail(request.getEmail());
-//
-//        if (store == null || !store.getPassword().equals(request.getPassword())) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(Map.of("success", false, "message", "이메일 또는 비밀번호가 잘못되었습니다."));
-//        }
-//
-//        return ResponseEntity.ok(Map.of("success", true));
-//    }
 }

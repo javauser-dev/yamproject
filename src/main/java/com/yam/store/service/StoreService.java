@@ -241,21 +241,12 @@ public class StoreService {
     public StoreService(StoreRepository storeRepository) {
         this.storeRepository = storeRepository;
     }
-
-    public Store findByBusinessNumber(String businessNumber) {
-        return storeRepository.findByBusinessNumber(businessNumber)
-                .orElse(null); // 없으면 null 반환
-    }
-    
+  
     public Store findByEmail(String email) {
         return storeRepository.findByEmail(email).orElse(null);
     }
     @Transactional
     public void save(Store store) {
         storeRepository.save(store);
-    }
-    
-    public Optional<Store> findByUsername(String username) {
-        return storeRepository.findByUsername(username);
     }
 }
