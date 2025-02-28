@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+		<th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+		    <link rel="stylesheet" href="/css/qna.css">
+	    <title>Q&A목록화면</title>
+	</head>
+	<body>
+	  		<div class="container py-4">
+	  		<div th:replace="template/client/fragments/adminblock :: header"></div>
+        <h2>Q&A 목록</h2>
+
+        <div class="table-container">
+            <table class="qna-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>카테고리</th>
+                        <th>작성자</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>작성일</th>
+                        <th>답변 상태</th>
+                        <th>관리</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="qna : ${qnaList}">
+                        <td th:text="${qna.id}"></td>
+                        <td th:text="${qna.category}"></td>
+                        <td th:text="${qna.writer}"></td>
+                        <td th:text="${qna.title}"></td>
+                        <td th:text="${qna.content}"></td>
+                        <td th:text="${qna.createdAt}"></td>
+                        <td>
+                            <span th:text="${qna.answer != null ? '답변' : '미답변'}"></span>
+                        </td>
+                        <td>
+           					 <!-- ✅ 답변 상태에 따라 버튼 변경 -->
+           	 					<a th:if="${qna.answer == null}" th:href="@{/qna-answer/{id}(id=${qna.id})}">
+               					 <button>답변 등록</button>
+           						 </a>
+					            <a th:if="${qna.answer != null}" th:href="@{/qna-edit/{id}(id=${qna.id})}">
+					                <button>답변 수정</button>
+					            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <footer th:replace="template/client/fragments/adminblock :: footer"></footer>
+
+    <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/common.js"></script>
+</body>
+</html>

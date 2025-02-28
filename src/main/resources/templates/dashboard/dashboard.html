@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+		<th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <title>관리자 대시보드</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <!-- Header Fragment -->
+    <div th:replace="template/client/fragments/adminblock :: header"></div>
+
+    <div class="container">
+        <!-- Sidebar Fragment -->  
+        <div th:replace="template/client/fragments/sidebar :: aside"></div>
+        <!-- Main Content -->
+        <main>
+            <h2>회원 가입/탈퇴 통계</h2>
+            <div class="charts">
+                <canvas id="chart1"></canvas>
+                <canvas id="chart2"></canvas>
+            </div> 
+            <div class="stats-container">
+                <div class="stat-circle">3,154 <br> 방문자 수</div>
+                <div class="stat-circle">912 <br> 예약성사</div>
+                <div class="stat-circle">150 <br> 예약취소 내역</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer Fragment -->
+     <div th:replace="template/client/fragments/adminblock :: footer"></div>
+
+    <script th:src="@{/js/chart.js}"></script>
+    <script th:src="@{/js/admin.js}"></script>
+</body>
+</html>
+ 

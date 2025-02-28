@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    margin: 0;
+}
+
+.register-container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    gap: 40px; /* 버튼 사이 간격 증가 */
+    margin-top: 30px;
+}
+
+.register-btn {
+    width: 300px; /* 버튼 크기 증가 */
+    height: 330px; /* 아이콘과 텍스트 간격을 고려해 높이 조정 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    border: none;
+    border-radius: 15px; /* 둥근 모서리 */
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); /* 입체적인 효과 */
+    background: white;
+    border: 3px solid #ccc;
+    padding: 20px;
+}
+
+.register-btn img {
+    width: 80px; /* 아이콘 크기 */
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+.personal {
+    border-color: #808080;
+}
+
+.business {
+    border-color: #808080;
+}
+
+.register-btn:hover {
+    transform: translateY(-5px); /* 살짝 떠오르는 효과 */
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3); /* 더 강한 그림자 */
+}
+
+p{
+	font-weight: bold;
+	color : gray;
+}

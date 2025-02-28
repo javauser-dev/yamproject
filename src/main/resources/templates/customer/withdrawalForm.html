@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 탈퇴</title>
+</head>
+<body>
+    <h1>회원 탈퇴</h1>
+    <p>탈퇴 사유를 입력해주세요.</p>
+
+    <form th:action="@{/customer/withdraw}" method="post">
+        <textarea name="withdrawalReason" rows="5" cols="50" required></textarea><br>
+        <button type="submit">탈퇴</button>
+        <a th:href="@{/customer/memberInfo}"><button type="button">취소</button></a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+		<th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+		    <link rel="stylesheet" href="/css/qna.css">
+	    <title>답변수정화면</title>
+	</head>
+	<body>
+	  		<div class="container py-4">
+	  		<div th:replace="template/client/fragments/adminblock :: header"></div>
+        <h2>답변 수정</h2>
+
+        <div class="qna-detail">
+            <p><strong>카테고리:</strong> <span th:text="${qna.category}"></span></p>
+            <p><strong>작성자:</strong> <span th:text="${qna.writer}"></span></p>
+            <p><strong>제목:</strong> <span th:text="${qna.title}"></span></p>
+            <p><strong>내용:</strong> <span th:text="${qna.content}"></span></p>
+            <p><strong>작성일:</strong> <span th:text="${qna.createdAt}"></span></p>
+        </div>
+
+        <!-- ✅ 답변 수정 폼 -->
+        <form th:action="@{/qna-edit/{id}(id=${qna.id})}" method="post">
+            <label for="answer">답변 수정:</label>
+            <textarea id="answer" name="answer" rows="4" required th:text="${qna.answer}"></textarea>
+
+            <button type="submit" class="submit-btn">수정</button>
+        </form>
+ 
+        <!-- ✅ 답변 삭제 버튼 -->
+        <form th:action="@{/delete/{id}(id=${qna.id})}" method="post">
+    			<button type="submit" class="delete-btn">삭제</button>
+		</form>
+    </div>
+    
+
+    <footer th:replace="template/client/fragments/adminblock :: footer"></footer>
+	<script>
+   		 function confirmDelete() {
+        	if (confirm("정말 삭제하시겠습니까?")) {
+            document.getElementById("deleteForm").submit();
+        	}
+   		 }
+	</script>
+    <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/common.js"></script>
+</body>
+</html>

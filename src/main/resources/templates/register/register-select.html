@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <title>회원가입 선택</title>
+    <link rel="stylesheet" th:href="@{/css/register-select.css}">
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="register-container">
+        <h2>회원가입 선택</h2>
+        <p>회원가입 유형을 선택해주세요</p>
+
+        <div class="button-container">
+            <button onclick="location.href='/customer/signup'" class="register-btn personal"><img src="../images/indi.png">개인 회원</button>
+            <button onclick="location.href='/store/store'" class="register-btn business"><img src="../images/store.png">사업자 회원</button>
+        </div>
+    </div>
+</th:block>
+</body> 
+</html>
+ 
