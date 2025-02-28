@@ -1,0 +1,142 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+	   <form id="updateForm" method="post" action="/store/update" enctype="multipart/form-data">
+        <!-- 🔙 뒤로가기 버튼 -->
+        <button type="button" onclick="window.location.href='/mypage'" style="position: absolute; top: 10px; left: 10px;">
+            ⬅ 뒤로가기
+        </button>
+
+        <h2>사업자 정보 수정</h2>
+
+        <!-- 🚨 경고 메시지 -->
+        <div id="errorMessage" style="color: red; display: none; font-weight: bold; margin-top: 10px;"></div>
+		
+        <!-- 현재 비밀번호 -->
+        <div>
+            <label for="currentPassword">현재 비밀번호:</label>
+            <input type="password" id="currentPassword" name="currentPassword">
+        </div>
+
+        <!-- 비밀번호 변경 -->
+        <div>
+            <label for="newPassword">새 비밀번호:</label>
+            <input type="password" id="newPassword" name="newPassword">
+        </div>
+
+        <div>
+            <label for="confirmPassword">비밀번호 확인:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword">
+        </div>
+
+        <!-- 이메일 변경 -->
+        <div>
+            <label for="email">이메일 변경:</label>
+            <input type="email" id="email" name="email" >
+            <button type="button" id="verifyBtn">인증번호 요청</button>
+        </div>
+
+        <div>
+            <label for="verificationCode">인증번호 입력:</label>
+            <input type="text" id="verificationCode" name="verificationCode">
+            <button type="button" id="checkCodeBtn">인증 확인</button>
+            <input type="hidden" id="emailVerified" name="emailVerified" value="false">
+        </div>
+
+        <!-- 정보 변경 버튼 -->
+        <div>
+            <button type="submit" id="updateBtn">정보 변경</button>
+        </div>
+    </form>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	<script>
+	$(document).ready(function () {
+	    let oldEmail = $("#oldEmail").val().trim();
+	    console.log("현재 이메일:", oldEmail);
+
+	    $("#verifyBtn").click(function () {
+	        let email = $("#email").val().trim();
+	        console.log("입력한 이메일:", email);
+
+	        if (!email) {
+	            alert("이메일을 입력하세요.");
+	            return;
+	        }
+	        if (email === oldEmail) {
+	            alert("현재 이메일과 동일한 이메일로 변경할 수 없습니다.");
+	            return;
+	        }
+
+	        fetch("/email/send-verification-email", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify({ email: email })
+	        })
+	        .then(response => {
+	            console.log("서버 응답:", response);
+	            if (response.ok) {
+	                alert("인증 메일이 전송되었습니다!");
+	            } else {
+	                return Promise.reject();
+	            }
+	        })
+	        .catch(() => alert("인증 메일 전송 실패! 서버 상태를 확인하세요."));
+	    });
+
+	    $("#updateForm").submit(function (e) {
+	        e.preventDefault();
+
+	        let currentPassword = $("#currentPassword").val().trim();
+	        let newPassword = $("#newPassword").val().trim();
+	        let confirmPassword = $("#confirmPassword").val().trim();
+	        let email = $("#email").val().trim();
+	        let phone = $("#phone").val().trim();
+
+	        let errorMessage = $("#errorMessage");
+	        errorMessage.hide().text("");
+
+	        if (!currentPassword) {
+	            errorMessage.text("정보 변경을 위해 현재 비밀번호를 입력해야 합니다.").show();
+	            return;
+	        }
+
+	        if (newPassword && newPassword !== confirmPassword) {
+	            errorMessage.text("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.").show();
+	            return;
+	        }
+	        if (phone && !/^\d{10,11}$/.test(phone)) {
+	            errorMessage.text("전화번호는 숫자 10~11자리로 입력해야 합니다.").show();
+	            return;
+	        }
+
+	        let updateData = {
+	            currentPassword,
+	            newPassword: newPassword.length > 0 ? newPassword : null,
+	            email: email !== oldEmail ? email : null,
+	            phone: phone || null
+	        };
+
+	        console.log("전송할 데이터:", updateData);
+
+	        fetch("/store/update", {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify(updateData)
+	        })
+	        .then(response => {
+	            console.log("서버 응답:", response);
+	            if (response.ok) {
+	                alert("정보가 성공적으로 변경되었습니다!");
+	            } else {
+	                return Promise.reject();
+	            }
+	        })
+	        .catch(() => alert("정보 변경 실패! 서버 상태를 확인하세요."));
+	    });
+	});
+	 </script>
+	</th:block>
+</html>

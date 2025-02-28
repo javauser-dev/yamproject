@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+/* 공통 적용 스타일*/
+textarea { resize: none; }
+a{color:black;}
+/* 게시판 적용 스타일 */
+.board-table-tr-height{ height:300px; } 
+/* .board-table-height{ height:500px; } */ 
+.board-msg-default-color{ color:#000099; }
+.board-msg-error-color{ color:red; }  
+.board-required{ color:red; }  
+/* .dateArea {display: none;} */
+
+/* 댓글 적용 스타일 */
+.cdate{ font-size:12px; }
+.reply-count{ color:red; font-size:12px; }
+
+/* clone 대상 적용 스타일*/
+#item-template{display:none;}
