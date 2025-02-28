@@ -1,7 +1,15 @@
 package com.yam.customer.member.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Random;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yam.customer.member.domain.CustomUserDetails;
@@ -35,6 +44,9 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailService emailService;
+    
+    @Value("${file.upload.path}")
+    private String uploadPath;  //상대경로
 
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
@@ -158,22 +170,28 @@ public class MemberController {
      
      @GetMapping("/myPage")
      public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-
          if (userDetails != null) {
-             Member member = userDetails.getMember();
+             // DB에서 회원 정보를 다시 조회
+             String customerId = userDetails.getUsername();
+             Member member = memberService.getMemberById(customerId);
+
+             // 조회된 회원 정보가 없으면 (예: 탈퇴한 회원) 로그인 페이지로 리다이렉트
+             if (member == null) {
+                 return "redirect:/customer/login";
+             }
 
              // 프로필 이미지 URL 설정 (null 체크)
              String profileImageUrl = member.getCustomerProfileImage();
              if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-                 profileImageUrl = "/upload/customer_image_default.png";  // 기본 이미지 경로 (상대 경로)
+                 profileImageUrl = "/upload/customer_image_default.png";  // 기본 이미지 경로
              }
 
              model.addAttribute("profileImageUrl", profileImageUrl);
-             model.addAttribute("customerName", member.getCustomerName()); //이름 추가
+             model.addAttribute("customerName", member.getCustomerName()); // 이름 추가
 
-         } else {  // userDetails가 null인 경우 (로그인 X)
-             // 로그인 페이지로 리다이렉트하거나, 다른 적절한 처리
-             return "redirect:/customer/login"; // 예시: 로그인 페이지로 리다이렉트
+         } else {
+             // userDetails가 null인 경우 (로그인 X) 로그인 페이지로 리다이렉트
+             return "redirect:/customer/login";
          }
 
          return "customer/myPage";
@@ -181,21 +199,27 @@ public class MemberController {
      
      @GetMapping("/memberInfo")
      public String showMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, Model model) {
-         // customUserDetails에서 member객체를 가져올 수 있음
 
-         // 1. 세션에서 가져오는 대신, DB에서 직접 조회
-         // Member member = customUserDetails.getMember(); // 이 부분 주석 처리 또는 제거
-
-         // 2. DB에서 회원 정보 다시 조회
+         // 1. DB에서 회원 정보 다시 조회
          String customerId = customUserDetails.getUsername(); // 또는 .getMember().getCustomerId() 사용
          Member member = memberService.getMemberById(customerId); // MemberService에 getMemberById 메서드 필요
 
-         // 3. 조회된 회원 정보가 없으면 (예: 탈퇴한 회원), 로그인 페이지로 리다이렉트
+         // 2. 조회된 회원 정보가 없으면 (예: 탈퇴한 회원), 로그인 페이지로 리다이렉트
          if (member == null) {
                return "redirect:/customer/login"; // 또는 적절한 에러 페이지
          }
+         
+          // 3. 프로필 이미지 URL 설정 (null 체크)
+         String profileImageUrl = member.getCustomerProfileImage();  //DB에 /upload/파일명 으로 저장되어있음.
+         if (profileImageUrl == null || profileImageUrl.isEmpty()) {
+             profileImageUrl = "/upload/customer_image_default.png";  // 기본 이미지 경로
+         }
 
-         model.addAttribute("member", member); //예시
+         // 4. 모델에 데이터 추가
+         model.addAttribute("profileImageUrl", profileImageUrl);
+         model.addAttribute("member", member); //회원 정보 객체
+         
+         // 5. 뷰 반환
          return "customer/memberInfo"; // templates/customer/memberInfo.html
      }
      
@@ -307,4 +331,51 @@ public class MemberController {
              return "customer/memberInfo";
          }
      }
+     
+     @PostMapping("/updateProfileImage")
+     public String updateProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                      RedirectAttributes redirectAttributes) {
+
+         // 1. 파일 유효성 검사 (비어 있는지, 이미지 파일인지)
+         if (file.isEmpty()) {
+             redirectAttributes.addFlashAttribute("errorMessage", "업로드할 파일을 선택해주세요.");
+             return "redirect:/customer/memberInfo";
+         }
+
+         if (!file.getContentType().startsWith("image")) {
+             redirectAttributes.addFlashAttribute("errorMessage", "이미지 파일만 업로드할 수 있습니다.");
+             return "redirect:/customer/memberInfo";
+         }
+
+         // 2. 파일 저장 경로 설정 및 생성 (상대 경로 사용)
+         File uploadDir = new File(uploadPath);  // 상대 경로
+         if (!uploadDir.exists()) {
+             uploadDir.mkdirs();
+         }
+
+         // 3. 파일 이름 생성 (중복 방지)
+         String originalFilename = file.getOriginalFilename();
+         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+         String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+         // 4. 파일 저장 (상대 경로 사용)
+         Path savePath = Paths.get(uploadPath, uniqueFilename); //상대경로
+         try {
+             Files.copy(file.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
+         } catch (IOException e) {
+             // 예외 처리 (로그 기록, 사용자에게 메시지)
+             redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+             return "redirect:/customer/memberInfo";
+         }
+
+
+         // 5. DB에 프로필 이미지 경로 업데이트.  상대경로 저장 (/upload/파일명)
+         String imageUrl = "/upload/" + uniqueFilename;
+         memberService.updateProfileImage(customUserDetails.getMember().getCustomerId(), imageUrl);
+
+         redirectAttributes.addFlashAttribute("updateSuccess", true);
+         return "redirect:/customer/myPage";
+     }
+
 }

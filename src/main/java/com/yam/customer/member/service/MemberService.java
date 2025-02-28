@@ -87,4 +87,12 @@ public class MemberService {
 
          member.setCustomerEmail(newEmail);
      }
+     
+     public void updateProfileImage(String customerId, String imageUrl) {
+         Member member = memberRepository.findById(customerId)
+                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+         member.setCustomerProfileImage(imageUrl);
+         // @Transactional에 의해 자동 저장
+     }
 }

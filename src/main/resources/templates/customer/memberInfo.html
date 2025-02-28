@@ -13,6 +13,14 @@
         .error-message {
            color: red;  /* 빨간색 */
         }
+        /* 프로필 이미지 미리보기 스타일 */
+        #profileImagePreview {
+            width: 150px; /* 원하는 크기로 조절 */
+            height: 150px;
+            border-radius: 50%; /* 원형으로 만들기 (선택 사항) */
+            object-fit: cover; /* 이미지가 비율을 유지하며 채워지도록 */
+            margin-bottom: 10px; /* 여백 */
+        }
 	</style>
 </head>
 <body>
@@ -91,6 +99,16 @@
         <div>
             <label>가입일:</label>
             <span th:text="${#temporals.format(member.customerCreateDate, 'yyyy-MM-dd')}"></span>
+        </div>
+
+        <!-- 프로필 사진 변경 부분 추가 -->
+        <div>
+            <label>프로필 사진:</label>
+            <img id="profileImagePreview" th:src="${member.customerProfileImage != null and member.customerProfileImage != '' ? member.customerProfileImage : '/upload/customer_image_default.png'}" alt="프로필 사진 미리보기">
+            <form id="updateProfileImageForm" th:action="@{/customer/updateProfileImage}" method="post" enctype="multipart/form-data">
+                <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                <button type="submit">사진 변경</button>
+            </form>
         </div>
 
     	<a th:href="@{/customer/myPage}"><button type = "button">마이페이지</button></a>

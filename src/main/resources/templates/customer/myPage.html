@@ -5,6 +5,22 @@
     <meta charset="UTF-8">
     <title>마이페이지</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/myPage.css}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // URL 파라미터나 세션 스토리지 등을 이용하여 새로고침 여부 확인
+            if (sessionStorage.getItem('reloaded') === null) {
+                // 0.5초 후 새로고침
+                setTimeout(function() {
+                    sessionStorage.setItem('reloaded', 'true'); // 새로고침 했음을 표시
+                    window.location.reload();
+                }, 500); // 0.5초 = 500ms
+            } else {
+                // 이미 새로고침된 경우, sessionStorage에서 표시 제거(다음번 myPage 방문을 위해)
+              sessionStorage.removeItem('reloaded');
+            }
+
+        });
+    </script>
 </head>
 <body>
  <div class="container">
@@ -18,12 +34,12 @@
     </div>
 
     <!-- 회원 정보 수정 성공 메시지 -->
-    <!--  th:if="${updateSuccess}" -->
-        <div th:if="${updateSuccess}">
+     <div th:if="${updateSuccess}">
             <script>
                 alert("회원정보가 수정되었습니다.")
             </script>
-        </div>
+    </div>
+
 
     <div class = "profile-image-container">
           <!-- <h2>프로필 이미지</h2> -->
