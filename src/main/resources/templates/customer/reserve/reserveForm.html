@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약하기</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>예약 정보 확인</h1>
+
+    <div>
+        <label>회원 ID:</label>
+        <span th:text="${customerId}"></span> <!-- 회원 ID 출력 -->
+    </div>
+
+
+    <form id="reserveForm" action="/customer/reserve/new" method="post">
+        <div>
+            <label>매장 ID:</label>
+            <span th:text="${reserveDto.shopId}"></span>
+            <input type="hidden" name="shopId" th:value="${reserveDto.shopId}" />
+        </div>
+        <div>
+            <label>날짜:</label>
+            <span th:text="${reserveDto.reserveDate}"></span>
+             <input type="hidden" name="reserveDate" th:value="${reserveDto.reserveDate}" />
+        </div>
+        <div>
+            <label>시간:</label>
+            <span th:text="${reserveDto.reserveTime}"></span>
+             <input type="hidden" name="reserveTime" th:value="${reserveDto.reserveTime}" />
+        </div>
+        <div>
+            <label>인원수:</label>
+            <span th:text="${reserveDto.guestCount}"></span>
+            <input type="hidden" name="guestCount" th:value="${reserveDto.guestCount}" />
+        </div>
+        <div>
+           <label>예약금:</label>
+           <span th:text="${reserveDto.deposit}"></span>
+           <input type="hidden" name="deposit" th:value="${reserveDto.deposit}" />
+       </div>
+        <div>
+            <label for="request">요청사항:</label>
+            <textarea id="request" name="request" rows="4" cols="50"></textarea>
+        </div>
+        <!--  customerId 관련 input은 제거됨 -->
+        <button type="submit">예약하기</button>
+    </form>
+
+ <script>
+    $(document).ready(function() {
+        $("#reserveForm").submit(function(event) {
+            event.preventDefault(); // 기본 폼 제출 동작 막기
+
+            var formData = {   // ReserveRequestDto와 필드명 일치해야함!
+                shopId: $("input[name='shopId']").val(),
+                reserveDate: $("input[name='reserveDate']").val(),
+                reserveTime: $("input[name='reserveTime']").val(),
+                guestCount: parseInt($("input[name='guestCount']").val()),  // parseInt()추가
+                deposit: parseInt($("input[name='deposit']").val()),
+                request: $("#request").val(),
+                //customerId는 ajax에서 제거
+            };
+
+            //JSON.stringify()
+            $.ajax({
+                type: "POST",
+                url: "/customer/reserve/new",
+                contentType: "application/json",  // JSON 형태로 전송
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    alert(response);  // 예약 완료 메시지 표시
+                    // 예약 확인 페이지 또는 메인 페이지로 리다이렉트
+                    window.location.href = "/customer/myPage"; // 마이페이지로 리다이렉트
+                },
+                error: function(xhr, status, error) {
+                  // 응답이 JSON 형식이 아니거나 파싱할 수 없는 경우에 대한 처리
+                   if (xhr.responseText) {
+                        alert(xhr.responseText); // 서버에서 보낸 에러 메시지 표시
+                   } else {
+                         alert("오류가 발생했습니다: " + error);
+                    }
+              }
+
+            });
+        });
+    });
+</script>
+</body>
+</html>
