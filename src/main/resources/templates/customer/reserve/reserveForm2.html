@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약하기</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 네이버페이 SDK 추가 -->
+    <script type="text/javascript" src="https://testpay.naver.com/v2/js/naverPayButton.js" charset="UTF-8"></script>
+</head>
+<body>
+    <h1>예약 정보 확인</h1>
+
+    <div>
+        <label>회원 ID:</label>
+        <span th:text="${customerId}"></span> <!-- 회원 ID 출력 -->
+    </div>
+
+
+    <form id="reserveForm" action="/customer/reserve/new" method="post">
+        <div>
+            <label>매장 ID:</label>
+            <span th:text="${reserveDto.shopId}"></span>
+            <input type="hidden" name="shopId" th:value="${reserveDto.shopId}" />
+        </div>
+        <div>
+            <label>날짜:</label>
+            <span th:text="${reserveDto.reserveDate}"></span>
+             <input type="hidden" name="reserveDate" th:value="${reserveDto.reserveDate}" />
+        </div>
+        <div>
+            <label>시간:</label>
+            <span th:text="${reserveDto.reserveTime}"></span>
+             <input type="hidden" name="reserveTime" th:value="${reserveDto.reserveTime}" />
+        </div>
+        <div>
+            <label>인원수:</label>
+            <span th:text="${reserveDto.guestCount}"></span>
+            <input type="hidden" name="guestCount" th:value="${reserveDto.guestCount}" />
+        </div>
+        <div>
+           <label>예약금:</label>
+           <span th:text="${reserveDto.deposit}"></span>
+           <input type="hidden" name="deposit" th:value="${reserveDto.deposit}" />
+       </div>
+       <div>
+           <label for="request">요청사항:</label>
+           <textarea id="request" name="request" rows="4" cols="50"></textarea>
+       </div>
+       <!--  customerId 관련 input은 제거됨 -->
+
+       <!-- 네이버페이 결제 버튼 -->
+       <div id="naverPayBtn"></div>
+
+       <button type="submit" id="reserveButton" style="display: none;">예약하기</button> <!-- 예약하기 버튼 숨김 -->
+    </form>
+
+ <script>
+    $(document).ready(function() {
+       var paymentAmount = parseInt($("input[name='deposit']").val());  //결제 금액
+
+       // 네이버페이 버튼 생성
+        naver.NaverPayButton.create({
+           "clientId": "HN3GGCMDdTgGUfl0kFCo",  //  네이버페이 clientId
+            "type": "PAY",  // 버튼 타입 설정
+           "color": "green",   // 버튼 컬러 설정
+           "mode": "TEST", // "PRODUCTION" : "TEST"
+           "payType": "CARD",  //
+           "orderTitle": "상품명", //
+           "cultureBenefit": "N",  //
+           "returnUrl": "http://localhost:9090/naverpay_result.html",  //
+           "product": [{ //
+               "id": "12928882",   //
+               "name": "예약금",   //
+               "count": 1,         //
+               "amount": paymentAmount     //결제 금액
+           }], //
+       });
+
+
+
+         // 예약하기 버튼 클릭 이벤트 (결제 성공 후에만 실행)
+        $("#reserveButton").click(function(event) {
+             event.preventDefault(); // 기본 폼 제출 동작 막기
+
+            var formData = {
+                shopId: $("input[name='shopId']").val(),
+                reserveDate: $("input[name='reserveDate']").val(),
+                reserveTime: $("input[name='reserveTime']").val(),
+                guestCount: parseInt($("input[name='guestCount']").val()),
+                deposit: parseInt($("input[name='deposit']").val()),
+                request: $("#request").val(),
+            };
+
+
+            $.ajax({
+                type: "POST",
+                url: "/customer/reserve/new",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    alert(response);
+                    window.location.href = "/customer/myPage"; // 마이페이지로 리다이렉트
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.responseText) {
+                        alert(xhr.responseText);
+                    } else {
+                        alert("오류가 발생했습니다: " + error);
+                    }
+                }
+            });
+        });
+
+
+         // 네이버페이 결제 버튼 클릭 이벤트
+         $("#naverPayBtn").click(function() {
+
+             if (paymentAmount <= 0) {  // parseInt() 추가
+                 alert("결제할 금액이 없습니다.");
+                 return;
+             }
+
+              // 네이버페이 결제창 호출 (여기서는 예시로 성공 가정)
+              // 실제로는 네이버페이 API 연동하여 결제창 띄우고, 결제 성공/실패 여부 받아와야 함
+               naver.NaverPayButton.open({
+                  "merchantUserKey": "가맹점 사용자 식별키",
+                  "merchantPayKey": "가맹점 주문 번호",
+                  "productName": "예약금 결제",
+                  "totalPayAmount": paymentAmount,
+                  "taxScopeAmount": paymentAmount,
+                  "taxExScopeAmount": "0",
+                  "returnUrl": "사용자 결제 완료 후 결제 결과를 받을 URL"
+              });
+
+         });
+    });
+
+
+
+    // 네이버페이 결제 완료 후 호출되는 함수 (가정)
+    function naverPaySuccess(paymentInfo) {
+      // paymentInfo 객체에 결제 정보 담겨있다고 가정
+
+      // ReservationPayment 엔티티 저장을 위한 ajax
+      $.ajax({
+           type: "POST",
+           url: "/payment/save",  // 결제 정보 저장을 처리할 컨트롤러 메서드 URL
+           contentType: "application/json",
+           data: JSON.stringify(paymentInfo), //결제 정보
+           success: function(response) {
+                alert("결제가 완료되었습니다.");
+                $("#reserveButton").show(); // 결제 성공 시 예약 버튼 표시
+           },
+           error: function(xhr, status, error) {
+              if (xhr.responseText) {
+                 alert("결제 정보 저장 실패!: " + xhr.responseText);
+              }
+              else{
+                  alert("결제 정보 저장에 실패했습니다.");
+              }
+           }
+       });
+    }
+
+
+    //결제 실패
+    function naverPayFail(){
+       alert("예약금을 결제해주세요");
+    }
+</script>
+</body>
+</html>
