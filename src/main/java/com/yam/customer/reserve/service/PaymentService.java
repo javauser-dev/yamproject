@@ -12,11 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentService {
 
-   private final ReservationPaymentRepository reservationPaymentRepository;
-   
-   @Transactional
-   public void savePayment(ReservationPayment payment) {
-       reservationPaymentRepository.save(payment);
-   }
+	 private final ReservationPaymentRepository reservationPaymentRepository;
+
+	   @Transactional
+	   public void savePayment(int paymentAmount, Long customerReserveId, String customerId, Long shopId) { // 파라미터 변경
+	       ReservationPayment payment = new ReservationPayment(paymentAmount, customerReserveId, customerId, shopId); // 객체 생성
+	       reservationPaymentRepository.save(payment);
+	   }
 
 }

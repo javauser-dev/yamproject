@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.repository.MemberRepository;
 import com.yam.customer.reserve.domain.CustomerReserve;
-import com.yam.customer.reserve.domain.ReservationPayment;
 import com.yam.customer.reserve.domain.Store;
 import com.yam.customer.reserve.repository.CustomerReserveRepository;
 import com.yam.customer.reserve.repository.ReservationPaymentRepository;
@@ -60,22 +59,5 @@ public class ReserveService {
 
         // 6. 예약 id 반환
         return reserve.getId();
-    }
-
-
-    //결제 정보 저장
-    @Transactional
-    public void savePayment(int paymentAmount, Long reserveId, String customerId, Long shopId) {
-        log.info("Saving payment: amount={}, reserveId={}, customerId={}, shopId={}",
-                paymentAmount, reserveId, customerId, shopId);
-        // 변경: reserveId를 null로 전달
-        ReservationPayment payment = new ReservationPayment(
-            paymentAmount,
-            null, // 예약 전이므로 customerReserveId는 null
-            customerId,
-            shopId
-        );
-      reservationPaymentRepository.save(payment);
-      log.info("Payment saved: id={}", payment.getPaymentId()); // 변경: getPaymentId()
     }
 }

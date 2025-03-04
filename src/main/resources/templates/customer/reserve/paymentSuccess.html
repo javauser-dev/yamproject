@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 완료</title>
+</head>
+<body>
+    <h1>결제가 완료되었습니다.</h1>
+    <p>결제 금액: <span th:text="${deposit}"></span>원</p>
+    <p>resultCode: <span th:text="${resultCode}"></span></p>
+    <p>paymentId: <span th:text="${paymentId}"></span></p>
+
+     <!-- 예약 페이지로 돌아가는 버튼 -->
+    <button onclick="goToReserveForm()">예약 페이지로 이동</button>
+
+     <script th:inline="javascript">
+        function goToReserveForm() {
+
+            var shopId = /*[[${shopId}]]*/ null;
+            var reserveDate = /*[[${reserveDate}]]*/ null;
+            var reserveTime = /*[[${reserveTime}]]*/ null;
+            var guestCount = /*[[${guestCount}]]*/ null;
+            var deposit = /*[[${deposit}]]*/ null;
+
+             // URL 생성
+            var url = "/customer/reserve/new?shopId=" + shopId +
+                      "&reserveDate=" + reserveDate +
+                      "&reserveTime=" + reserveTime +
+                      "&guestCount=" + guestCount +
+                      "&deposit=" + deposit;
+
+            location.href = url; // 현재 페이지에서 바로 이동
+        }
+    </script>
+
+</body>
+</html>

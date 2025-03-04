@@ -1,15 +1,6 @@
 $(document).ready(function() {
-    // reserveForm.html이 로드될 때, 세션에서 customerId 가져오기
-    $.ajax({
-        url: '/customer/reserve/getCustomerId', // 세션에서 customerId 가져오는 엔드포인트
-        type: 'GET',
-        success: function(data) {
-            $("#customerId").val(data); // customerId 필드에 설정
-        },
-        error: function() {
-            console.error("Failed to get customerId");
-        }
-    });
+    var customerId = /*[[${customerId}]]*/ null;
+    $("#customerId").val(customerId ?? '');
 
     var oPay = Naver.Pay.create({
         "mode": "development",
@@ -22,33 +13,19 @@ $(document).ready(function() {
         var paymentAmount = parseInt($("#deposit").val());
         var merchantPayKey = "order-" + new Date().getTime();
 
-        // AJAX를 사용하여 서버에 결제 정보 전송 (세션에 저장)
-        $.ajax({
-            url: "/customer/reserve/setPaymentInfo",  // Controller의 핸들러 URL
-            type: "POST",
-            data: {
-                merchantPayKey: merchantPayKey,
-                paymentAmount: paymentAmount
-            },
-            success: function(response) {
-                // 서버에서 세션 설정 완료 후, 네이버페이 결제창 열기
-                oPay.open({
-                    "merchantUserKey":  $("#customerId").val(),
-                    "merchantPayKey": merchantPayKey,
-                    "productName": "예약금 결제",
-                    "totalPayAmount": paymentAmount,
-                    "taxScopeAmount": paymentAmount,
-                    "taxExScopeAmount": 0,
-                    "returnUrl": "http://localhost:8080/customer/reserve/paymentSuccess"
-                });
-            },
-            error: function(xhr, status, error) {
-                alert("서버 오류: " + error);
-            }
+        oPay.open({
+            "merchantUserKey": $("#customerId").val(),
+            "merchantPayKey": merchantPayKey,
+            "productName": "예약금 결제",
+            "totalPayAmount": paymentAmount,
+            "taxScopeAmount": paymentAmount,
+            "taxExScopeAmount": 0,
+            "returnUrl": "http://localhost:8080/customer/reserve/payment-success?merchantPayKey=" + merchantPayKey + "&paymentAmount=" + paymentAmount
         });
     });
 
-     $("#submitBtn").click(function() {
+
+   $("#submitBtn").click(function() {
         // 세션에 paymentSuccess가 있는지 확인 (추가)
         $.ajax({
             type: "GET",

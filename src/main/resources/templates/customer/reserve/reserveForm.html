@@ -16,27 +16,27 @@
      <form id="reserveForm">
         <div>
             <label for="customerId">고객 ID:</label>
-            <input type="text" id="customerId" name="customerId" th:value="${customerId}" readonly>
+            <input type="text" id="customerId" name="customerId" th:value="${customerId}" readonly> <!-- customerId는 reserveForm.js에서 처리 -->
         </div>
         <div>
             <label for="shopId">매장 ID:</label>
-            <input type="text" id="shopId" name="shopId" th:value="${reserveDto.shopId}" readonly>
+            <input type="text" id="shopId" name="shopId" th:value="${shopId}" readonly>  <!-- reserveDto.shopId -> shopId -->
         </div>
         <div>
             <label for="reserveDate">예약 날짜:</label>
-            <input type="date" id="reserveDate" name="reserveDate" th:value="${reserveDto.reserveDate}" readonly>
+            <input type="date" id="reserveDate" name="reserveDate" th:value="${reserveDate}" readonly> <!-- reserveDto.reserveDate -> reserveDate -->
         </div>
         <div>
             <label for="reserveTime">예약 시간:</label>
-            <input type="time" id="reserveTime" name="reserveTime" th:value="${reserveDto.reserveTime}" readonly>
+            <input type="time" id="reserveTime" name="reserveTime" th:value="${reserveTime}" readonly> <!-- reserveDto.reserveTime -> reserveTime -->
         </div>
         <div>
             <label for="guestCount">인원 수:</label>
-            <input type="number" id="guestCount" name="guestCount" th:value="${reserveDto.guestCount}" readonly>
+            <input type="number" id="guestCount" name="guestCount" th:value="${guestCount}" readonly> <!-- reserveDto.guestCount -> guestCount -->
         </div>
         <div>
             <label for="deposit">예약금:</label>
-            <input type="number" id="deposit" name="deposit" th:value="${reserveDto.deposit}" readonly>
+            <input type="number" id="deposit" name="deposit" th:value="${deposit}" readonly> <!-- reserveDto.deposit -> deposit -->
         </div>
         <div>
             <label for="request">요청사항:</label>
