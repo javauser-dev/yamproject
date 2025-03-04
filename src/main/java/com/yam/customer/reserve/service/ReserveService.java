@@ -14,10 +14,12 @@ import com.yam.customer.reserve.repository.StoreRepository;
 import com.yam.customer.reserve.vo.ReserveRequestDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional //선언적으로 트랜잭션 관리
+@Slf4j
 public class ReserveService {
 
     private final CustomerReserveRepository customerReserveRepository;
@@ -64,12 +66,16 @@ public class ReserveService {
     //결제 정보 저장
     @Transactional
     public void savePayment(int paymentAmount, Long reserveId, String customerId, Long shopId) {
+        log.info("Saving payment: amount={}, reserveId={}, customerId={}, shopId={}",
+                paymentAmount, reserveId, customerId, shopId);
+        // 변경: reserveId를 null로 전달
         ReservationPayment payment = new ReservationPayment(
             paymentAmount,
-            reserveId,
+            null, // 예약 전이므로 customerReserveId는 null
             customerId,
             shopId
         );
       reservationPaymentRepository.save(payment);
+      log.info("Payment saved: id={}", payment.getPaymentId()); // 변경: getPaymentId()
     }
 }

@@ -38,13 +38,13 @@ public class ReservationPayment {
     @Column(name = "refund_date")
     private LocalDateTime refundDate;
 
-    @Column(name = "customer_reserve_id", nullable = false)
+    @Column(name = "customer_reserve_id", nullable = true) // 변경: nullable = true
     private Long customerReserveId; // CustomerReserve의 외래키
 
     @Column(name = "customer_id", nullable = false)
     private String customerId;  // Member (customer_manage 테이블)의 외래키
 
-     @Column(name = "shop_id", nullable = false)
+    @Column(name = "shop_id", nullable = false)
     private Long shopId;       // Store (yam_store_info 테이블)의 외래키
 
      //생성자

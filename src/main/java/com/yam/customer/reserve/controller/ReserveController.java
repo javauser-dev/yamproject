@@ -29,8 +29,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/customer/reserve")
 public class ReserveController {
 
-    private final ReserveService reserveService;
-    private final CustomerReserveRepository customerReserveRepository; // 필드 추가
+	private final ReserveService reserveService;
+    private final CustomerReserveRepository customerReserveRepository;
     private final PaymentService paymentService;
     private final HttpSession httpSession;
     private static final Logger logger = LoggerFactory.getLogger(ReserveController.class); // 로거 추가
@@ -71,15 +71,18 @@ public class ReserveController {
     }
 
 
-    // 예약 처리 (POST) - createReserve 메서드
+	// 예약 처리 (POST) - createReserve 메서드
     @PostMapping("/new")
-    public ResponseEntity<?> createReserve(@RequestBody ReserveRequestDto requestDto, Authentication authentication) {
+    public ResponseEntity<?> createReserve(@RequestBody ReserveRequestDto requestDto, Authentication authentication, HttpSession session) { // HttpSession 추가
         try {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String customerId = userDetails.getUsername();
 
             requestDto.setCustomerId(customerId);
             Long reserveId = reserveService.createReserve(requestDto, customerId);
+
+            // 예약 성공 시, reserveDto를 세션에 저장.
+            session.setAttribute("reserveDto", requestDto);
 
             // 성공 시 "success" 문자열 반환
             return ResponseEntity.ok("success"); // 또는 JSON 객체 등
@@ -93,54 +96,6 @@ public class ReserveController {
         }
     }
 
-
-   // 네이버 페이 결제 성공 후 리다이렉트될 URL
-   /*@GetMapping("/payment-success")
-   public String paymentSuccess(@RequestParam("merchantPayKey") String merchantPayKey,
-                                @RequestParam("paymentAmount") int paymentAmount,
-                                Authentication authentication, HttpSession session) {
-
-       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-       String customerId = userDetails.getUsername();
-
-       Long shopId = (Long) session.getAttribute("shopId");
-       String reserveDate = (String) session.getAttribute("reserveDate");
-       String reserveTime = (String) session.getAttribute("reserveTime");
-       Integer guestCount = (Integer) session.getAttribute("guestCount");
-       Integer deposit = (Integer) session.getAttribute("deposit");
-
-
-       try {
-           // customerReserveId는 null로 전달 (예약 정보와 연결하지 않음)
-           reserveService.savePayment(paymentAmount, null, customerId, shopId);
-
-           // 세션에 결제 정보 저장 (선택 사항, 예약 완료 페이지에서 필요하면 사용)
-           session.setAttribute("paymentSuccess", true);
-           session.setAttribute("merchantPayKey", merchantPayKey);
-           session.setAttribute("paymentAmount", paymentAmount);
-
-
-           // 예약 폼으로 리다이렉트 (세션에 저장된 예약 정보를 쿼리 파라미터로 전달)
-           return "redirect:/customer/reserve/new?shopId=" + shopId +
-                  "&reserveDate=" + reserveDate +
-                  "&reserveTime=" + reserveTime +
-                  "&guestCount=" + guestCount +
-                  "&deposit=" + deposit;
-
-
-       } catch (Exception e) {
-           // 결제 정보 저장 실패 시 처리
-           logger.error("결제 정보 저장 실패: ", e); // 로그 기록 (logger는 이전 답변 참고)
-
-           // 에러 메시지와 함께 예약 폼으로 리다이렉트 (선택 사항)
-           return "redirect:/customer/reserve/new?error=payment&shopId=" + shopId +
-                  "&reserveDate=" + reserveDate +
-                  "&reserveTime=" + reserveTime +
-                  "&guestCount=" + guestCount +
-                   "&deposit=" + deposit;
-       }
-   }*/
-    
     @GetMapping("/payment-success")
     public String paymentSuccess(@RequestParam("merchantPayKey") String merchantPayKey,
                                  @RequestParam("paymentAmount") int paymentAmount,
@@ -187,24 +142,31 @@ public class ReserveController {
         }
     }
 
-
-   @GetMapping("/complete")
+    @GetMapping("/complete")
     public String reserveComplete(HttpSession httpSession, Model model) {
         // 세션에서 merchantPayKey와 paymentAmount 가져오기 (필요한 경우)
         String merchantPayKey = (String) httpSession.getAttribute("merchantPayKey");
         Integer paymentAmount = (Integer) httpSession.getAttribute("paymentAmount");
 
-        // 모델에 필요한 정보 추가 (예: 결제 정보, 예약 정보 등)
+        // 세션에서 reserveDto 가져오기
+        ReserveRequestDto reserveDto = (ReserveRequestDto) httpSession.getAttribute("reserveDto");
+
+        // 모델에 필요한 정보 추가
         model.addAttribute("merchantPayKey", merchantPayKey);
         model.addAttribute("paymentAmount", paymentAmount);
+        model.addAttribute("reserveDto", reserveDto); // reserveDto 추가
+
 
         // 세션 정보 삭제 (더 이상 필요하지 않은 경우)
         httpSession.removeAttribute("paymentSuccess");
         httpSession.removeAttribute("merchantPayKey");
         httpSession.removeAttribute("paymentAmount");
+        // reserveDto는 삭제하지 *않습니다*.  삭제하면 예약 완료 페이지에 정보가 표시되지 않음.
+        // 필요하다면, 마이페이지로 이동한 후에 삭제하는 것이 좋음.
+        //httpSession.removeAttribute("reserveDto");
         httpSession.removeAttribute("shopId");
 
-        // 예약 완료 페이지 (reserveComplete.html)로 이동
-        return "customer/reserve/reserveComplete"; // 뷰 이름
+
+        return "customer/reserve/reserveComplete";
     }
 }

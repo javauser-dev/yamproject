@@ -6,6 +6,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 네이버 페이 SDK 추가 -->
     <script src="https://nsp.pay.naver.com/sdk/js/naverpay.min.js"></script>
+    <!-- reserveForm.js 추가 -->
+    <script th:src="@{/js/customer/reserve/reserveForm.js}"></script>
+
 </head>
 <body>
     <h1>예약 정보</h1>
@@ -45,61 +48,5 @@
     </form>
 
     <span id="errorMessage" style="color: red;"></span> <!-- 에러 메시지용 span -->
-
-    <script>
-        $(document).ready(function() {
-
-            // 네이버페이 결제 연동
-           var oPay = Naver.Pay.create({
-                "mode" : "development",  // 또는 "production"
-                "clientId": "HN3GGCMDdTgGUfl0kFCo", // 실제 클라이언트 아이디로 변경
-                "chainId": "b1NiUjJIcGlIZ3B"
-            });
-
-            $("#naverPayBtn").click(function() {
-                var paymentAmount = parseInt($("#deposit").val());
-                var merchantPayKey = "order-" + new Date().getTime(); // 고유한 merchantPayKey 생성
-
-                oPay.open({
-                    "merchantUserKey": $("#customerId").val(),
-                    "merchantPayKey": merchantPayKey,
-                    "productName": "예약금 결제",
-                    "totalPayAmount": paymentAmount,
-                    "taxScopeAmount": paymentAmount,
-                    "taxExScopeAmount": 0,
-                    "returnUrl": "http://localhost:8080/customer/reserve/payment-success?merchantPayKey=" + merchantPayKey + "&paymentAmount=" + paymentAmount
-                });
-            });
-
-
-            $("#submitBtn").click(function() {
-                var formData = {
-                    shopId: parseInt($("#shopId").val()),
-                    reserveDate: $("#reserveDate").val(),
-                    reserveTime: $("#reserveTime").val(),
-                    guestCount: parseInt($("#guestCount").val()),
-                    deposit: parseInt($("#deposit").val()),
-                    request: $("#request").val()
-                };
-
-                $.ajax({
-                    type: "POST",
-                    url: "/customer/reserve/new",
-                    contentType: "application/json",
-                    data: JSON.stringify(formData),
-                    success: function(response) {
-                        if (response === "success") {
-                            window.location.href = "/customer/reserve/complete"; // 예약 성공 시 리다이렉트
-                        } else {
-                            $("#errorMessage").text("예약 실패: " + response); // 예약 실패 메시지
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        $("#errorMessage").text("예약 실패: " + xhr.responseText); // 서버 에러 메시지
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
