@@ -196,7 +196,8 @@ public class ReserveController {
             return ResponseEntity.internalServerError().body("예약 중 오류 발생: " + e.getMessage());
         }
     }
-       @GetMapping("/complete")
+    
+    @GetMapping("/complete")
     public String reserveComplete(HttpSession httpSession, Model model) {
         String merchantPayKey = (String) httpSession.getAttribute("merchantPayKey");
         Integer paymentAmount = (Integer) httpSession.getAttribute("paymentAmount");
