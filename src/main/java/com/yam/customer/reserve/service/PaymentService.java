@@ -23,7 +23,7 @@ public class PaymentService {
         ReservationPayment payment = new ReservationPayment();
         payment.setPaymentAmount(paymentRequestDto.getPaymentAmount());
         payment.setCustomerId(paymentRequestDto.getCustomerId());
-        payment.setShopId(paymentRequestDto.getShopId());
+        payment.setShopNo(paymentRequestDto.getShopNo());
         
         //payment.setCustomerReserveId(1L);  // 요구사항에 따라 1로 설정
         

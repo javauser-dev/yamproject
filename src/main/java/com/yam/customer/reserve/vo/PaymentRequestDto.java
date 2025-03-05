@@ -9,5 +9,5 @@ public class PaymentRequestDto {
 
     private int paymentAmount;
     private String customerId;
-    private Long shopId;
+    private Long shopNo;
 }

@@ -18,7 +18,7 @@ $(document).ready(function() {
     });
 
 	$("#naverPayBtn").click(function() {
-        var shopId = $("#shopId").val();
+        var shopNo = $("#shopNo").val();
         var paymentAmount = parseInt($("#deposit").val());
         var merchantPayKey = "order-" + new Date().getTime();
         var customerId = $("#customerId").val(); // customerId 가져오기
@@ -31,7 +31,7 @@ $(document).ready(function() {
                 merchantPayKey: merchantPayKey,
                 paymentAmount: paymentAmount,
                 customerId: customerId, // customerId 추가
-                shopId: shopId          // shopId 추가
+                shopNo: shopNo          // shopNo 추가
             },
             success: function(response) {
                 if (response === "success") {
@@ -58,7 +58,7 @@ $(document).ready(function() {
     $("#submitBtn").click(function() {
         // 예약 정보 formData에 저장
         var formData = {
-            shopId: parseInt($("#shopId").val()),
+            shopNo: parseInt($("#shopNo").val()),
             reserveDate: $("#reserveDate").val(),
             reserveTime: $("#reserveTime").val(),
             guestCount: parseInt($("#guestCount").val()),

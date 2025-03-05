@@ -16,14 +16,14 @@
      <script th:inline="javascript">
         function goToReserveForm() {
 
-            var shopId = /*[[${shopId}]]*/ null;
+            var shopNo = /*[[${shopNo}]]*/ null;
             var reserveDate = /*[[${reserveDate}]]*/ null;
             var reserveTime = /*[[${reserveTime}]]*/ null;
             var guestCount = /*[[${guestCount}]]*/ null;
             var deposit = /*[[${deposit}]]*/ null;
 
              // URL 생성
-            var url = "/customer/reserve/new?shopId=" + shopId +
+            var url = "/customer/reserve/new?shopNo=" + shopNo +
                       "&reserveDate=" + reserveDate +
                       "&reserveTime=" + reserveTime +
                       "&guestCount=" + guestCount +

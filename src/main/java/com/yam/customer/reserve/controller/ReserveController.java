@@ -1,5 +1,6 @@
 package com.yam.customer.reserve.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yam.customer.reserve.domain.CustomerReserve;
 import com.yam.customer.reserve.repository.CustomerReserveRepository;
 import com.yam.customer.reserve.service.PaymentService;
 import com.yam.customer.reserve.service.ReserveService;
@@ -39,7 +41,7 @@ public class ReserveController {
     private static final Logger logger = LoggerFactory.getLogger(ReserveController.class);
 
     @GetMapping("/new")
-    public String reserveForm(@RequestParam("shopId") Long shopId,
+    public String reserveForm(@RequestParam("shopNo") Long shopNo,
                               @RequestParam("reserveDate") String reserveDate,
                               @RequestParam("reserveTime") String reserveTime,
                               @RequestParam("guestCount") int guestCount,
@@ -50,7 +52,7 @@ public class ReserveController {
 
         // 세션에 예약 정보 저장 (reserveForm에서도 세션 사용)
         // session.setAttribute("customerId", customerId); // customerId는 reserveForm.js에서 처리
-        session.setAttribute("shopId", shopId);
+        session.setAttribute("shopNo", shopNo);
         session.setAttribute("reserveDate", reserveDate);
         session.setAttribute("reserveTime", reserveTime);
         session.setAttribute("guestCount", guestCount);
@@ -58,7 +60,7 @@ public class ReserveController {
 
 
         // 모델에도 예약 정보 추가
-        model.addAttribute("shopId", shopId);
+        model.addAttribute("shopNo", shopNo);
         model.addAttribute("reserveDate", reserveDate);
         model.addAttribute("reserveTime", reserveTime);
         model.addAttribute("guestCount", guestCount);
@@ -84,20 +86,20 @@ public class ReserveController {
             @RequestParam("merchantPayKey") String merchantPayKey,
             @RequestParam("paymentAmount") int paymentAmount,
             @RequestParam("customerId") String customerId, // customerId 추가
-            @RequestParam("shopId") Long shopId,       // shopId 추가
+            @RequestParam("shopNo") Long shopNo,       // shopNo 추가
             HttpSession session) {
 
         // 1. 세션에 데이터 저장 (기존 로직)
         session.setAttribute("merchantPayKey", merchantPayKey);
         session.setAttribute("paymentAmount", paymentAmount);
         session.setAttribute("customerId", customerId); // customerId도 세션에 저장
-        session.setAttribute("shopId", shopId);     // shopId도 세션에 저장.
+        session.setAttribute("shopNo", shopNo);     // shopNo도 세션에 저장.
 
         // 2. PaymentRequestDto 생성 및 값 설정
         PaymentRequestDto paymentRequestDto = new PaymentRequestDto();
         paymentRequestDto.setPaymentAmount(paymentAmount);
         paymentRequestDto.setCustomerId(customerId);
-        paymentRequestDto.setShopId(shopId);
+        paymentRequestDto.setShopNo(shopNo);
 
 
         // 3. PaymentService를 통해 결제 정보 DB에 저장
@@ -131,7 +133,7 @@ public class ReserveController {
 
 
          // 세션에서 예약 정보 가져오기
-        Long shopId = (Long) session.getAttribute("shopId");
+        Long shopNo = (Long) session.getAttribute("shopNo");
         String reserveDate = (String) session.getAttribute("reserveDate");
         String reserveTime = (String) session.getAttribute("reserveTime");
         Integer guestCount = (Integer) session.getAttribute("guestCount");
@@ -150,7 +152,7 @@ public class ReserveController {
 
 
         // 세션에서 가져온 예약 정보 모델에 추가
-        model.addAttribute("shopId", shopId);
+        model.addAttribute("shopNo", shopNo);
         model.addAttribute("reserveDate", reserveDate);
         model.addAttribute("reserveTime", reserveTime);
         model.addAttribute("guestCount", guestCount);
@@ -160,7 +162,7 @@ public class ReserveController {
         try{
             if("Success".equals(resultCode)) {
 
-              //paymentService.savePayment(paymentAmountFromNaver, null, customerId, shopId); //주석 처리
+              //paymentService.savePayment(paymentAmountFromNaver, null, customerId, shopNo); //주석 처리
               //session.setAttribute("paymentSuccess", true); //세션에 true로 저장, 주석 처리
               return "customer/reserve/paymentSuccess";
 
@@ -211,7 +213,7 @@ public class ReserveController {
         httpSession.removeAttribute("merchantPayKey");
         httpSession.removeAttribute("paymentAmount");
         //httpSession.removeAttribute("reserveDto"); // 주석 처리
-        httpSession.removeAttribute("shopId");
+        httpSession.removeAttribute("shopNo");
           httpSession.removeAttribute("reserveDate");
         httpSession.removeAttribute("reserveTime");
         httpSession.removeAttribute("guestCount");
@@ -242,5 +244,28 @@ public class ReserveController {
             }
         }
         return customerId != null ? customerId : ""; // customerId 반환 (없으면 빈 문자열)
+    }
+    
+    @GetMapping("/reserveInquiry")
+    public String reserveInquiry(Model model, HttpSession session) {
+        String customerId = (String) session.getAttribute("customerId");
+        if (customerId == null || customerId.isEmpty()) {
+             // customerId가 세션에 없으면, Authentication에서 가져와 세션에 저장
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                customerId = userDetails.getUsername();
+                session.setAttribute("customerId", customerId); //세션에도 저장
+            } else {
+              //로그인 되어있지 않으면 로그인 페이지로 리다이렉트
+              return "redirect:/customer/login";
+            }
+        }
+
+        // ReserveService를 사용하여 전체 예약 목록 가져오기
+        List<CustomerReserve> allReserves = reserveService.getAllReservesByCustomerId(customerId); // 메서드 이름 확인
+
+        model.addAttribute("allReserves", allReserves); // 모델에 추가
+        return "customer/reserve/reserveInquiry"; // 뷰 이름
     }
 }

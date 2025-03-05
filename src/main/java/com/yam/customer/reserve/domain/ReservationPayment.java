@@ -44,16 +44,16 @@ public class ReservationPayment {
     @Column(name = "customer_id", nullable = false)
     private String customerId;  // Member (customer_manage 테이블)의 외래키
 
-    @Column(name = "shop_id", nullable = false)
-    private Long shopId;       // Store (yam_store_info 테이블)의 외래키
+    @Column(name = "shop_no", nullable = false)
+    private Long shopNo;       // Shop (yam_shop 테이블)의 외래키
 
      //생성자
-     public ReservationPayment(int paymentAmount, Long customerReserveId, String customerId, Long shopId) {
+     public ReservationPayment(int paymentAmount, Long customerReserveId, String customerId, Long shopNo) {
          this.paymentAmount = paymentAmount;
          this.paymentDate = LocalDateTime.now(); // 현재 시간으로 설정
          this.refundStatus = 1; // 기본값 1 (환불 미처리)
          this.customerReserveId = customerReserveId;
          this.customerId = customerId;
-         this.shopId = shopId;
+         this.shopNo = shopNo;
     }
 }
