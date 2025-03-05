@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,45 +20,36 @@ import com.yam.customer.review.service.ReviewService;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Controller
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
 @RequestMapping("/review")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // 파일 업로드 경로 (application.properties의 file.upload.path 값)
+    // 파일 업로드 경로 (application.properties에 설정된 값)
     @Value("${file.upload.path}")
     private String uploadPath;
 
-    // 리뷰 목록 (검색 및 정렬 기능 포함)
+    // 리뷰 목록 조회 (검색 기능 포함)
     @GetMapping("/list")
     public String list(@RequestParam(value="keyword", required=false) String keyword,
                        @RequestParam(value="searchType", required=false, defaultValue="word") String searchType,
-                       @RequestParam(value="sort", required=false, defaultValue="latest") String sortOption,
                        Model model) {
         List<Review> reviewList;
         if (keyword != null && !keyword.trim().isEmpty()) {
             reviewList = reviewService.searchReviews(keyword.trim(), searchType);
         } else {
-            Sort sort;
-            if ("rating".equalsIgnoreCase(sortOption)) {
-                sort = Sort.by(Sort.Direction.DESC, "rating");
-            } else if ("popularity".equalsIgnoreCase(sortOption)) {
-                sort = Sort.by(Sort.Direction.DESC, "likeCount");
-            } else { // 최신순: 작성일 기준
-                sort = Sort.by(Sort.Direction.DESC, "createdAt");
-            }
-            reviewList = reviewService.getReviewList(sort);
+            reviewList = reviewService.getReviewList();
         }
         model.addAttribute("reviewList", reviewList);
         model.addAttribute("keyword", keyword);
         model.addAttribute("searchType", searchType);
-        model.addAttribute("sortOption", sortOption);
         return "review/list";  // templates/review/list.html
     }
 
-    // 리뷰 상세보기
+    // 리뷰 상세 보기
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         Review review = reviewService.getReview(id);
@@ -86,7 +76,7 @@ public class ReviewController {
     @PostMapping("/create")
     public String create(@ModelAttribute Review review,
                          @RequestParam("uploadFile") MultipartFile file) {
-        // 파일 업로드 처리: 파일이 있으면 업로드 후 파일명을 imageUrl에 저장
+        // 파일 업로드 처리: 파일이 있으면 업로드 후 파일명을 imageUrl에 저장.
         if (!file.isEmpty()) {
             try {
                 String originalFilename = file.getOriginalFilename();
