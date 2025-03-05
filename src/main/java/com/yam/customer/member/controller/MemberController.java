@@ -6,10 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -33,6 +36,8 @@ import com.yam.customer.member.vo.EmailVerificationRequest;
 import com.yam.customer.member.vo.MemberSignupRequest; // DTO import
 import com.yam.customer.member.vo.NicknameRequest;
 import com.yam.customer.member.vo.PasswordChangeRequest;
+import com.yam.customer.reserve.domain.CustomerReserve;
+import com.yam.customer.reserve.repository.CustomerReserveRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -45,6 +50,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailService emailService;
+    private final CustomerReserveRepository customerReserveRepository;
     
     @Value("${file.upload.path}")
     private String uploadPath;  //상대경로
@@ -170,28 +176,28 @@ public class MemberController {
      }
      
      @GetMapping("/myPage")
-     public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+     public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpSession session) {
          if (userDetails != null) {
-             // DB에서 회원 정보를 다시 조회
              String customerId = userDetails.getUsername();
              Member member = memberService.getMemberById(customerId);
 
-             // 조회된 회원 정보가 없으면 (예: 탈퇴한 회원) 로그인 페이지로 리다이렉트
              if (member == null) {
                  return "redirect:/customer/login";
              }
 
-             // 프로필 이미지 URL 설정 (null 체크)
              String profileImageUrl = member.getCustomerProfileImage();
              if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-                 profileImageUrl = "/upload/customer_image_default.png";  // 기본 이미지 경로
+                 profileImageUrl = "/upload/customer_image_default.png";
              }
 
              model.addAttribute("profileImageUrl", profileImageUrl);
-             model.addAttribute("customerName", member.getCustomerName()); // 이름 추가
+             model.addAttribute("customerName", member.getCustomerName());
+
+             Pageable topThree = PageRequest.of(0, 3);
+             List<CustomerReserve> recentReserves = customerReserveRepository.findTop3ByMemberIdOrderByReserveDateDesc(customerId, topThree);
+             model.addAttribute("recentReserves", recentReserves);
 
          } else {
-             // userDetails가 null인 경우 (로그인 X) 로그인 페이지로 리다이렉트
              return "redirect:/customer/login";
          }
 

@@ -47,13 +47,13 @@
      </div>
 
     <div class = "content-box">
-          <h2>찜 목록</h2>
-        <div th:replace="customer/wishList :: content"></div>
-     </div>
+        <h2>찜 목록</h2>
+    	<div th:replace="customer/wishList :: content"></div>
+    </div>
 
     <div class = "content-box">
-      <h2>예약 목록</h2>
-      <div th:replace="customer/reserve :: content"></div>
+    	<h2>예약 목록</h2>
+    	<div th:replace="customer/mypage_reserve :: content"></div>
     </div>
 
     <a th:href="@{/customer/memberInfo}"><button type="button">회원 정보</button></a>
