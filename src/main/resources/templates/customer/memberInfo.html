@@ -56,7 +56,9 @@
                     <th><label for="customerEmail">이메일</label></th>
                     <td>
                       <div class="input-button-wrapper">
-                        <input type="email" id="customerEmail" name="customerEmail" th:value="${member.customerEmail}" />
+                         <!-- 이메일 마스킹: 5번째 글자부터 * 처리 -->
+                        <input type="email" id="customerEmail" name="customerEmail"
+                        th:value="${#strings.substring(member.customerEmail, 0, 4) + #strings.repeat('*', #strings.length(member.customerEmail) - 4)}" />
                         <button type="button" id="sendVerificationCodeBtn" class="form-button">인증번호받기</button>
                       </div>
                         <span id="customerEmailError" class="error-message"></span>
@@ -89,28 +91,41 @@
         <table>
             <tr>
               <th><label>아이디</label></th>
-              <td><span th:text="${member.customerId}"></span></td>
+              <!-- 아이디 마스킹: 길이에 따라 다르게 처리 -->
+                <td>
+                  <span th:if="${#strings.length(member.customerId) >= 4}"
+                        th:text="${#strings.substring(member.customerId, 0, 4) + #strings.repeat('*', #strings.length(member.customerId) - 4)}"></span>
+                  <!-- 추가: 아이디가 4글자 미만일 때 -->
+                  <span th:if="${#strings.length(member.customerId) < 4}"
+                  	    th:text="${#strings.substring(member.customerId, 0, 1) + #strings.repeat('*', #strings.length(member.customerId) -1)}">
+                  </span>
+                </td>
             </tr>
             <tr>
                 <th><label>이름</label></th>
-                <td><span th:text="${member.customerName}"></span></td>
+                <!-- 이름 마스킹: 첫 글자 제외 * 처리 -->
+                <td><span th:text="${#strings.substring(member.customerName, 0, 1) + #strings.repeat('*', #strings.length(member.customerName) - 1)}"></span></td>
             </tr>
             <tr>
                 <th><label>생년월일</label></th>
-                <td><span th:text="${#temporals.format(member.customerBirthDate, 'yyyy-MM-dd')}"></span></td>
+                 <!-- 생년월일 마스킹: 월, 일 부분을 **로 -->
+                <td>
+                <span th:text="${#strings.substring(member.customerBirthDate, 0, 4) + '년 **월 **일'}"></span>
+                </td>
+
             </tr>
              <tr>
                 <th><label>성별</label></th>
                 <td>
                   <span>
-                    <span th:if="${member.customerGender == 'M'}">남성</span>
-                    <span th:if="${member.customerGender == 'F'}">여성</span>
+                    <span th:if="${member.customerGender == 'M'}">**</span>
+                    <span th:if="${member.customerGender == 'F'}">**</span>
                   </span>
                 </td>
             </tr>
             <tr>
               <th><label>가입일</label></th>
-              <td> <span th:text="${#temporals.format(member.customerCreateDate, 'yyyy-MM-dd')}"></span></td>
+              <td> <span th:text="${#temporals.format(member.customerCreateDate, 'yyyy년 MM월 dd일')}"></span></td>
             </tr>
         </table>
 

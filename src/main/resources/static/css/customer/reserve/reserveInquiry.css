@@ -1,1 +1,76 @@
-@charset "UTF-8";
+/* 전체 컨테이너 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%; /* 너비 조정 */
+    max-width: 800px; /* 최대 너비 */
+}
+
+/* 제목 */
+h1 {
+    text-align: center; /* 가운데 정렬 */
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* 테이블 스타일 */
+.reserve-table {
+    width: 100%; /* 테이블 너비 */
+    border-collapse: collapse;
+    table-layout: fixed; /*  고정 테이블 레이아웃 (너비 자동 조절 위해) */
+}
+
+.reserve-table th,
+.reserve-table td {
+    border: 1px solid #ddd;
+    padding: 12px; /* 패딩 증가 */
+    text-align: center;
+    word-break: break-word; /* 긴 단어 줄바꿈 */
+}
+
+.reserve-table th {
+    background-color: #f2f2f2;
+    font-weight: bold; /* 굵기 */
+}
+
+/* 예약 내역 없을 때 메시지 */
+.no-reserves {
+    text-align: center;
+    margin: 20px 0;
+    color: #777;
+}
+
+/* 버튼 컨테이너 */
+.button-container {
+    text-align: center; /* 가운데 정렬 */
+    margin-top: 30px; /* 위쪽 여백 */
+}
+
+/* 버튼 스타일 */
+.button-container button {
+    background-color: #007bff; /* 파란색 계열 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.button-container button:hover {
+    background-color: #0056b3; /* 호버 시 더 진한 파란색 */
+}

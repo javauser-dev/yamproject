@@ -69,8 +69,10 @@ public class ReserveService {
     public List<CustomerReserve> getAllReservesByCustomerId(String customerId) {
         // CustomerReserveRepository를 사용하여 전체 예약 목록 조회
         // (Member 객체를 통해 조회해야 함)
-        Member member = memberRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + customerId));
-        return customerReserveRepository.findByMember(member);
+    	 Member member = memberRepository.findById(customerId)
+                 .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + customerId));
+
+         // 수정된 부분: 취소되지 않은 예약만 가져오기
+         return customerReserveRepository.findByMemberAndReserveCancelIsZero(member);
     }
 }

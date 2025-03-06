@@ -49,6 +49,12 @@ public class CustomerReserve {
     @Column(name = "cutomer_reserve_request", nullable = true)
     private String request; // 요청사항
     
+    @Column(name = "customer_reserve_check", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0")
+    private int reserveCheck; // 0: 미확인, 1: 확인
+
+    @Column(name = "customer_reserve_cancel", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0")
+    private int reserveCancel; // 0: 정상, 1: 취소
+    
     @ManyToOne(fetch = FetchType.LAZY)  //다대일 관계
     @JoinColumn(name = "shop_no", nullable = false)
     private Shop shop; // 매장 ID (FK)
@@ -60,12 +66,15 @@ public class CustomerReserve {
     @Builder  //생성자에 @Builder를 넣으면 빌더 패턴을 통해 객체를 생성할 수 있다.
     public CustomerReserve(LocalDate reserveDate, LocalTime reserveTime,
                           int guestCount, int deposit, String request,
+                          int reserveCheck, int reserveCancel, 
                           Shop shop, Member member) {
         this.reserveDate = reserveDate;
         this.reserveTime = reserveTime;
         this.guestCount = guestCount;
         this.deposit = deposit;
         this.request = request;
+        this.reserveCheck = reserveCheck;
+        this.reserveCancel = reserveCancel;
         this.shop = shop;
         this.member = member;
     }

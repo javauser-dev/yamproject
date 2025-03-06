@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>전체 예약 조회</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveInquiry.css}"> <!-- CSS 파일 (필요한 경우) -->
-    <style>
-      /* 테이블 스타일 (CSS 파일에 추가해도 됨) */
-      .reserve-table {
-          width: 100%;
-          border-collapse: collapse; /* 셀 간격 없애기 */
-      }
-
-      .reserve-table th, .reserve-table td {
-          border: 1px solid #ddd; /* 테두리 */
-          padding: 8px;
-          text-align: center;
-      }
-
-      .reserve-table th {
-          background-color: #f2f2f2; /* 헤더 배경색 */
-      }
-
-    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveInquiry.css}">
+    <!-- JavaScript 추가 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.onload = function() {
+            var message = /*[[${message}]]*/ null; // Thymeleaf 변수 받기
+            if (message) {
+                alert(message); // 메시지가 있으면 알림 표시
+            }
+        }
+        /*]]>*/
+    </script>
 </head>
 <body>
+  <div class="container">
     <h1>전체 예약 조회</h1>
 
     <div th:if="${not #lists.isEmpty(allReserves)}">
         <table class = "reserve-table">
             <thead>
                 <tr>
+                	<th>예약 번호</th> <!-- 예약 번호 컬럼 추가 -->
                     <th>가게 이름</th>
                     <th>예약 날짜</th>
                     <th>예약 시간</th>
@@ -39,6 +34,9 @@
             </thead>
             <tbody>
                 <tr th:each="reserve : ${allReserves}">
+                	<td>
+                		<a th:href="@{/customer/reserve/detail(id=${reserve.id})}" th:text="${reserve.id}"></a>
+                	</td>
                     <td th:text="${reserve.shop.shopName}"></td>
                     <td th:text="${#temporals.format(reserve.reserveDate, 'yyyy.MM.dd')}"></td>
                     <td th:text="${#temporals.format(reserve.reserveTime, 'HH:mm')}"></td>
@@ -50,11 +48,14 @@
     </div>
 
      <div th:unless="${not #lists.isEmpty(allReserves)}">
-        <p>예약 내역이 없습니다.</p> <!-- 예약 내역이 없을 때 표시할 메시지 -->
+        <p class = "no-reserves">예약 내역이 없습니다.</p> <!-- 예약 내역이 없을 때 표시할 메시지 -->
     </div>
 
+   <div class="button-container">
     <a th:href="@{/customer/myPage}"> <!-- 마이페이지로 돌아가는 링크 -->
         <button type="button">마이페이지로 돌아가기</button>
     </a>
+   </div>
+ </div>
 </body>
 </html>

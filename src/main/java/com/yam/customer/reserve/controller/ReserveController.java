@@ -12,12 +12,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yam.customer.reserve.domain.CustomerReserve;
 import com.yam.customer.reserve.repository.CustomerReserveRepository;
@@ -27,6 +30,7 @@ import com.yam.customer.reserve.vo.PaymentRequestDto;
 import com.yam.customer.reserve.vo.ReserveRequestDto;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -267,5 +271,59 @@ public class ReserveController {
 
         model.addAttribute("allReserves", allReserves); // 모델에 추가
         return "customer/reserve/reserveInquiry"; // 뷰 이름
+    }
+    
+    @GetMapping("/detail") // /customer/reserve/detail 요청 처리
+    public String reserveDetail(@RequestParam("id") Long reserveId, Model model) {
+
+        // 1. reserveId를 사용하여 예약 정보 조회
+        CustomerReserve reserve = customerReserveRepository.findById(reserveId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid reserve Id:" + reserveId)); // 예약 정보가 없으면 예외 발생
+
+        // 2. 모델에 예약 정보 추가
+        model.addAttribute("reserve", reserve); // allReserves -> reserve로 변경
+
+        // 3. reserveInquiryDetail.html 뷰 반환
+        return "customer/reserve/reserveInquiryDetail";
+    }
+    
+    @GetMapping("/updateForm")
+    public String updateReserveForm(@RequestParam("id") Long reserveId, Model model) {
+        // 1. reserveId를 사용하여 예약 정보 조회
+        CustomerReserve reserve = customerReserveRepository.findById(reserveId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid reserve Id:" + reserveId));
+
+        // 2. 모델에 예약 정보 추가
+        model.addAttribute("reserve", reserve);
+
+        // 3. 예약 수정 폼 뷰 반환 (updateForm.html)
+        return "customer/reserve/updateForm"; // 경로 확인!
+    }
+    
+    // 예약 수정 처리 (POST 요청)
+    @PostMapping("/update")
+    public String updateReserve(@ModelAttribute("reserve") @Valid CustomerReserve updatedReserve, //DTO 사용
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes) {
+
+        if (result.hasErrors()) {
+            return "customer/reserve/updateForm"; // 유효성 검사 실패 시, 다시 수정 폼으로
+        }
+
+        // updatedReserve 객체에는 수정된 정보가 들어있음.
+        // (주의: updatedReserve.getId()를 사용하여 예약 ID를 얻을 수 있음)
+
+        try {
+           // 예약 정보 업데이트 로직 (customerReserveRepository.save() 사용)
+            // 주의: updatedReserve에는 id, shop, deposit 필드도 포함되어 있어야 함! (hidden 필드로 전달)
+           customerReserveRepository.save(updatedReserve); //JPA의 save는 update 쿼리도 수행
+            redirectAttributes.addFlashAttribute("message", "예약이 수정되었습니다.");
+            return "redirect:/customer/reserve/reserveInquiry"; // 수정 후 목록으로
+
+        } catch (Exception e) {
+             // 예외 처리
+            redirectAttributes.addFlashAttribute("errorMessage", "예약 수정 중 오류 발생: " + e.getMessage());
+            return "redirect:/customer/reserve/updateForm?id=" + updatedReserve.getId(); // 수정 폼으로
+        }
     }
 }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 상세 정보</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveInquiryDetail.css}">
+    <!-- 필요한 경우 CSS 파일 추가 -->
+    <style>
+     /* 테이블 스타일 */
+      .reserve-table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+
+      .reserve-table th, .reserve-table td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: center;
+      }
+
+      .reserve-table th {
+          background-color: #f2f2f2;
+      }
+    </style>
+</head>
+<body>
+    <h1>예약 상세 정보</h1>
+
+    <table class="reserve-table">
+        <thead>
+            <tr>
+                <th>예약 번호</th>
+                <th>가게 이름</th>
+                <th>예약 날짜</th>
+                <th>예약 시간</th>
+                <th>인원 수</th>
+                <th>예약금</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td th:text="${reserve.id}"></td>
+                <td th:text="${reserve.shop.shopName}"></td>
+                <td th:text="${#temporals.format(reserve.reserveDate, 'yyyy.MM.dd')}"></td>
+                <td th:text="${#temporals.format(reserve.reserveTime, 'HH:mm')}"></td>
+                <td th:text="${reserve.guestCount} + '명'"></td>
+                <td th:text="${reserve.deposit} + '원'"></td>
+            </tr>
+        </tbody>
+    </table>
+
+	<div class="button-group">
+        <a th:href="@{/customer/reserve/updateForm(id=${reserve.id})}">
+            <button type="button">예약 수정</button>
+        </a>
+        <button type="button">예약 취소</button>
+    </div>
+
+    <a th:href="@{/customer/reserve/reserveInquiry}"> <!-- 전체 예약 목록으로 돌아가는 링크 -->
+        <button type="button">목록으로 돌아가기</button>
+    </a>
+
+</body>
+</html>
