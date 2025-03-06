@@ -28,7 +28,7 @@
      <!-- 사용자 이름, 로그아웃 버튼 --> 
       <div class="top-right-container">
         <p><span th:text="${customerNickname}"></span>님 반갑습니다.</p>
-        <form th:action="@{/customer/logout}" method="post">
+        <form th:action="@{/logout}" method="post">
             <button type="submit">로그아웃</button>
         </form>
     </div>

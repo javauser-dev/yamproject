@@ -1,0 +1,123 @@
+ body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .mypage-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        
+        .mypage-title {
+            text-align: center;
+            font-size: 24px;
+            padding: 15px 0;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .back-button span {
+            font-size: 20px;
+        }
+        
+        .bg-setting-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border: 1px solid #333;
+            border-radius: 15px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .profile-container {
+            position: absolute;
+            top: 120px;
+            right: 120px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-text {
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .menu-button {
+            position: absolute;
+            width: 180px;
+            height: 100px;
+            border: 1px solid #333;
+            border-radius: 15px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .my-store-btn {
+            bottom: 150px;
+            left: 100px;
+        }
+        
+        .edit-info-btn {
+            bottom: 150px;
+            right: 100px;
+        }
+        
+        .withdraw-btn {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 50px;
+        }
+         
+        .my-store-text {
+            color: blue;
+        }
+        
+        #fileInputBg, #fileInputProfile {
+            display: none;
+        }

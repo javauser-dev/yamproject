@@ -1,20 +1,20 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
-	layout:decorate="~{template/client/layout/layout}">
-	
-	<th:block layout:fragment="content">
-	 <div class="mypage-container" id="mypageContainer">
+   layout:decorate="~{template/client/layout/layout}">
+   
+   <th:block layout:fragment="content"> 
+    <div class="mypage-container" id="mypageContainer">
         <div class="header">
             <div class="back-button" onclick="history.back()">&lt;</div>
             <div class="mypage-title">마이 페이지</div>
         </div>
         
         <div class="profile-section">
-            <div class="name-text">이름</div>
+            <div class="name-text">닉네임</div>
             <div class="profile-container" onclick="openProfileFileDialog()">
                 <img id="profileImage" class="profile-img" src="/images/default-profile.png" 
                      onerror="this.src='/images/default-profile.png'">
                 <div class="profile-text" id="profileText">프로필 사진 변경</div>
-            </div>
+            </div> 
             <input type="file" id="fileInputProfile" accept="image/*" onchange="changeProfileImage(event)">
         </div>
         
@@ -22,72 +22,72 @@
         <input type="file" id="fileInputBg" accept="image/*" onchange="changeBackground(event)">
 
         <div class="menu-section">
-            <div class="menu-button my-store-btn" onclick="location.href='/mystore'">내 매장 보기</div>
-            <div class="menu-button edit-info-btn" onclick="location.href='/edit'">회원 정보 수정</div>
-            <div class="menu-button withdraw-btn" onclick="confirmWithdrawal()">회원 탈퇴</div>
+            <div class="menu-button my-store-btn" onclick="location.href='/shop/myShop'">내 매장 보기</div>
+            <div class="menu-button edit-info-btn" onclick="location.href='/store/edit'">사업자 정보 수정</div>
+            <div class="menu-button withdraw-btn" onclick="confirmWithdrawal()">사업자 탈퇴</div>
         </div>
     </div>
 
 <link rel="stylesheet" th:href="@{/css/store/mypage.css}">
-	</th:block>
-	
-	<th:block layout:fragment="script">
-	 
-	 <script>
-	 
-	 window.onload = function() {
-		    const savedBg = localStorage.getItem('myPageBackground');
-		    if (savedBg) {
-		        document.getElementById('mypageContainer').style.backgroundImage = `url(${savedBg})`;
-		    }
-		    
-		    const savedProfile = localStorage.getItem('myPageProfile');
-		    if (savedProfile) {
-		        document.getElementById('profileImage').src = savedProfile;
-		        document.getElementById('profileText').style.display = 'none';
-		    }
-		};
+   </th:block>
+   
+   <th:block layout:fragment="script">
+    
+    <script>
+    
+    window.onload = function() {
+          const savedBg = localStorage.getItem('myPageBackground');
+          if (savedBg) {
+              document.getElementById('mypageContainer').style.backgroundImage = `url(${savedBg})`;
+          }
+          
+          const savedProfile = localStorage.getItem('myPageProfile');
+          if (savedProfile) {
+              document.getElementById('profileImage').src = savedProfile;
+              document.getElementById('profileText').style.display = 'none';
+          }
+      };
 
-		function openBackgroundFileDialog() {
-		    document.getElementById('fileInputBg').click();
-		}
+      function openBackgroundFileDialog() {
+          document.getElementById('fileInputBg').click();
+      }
 
-		function openProfileFileDialog() {
-		    document.getElementById('fileInputProfile').click();
-		}
+      function openProfileFileDialog() {
+          document.getElementById('fileInputProfile').click();
+      }
 
-		function changeBackground(event) {
-		    const file = event.target.files[0];
-		    if (file) {
-		        const reader = new FileReader();
-		        reader.onload = function(e) {
-		            document.getElementById('mypageContainer').style.backgroundImage = `url(${e.target.result})`;
-		            localStorage.setItem('myPageBackground', e.target.result);
-		        };
-		        reader.readAsDataURL(file);
-		    }
-		}
+      function changeBackground(event) {
+          const file = event.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  document.getElementById('mypageContainer').style.backgroundImage = `url(${e.target.result})`;
+                  localStorage.setItem('myPageBackground', e.target.result);
+              };
+              reader.readAsDataURL(file);
+          }
+      }
 
-		function changeProfileImage(event) {
-		    const file = event.target.files[0];
-		    if (file) {
-		        const reader = new FileReader();
-		        reader.onload = function(e) {
-		            document.getElementById('profileImage').src = e.target.result;
-		            document.getElementById('profileText').style.display = 'none';
-		            localStorage.setItem('myPageProfile', e.target.result);
-		        };
-		        reader.readAsDataURL(file);
-		    }
-		}
+      function changeProfileImage(event) {
+          const file = event.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  document.getElementById('profileImage').src = e.target.result;
+                  document.getElementById('profileText').style.display = 'none';
+                  localStorage.setItem('myPageProfile', e.target.result);
+              };
+              reader.readAsDataURL(file);
+          }
+      }
 
-		function confirmWithdrawal() {
-		    if (confirm('정말 회원 탈퇴하시겠습니까?')) {
-		        // 회원 탈퇴 로직
-		    }
-		}
+      function confirmWithdrawal() {
+          if (confirm('정말 회원 탈퇴하시겠습니까?')) {
+             window.location.href = '/store/remove'
+          }
+      }
 
-	 </script>
-	</th:block>
-	
+    </script>
+   </th:block>
+   
 </html>

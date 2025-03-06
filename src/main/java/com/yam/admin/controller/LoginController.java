@@ -104,8 +104,11 @@ public class LoginController {
 					storeOpt.get().getEmail(), password, List.of(new SimpleGrantedAuthority("ROLE_STORE")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
+			// 🔥 인증 정보 세션에 저장 (추가된 코드)
+			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
 			response.put("success", true);
-			response.put("role", "STORE");
+			response.put("role", "STORE"); 
 			response.put("redirect", "/main");
 			return ResponseEntity.ok(response);
 		}

@@ -27,10 +27,13 @@ public class UserQnaController {
 		this.qnaRepository = qnaRepository;
 	}
 
-	// ✅ QnA 목록 (사용자가 작성한 QnA만 조회)
+	// ✅ QnA 목록 (회원과 사업자 모두 접근 가능)
 	@GetMapping
 	public String getUserQnaList(HttpSession session, Model model) {
-		String writer = (String) session.getAttribute("customerId"); // ✅ customerId 사용
+		String writer = (String) session.getAttribute("customerId");
+		if (writer == null) {
+			writer = (String) session.getAttribute("storeId"); // ✅ storeId가 있으면 사업자로 접근 가능
+		}
 
 		if (writer == null) {
 			return "redirect:/login"; // 🔥 비회원이면 로그인 페이지로 이동
@@ -38,30 +41,37 @@ public class UserQnaController {
 
 		List<Qna> qnaList = qnaRepository.findByWriter(writer);
 		model.addAttribute("qnaList", qnaList);
-		return "user/qna/qnaList"; // 회원용 QnA 목록 페이지
+		return "user/qna/qnaList";
 	}
 
-	// ✅ QnA 작성 페이지
+	// ✅ QnA 작성 페이지 (회원과 사업자 가능)
 	@GetMapping("/create")
 	public String createQnaForm(HttpSession session, Model model) {
-		if (session.getAttribute("customerId") == null) {
-			return "redirect:/login"; // 🔥 로그인 필요
-		}
-
-		model.addAttribute("qna", new Qna());
-		return "user/qna/qnaCreate"; // 회원용 QnA 작성 페이지
-	}
-
-	// ✅ QnA 저장 (회원이 질문 등록)
-	@PostMapping("/create")
-	public String createQna(@ModelAttribute Qna qna, HttpSession session, Model model) {
 		String writer = (String) session.getAttribute("customerId");
+		if (writer == null) {
+			writer = (String) session.getAttribute("storeId"); // ✅ storeId가 있으면 접근 가능
+		}
 
 		if (writer == null) {
 			return "redirect:/login";
 		}
 
-		// ✅ 필수 입력값 검증
+		model.addAttribute("qna", new Qna());
+		return "user/qna/qnaCreate";
+	}
+
+	// ✅ QnA 저장 (회원과 사업자 가능)
+	@PostMapping("/create")
+	public String createQna(@ModelAttribute Qna qna, HttpSession session, Model model) {
+		String writer = (String) session.getAttribute("customerId");
+		if (writer == null) {
+			writer = (String) session.getAttribute("storeId"); // ✅ storeId가 있으면 접근 가능
+		}
+
+		if (writer == null) {
+			return "redirect:/login";
+		}
+
 		if (qna.getTitle() == null || qna.getTitle().trim().isEmpty() || qna.getContent() == null
 				|| qna.getContent().trim().isEmpty()) {
 			model.addAttribute("error", "제목과 내용을 입력하세요.");
@@ -75,10 +85,13 @@ public class UserQnaController {
 		return "redirect:/userqna";
 	}
 
-	// ✅ QnA 상세보기 (본인이 작성한 QnA만 볼 수 있음)
+	// ✅ QnA 상세보기 (회원과 사업자 가능)
 	@GetMapping("/{id}")
 	public String qnaDetail(@PathVariable Long id, HttpSession session, Model model) {
 		String writer = (String) session.getAttribute("customerId");
+		if (writer == null) {
+			writer = (String) session.getAttribute("storeId"); // ✅ storeId가 있으면 접근 가능
+		}
 
 		if (writer == null) {
 			return "redirect:/login";
@@ -94,10 +107,13 @@ public class UserQnaController {
 		return "redirect:/userqna";
 	}
 
-	// ✅ QnA 삭제
+	// ✅ QnA 삭제 (회원과 사업자 가능)
 	@PostMapping("/{id}/delete")
 	public String deleteQna(@PathVariable Long id, HttpSession session) {
 		String writer = (String) session.getAttribute("customerId");
+		if (writer == null) {
+			writer = (String) session.getAttribute("storeId"); // ✅ storeId가 있으면 접근 가능
+		}
 
 		if (writer == null) {
 			return "redirect:/login";

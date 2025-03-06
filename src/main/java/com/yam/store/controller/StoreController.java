@@ -89,7 +89,7 @@ public class StoreController {
 		}
 	}
 
-	@PostMapping("/store/edit")
+	@PostMapping("/edit")
 	public String updateEmail(@RequestParam("newEmail") String newEmail) {
 		// 로그인 구현이 안 됐으므로 임시로 특정 사업자 정보 가져오기
 		Store store = storeService.findByEmail("test@store.com"); // 테스트용 이메일 (나중에 로그인 구현 후 수정)
