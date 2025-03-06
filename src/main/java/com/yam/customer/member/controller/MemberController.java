@@ -11,7 +11,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -167,59 +169,59 @@ public class MemberController {
 		return "login"; // templates/customer/login.html
 	}
 
-	@GetMapping("/myPage")
-	public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-		if (userDetails != null) {
-			// DB에서 회원 정보를 다시 조회
-			String customerId = userDetails.getUsername();
-			Member member = memberService.getMemberById(customerId);
+	@GetMapping("/mypage")
+	public String myPage(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-			// 조회된 회원 정보가 없으면 (예: 탈퇴한 회원) 로그인 페이지로 리다이렉트
-			if (member == null) {
-				return "redirect:/customer/login";
-			}
-
-			// 프로필 이미지 URL 설정 (null 체크)
-			String profileImageUrl = member.getCustomerProfileImage();
-			if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-				profileImageUrl = "/upload/customer_image_default.png"; // 기본 이미지 경로
-			}
-
-			model.addAttribute("profileImageUrl", profileImageUrl);
-			model.addAttribute("customerName", member.getCustomerName()); // 이름 추가
-
-		} else {
-			// userDetails가 null인 경우 (로그인 X) 로그인 페이지로 리다이렉트
-			return "redirect:/customer/login";
+		if (authentication == null || !authentication.isAuthenticated()) {
+			System.out.println("🚨 인증 정보 없음! 로그인이 필요함.");
+			return "redirect:/login"; // 로그인 페이지로 리다이렉트
 		}
 
-		return "customer/myPage";
+		String customerId = authentication.getName(); // 현재 로그인한 사용자 ID 가져오기
+		Member member = memberService.getMemberById(customerId);
+
+		if (member == null) {
+			return "redirect:/login"; // 회원 정보가 없으면 로그인 페이지로
+		}
+
+		String profileImageUrl = member.getCustomerProfileImage();
+		if (profileImageUrl == null || profileImageUrl.isEmpty()) {
+			profileImageUrl = "/upload/customer_image_default.png";
+		}
+
+		model.addAttribute("profileImageUrl", profileImageUrl);
+		model.addAttribute("customerNickname", member.getCustomerNickname());
+
+		return "customer/mypage";
 	}
 
 	@GetMapping("/memberInfo")
-	public String showMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, Model model) {
+	public String showMemberInfo(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		// 1. DB에서 회원 정보 다시 조회
-		String customerId = customUserDetails.getUsername(); // 또는 .getMember().getCustomerId() 사용
-		Member member = memberService.getMemberById(customerId); // MemberService에 getMemberById 메서드 필요
+		if (authentication == null || !authentication.isAuthenticated()) {
+			System.out.println("🚨 인증 정보 없음! 로그인이 필요함.");
+			return "redirect:/customer/login"; // 로그인 페이지로 리다이렉트
+		}
 
-		// 2. 조회된 회원 정보가 없으면 (예: 탈퇴한 회원), 로그인 페이지로 리다이렉트
+		String customerId = authentication.getName(); // 현재 로그인한 사용자 ID 가져오기
+		Member member = memberService.getMemberById(customerId);
+
 		if (member == null) {
-			return "redirect:/customer/login"; // 또는 적절한 에러 페이지
+			return "redirect:/customer/login"; // 회원 정보가 없으면 로그인 페이지로
 		}
 
-		// 3. 프로필 이미지 URL 설정 (null 체크)
-		String profileImageUrl = member.getCustomerProfileImage(); // DB에 /upload/파일명 으로 저장되어있음.
+		String profileImageUrl = member.getCustomerProfileImage();
 		if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-			profileImageUrl = "/upload/customer_image_default.png"; // 기본 이미지 경로
+			profileImageUrl = "/upload/customer_image_default.png";
 		}
 
-		// 4. 모델에 데이터 추가
 		model.addAttribute("profileImageUrl", profileImageUrl);
-		model.addAttribute("member", member); // 회원 정보 객체
+		model.addAttribute("customerNickname", member.getCustomerNickname());
+		model.addAttribute("member", member); // 회원 정보 추가
 
-		// 5. 뷰 반환
-		return "customer/memberInfo"; // templates/customer/memberInfo.html
+		return "customer/memberInfo"; // 회원 정보 페이지 반환
 	}
 
 	@PostMapping("/updatePassword")

@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
 	<head>
-		<th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
-<!-- 		    <link rel="stylesheet" href="/css/serve.css">
- -->		    <title>메인화면</title>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+    
+		<title>메인화면</title>
+		
 	</head>
 	<body>
-		<main>
+		<main> 
 	  		<div class="container py-4">
-	  		<div th:replace="template/client/fragments/adminblock :: header"></div>
+	  		<!-- 기본 레이아웃 (block.html) - 관리자 아닌 경우만 표시 -->
+            <th:block th:if="${session.userRole != 'ADMIN'}">
+                <div th:replace="template/client/fragments/block :: header"></div>
+            </th:block>
+
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+
+			<!-- 메인 컨텐츠 -->
 	    		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
 		    		<div class="ratio ratio-21x9">
 					  <div class="carousel-inner">
@@ -31,30 +49,17 @@
 					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 					    <span class="visually-hidden">Next</span>
 					  </button>
-					
 				</div>
-				
+
 				<p class="mb-2 text-center">지금바로 예약하기</p>
-	    		<!-- 슬라이드 넣어보기 -->
-	    		<!-- <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-	    			<div class="container-fluid py-5">
-	    				<h1 class="display-5 fw-bold">Effort Quotes</h1>
-	    				<p class="col-md-8 fs-4">노력 없이 얻는 것은 없다. There are no gains without pains.</p>
-	    				<p class="col-md-8 fs-4">끊임없이 도전하는 자만이 승리한다. The man who moves a mountain begins by carrying away small stones</p>
-	    				<button class="btn btn-primary btn-lg" type="button">Effort Quotes</button>
-	    			</div>
-	    		</div>
-	    		 -->
+
 	    		<div class="row align-items-md-stretch">
-	
 	    			<div class="col-md-4">
 	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3">
 	    					<h2>게시판 관리</h2>
 	    					<img class="height-70 w-100" alt="매장 매뉴2" src="images/f2.jpg">
 	    					<p>Wine Bar Promotion</p>
-	    					<p>ㅁ</p>
 	    					<p>자유 게시판. 입력/수정/삭제 및 댓글 작성까지 처리 완료.</p>
-	    					
 	    					<button class="btn btn-outline-secondary article" type="button">게시판 리스트</button>
 	    				</div>
 	    			</div>
@@ -66,7 +71,6 @@
 	    					<button class="btn btn-outline-light gallery" type="button">갤러리 게시판 리스트</button>
 	    				</div>
 	    			</div>
-	    			
 	    			<div class="col-md-4">
 	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3">
 	    					<h2>게시판 관리</h2>
@@ -76,23 +80,15 @@
 	    				</div>
 	    			</div>
 	    		</div>
-	    
-				    <div th:replace="template/client/fragments/adminblock :: footer"></div>
+
+	    		<!-- 푸터: 관리자와 사용자 모두 표시 -->
+	    		<div th:replace="template/client/fragments/adminblock :: footer"></div>
+
 			</div>     
 		</main>
 		
 		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="/js/jquery-3.7.1.min.js"></script>
 		<script src="/js/common.js"></script>
-		<script>
-			$(".gallery").on("click", ()=>{
-				locationProcess("/board/boardList");
-			});
-			
-			$(".article").on("click", ()=>{
-				locationProcess("/article/articleList");
-			});
-		
-		</script>
 	</body>
 </html>

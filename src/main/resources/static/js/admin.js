@@ -1,51 +1,43 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ admin.js가 실행되었습니다.");
+    console.log("✅ 로그인 JS 로드됨");
 
-    const profileImg = document.querySelector(".profile-img");
-    const profileUpload = document.getElementById("profile-upload");
-    const menuItems = document.querySelectorAll(".menu-toggle");
+    const loginButton = document.querySelector(".login-btn");
+    const loginForm = document.querySelector("#loginForm");
 
-    if (!profileImg || !profileUpload || menuItems.length === 0) {
-        console.error("❌ 필요한 요소를 찾을 수 없습니다. HTML 구조를 확인하세요.");
-        return;
-    }
+    loginButton.addEventListener("click", async function (event) {
+        event.preventDefault(); // 기본 제출 방지
 
-    // 프로필 이미지 클릭 시 파일 업로드 창 열기
-    profileImg.addEventListener("click", function () {
-        profileUpload.click();
-    });
+        const idInput = loginForm.querySelector('input[name="id"]');
+        const passwordInput = loginForm.querySelector('input[name="password"]');
 
-    // 파일 업로드 후 미리보기 설정
-    profileUpload.addEventListener("change", function (event) {
-        const file = event.target.files[0]; 
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profileImg.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        if (!idInput.value || !passwordInput.value) {
+            alert("아이디와 비밀번호를 모두 입력해주세요.");
+            return;
+        }
+
+        const formData = new URLSearchParams(new FormData(loginForm));
+
+        try {
+            const response = await fetch("/api/login", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // ✅ 서버에서 전달된 redirectUrl 사용
+                window.location.href = result.redirectUrl;
+            } else {
+                alert(result.message || "로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다.");
+            }
+        } catch (error) {
+            console.error("❌ 로그인 요청 중 오류 발생:", error);
+            alert("네트워크 오류 발생! 다시 시도해 주세요.");
         }
     });
-
-    // 메뉴 클릭 시 소메뉴 토글
-    menuItems.forEach(item => {
-        item.addEventListener("click", function (e) {
-            e.preventDefault(); // 기본 링크 동작 방지
-            const parent = this.parentElement;
-            const submenu = parent.querySelector(".submenu");
-
-            if (submenu) {
-                submenu.classList.toggle("open"); // 소메뉴 토글
-
-                // 다른 열린 메뉴 닫기
-                document.querySelectorAll(".submenu").forEach(sub => {
-                    if (sub !== submenu) {
-                        sub.classList.remove("open");
-                    }
-                });
-            }
-        });
-    });
-
-    console.log("✅ 사이드바 메뉴 토글 기능이 정상적으로 적용되었습니다.");
 });

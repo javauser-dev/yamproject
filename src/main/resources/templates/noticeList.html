@@ -9,8 +9,8 @@
     <th:block th:if="${session.userRole == 'ADMIN'}">
         <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
     </th:block>
-      		<link rel="stylesheet" href="/css/qna.css">
-		<title>메인화면</title> 
+   		<link rel="stylesheet" href="/css/notice.css">
+		<title>메인화면</title>
 		
 	</head>
 	<body>
@@ -25,28 +25,25 @@
             <th:block th:if="${session.userRole == 'ADMIN'}">
                 <div th:replace="template/client/fragments/adminblock :: header"></div>
             </th:block>
-        <h2>답변 작성</h2>
-
-        <div class="qna-detail"> 
-            <p><strong>카테고리:</strong> <span th:text="${qna.category}"></span></p>
-            <p><strong>작성자:</strong> <span th:text="${qna.writer}"></span></p>
-            <p><strong>제목:</strong> <span th:text="${qna.title}"></span></p>
-            <p><strong>내용:</strong> <span th:text="${qna.content}"></span></p>
-            <p><strong>작성일:</strong> <span th:text="${qna.createdAt}"></span></p>
-        </div>
-
-        <form th:action="@{/qna-answer/{id}(id=${qna.id})}" method="post">
-            <label for="answer">답변 입력:</label>
-            <textarea id="answer" name="answer" rows="4" required></textarea>
-
-            <button type="submit" class="submit-btn">답변 등록</button>
-        </form>
+        <h2>공지사항</h2>
+    	<table border="1">
+        <tr> 
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th> 
+        </tr>
+        <tr th:each="notice : ${notices}"> 
+			<td><a th:href="@{/noticeList/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
+            <td th:text="${notice.author}"></td>
+            <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+    </table>
+    <th:block th:if="${session.userRole == 'ADMIN'}">  
+        <a class="notice-create-button" href="/noticeList/create">공지 작성</a> 
+    </th:block>
     </div>
-
-    <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-    <script src="/js/common.js"></script>
-</main>
+        <footer th:replace="template/client/fragments/adminblock :: footer"></footer> 
+ 		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+ 	</main>
 </body>
 </html>
- 

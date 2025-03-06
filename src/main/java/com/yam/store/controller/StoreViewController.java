@@ -10,7 +10,7 @@ import com.yam.store.Store;
 @Controller
 public class StoreViewController {
 
-	@GetMapping("/mypage")
+	@GetMapping("store/mypage")
 	public String myPage(Model model, @AuthenticationPrincipal Store store) {
 		model.addAttribute("store", store); // 현재 로그인한 사업자 정보 전달
 		return "store/mypage";

@@ -33,13 +33,10 @@
 }
 
 .qna-table th {
-    background: #ff8080;
     font-weight: bold;
 }
 
-.qna-table tr:nth-child(even) {
-    background-color: #808080;
-}
+
 
 .qna-table tr:hover {
     transition: background 0.3s ease-in-out;
@@ -111,13 +108,22 @@ footer {
 /* 링크 정렬 */
 a {
     text-align: center;
+    text-decoration : none;
+    font-weight: bold;
+}
+ 
+.ttitle:hover {
+    font-size: 18px; 
+} 
+
+.titleanswer{
+    font-weight: bold;
 }
 
-
-/* 관리자 답변 입력 */
+/* 관리자 답변 입력 */ 
 .qna-table input {
     width: 80%;
-    padding: 5px;
+    padding: 5px; 
     margin-right: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -133,6 +139,11 @@ a {
     cursor: pointer;
     transition: background 0.3s;
 }
+ 
+.buttontd {
+	width: 100px;
+}  
+  
 
 .qna-table button:hover {
     background: #218838;
@@ -171,3 +182,141 @@ textarea {
 .submit-btn:hover {
     background: #218838;
 }
+
+/* 전체 폼 스타일 */
+form {
+    width: 50%; /* 폼을 화면의 50% 너비로 설정 */
+    margin: auto; /* 가운데 정렬 */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 입력 필드 간격 */
+}
+
+/* 입력 필드 및 레이블 스타일 */
+form label {
+    text-align: left; /* 레이블 왼쪽 정렬 */
+    font-weight: bold;
+    display: block; /* 줄 바꿈 */
+    margin-bottom: 5px;
+}
+
+form select, form input, form textarea {
+    width: 100%; /* 입력 필드 전체 너비 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* textarea 크기 조정 */
+form textarea {
+    height: 120px; /* 높이 조절 */
+    resize: none; /* 크기 조절 방지 */
+}
+
+/* 버튼 스타일 */
+form button, form a {
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+/* 등록 버튼 */
+form button {
+    background: #007bff;
+    color: white;
+}
+
+form button:hover {
+    background: #0056b3;
+}
+
+/* 취소 버튼 */
+form a {
+    background: #ccc;
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+form a:hover {
+    background: #bbb;
+}
+/* ✅ QnA 상세 컨테이너 */
+.qna-detail-container {
+    width: 60%;
+    margin: auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left; /* 왼쪽 정렬 */
+}
+
+/* ✅ 제목 스타일 */
+.qna-detail-container h1 {
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 15px;    
+}
+
+/* ✅ 정보(카테고리, 작성자 등) 스타일 */
+.qna-meta {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.qna-meta span {
+    font-weight: bold;
+}
+
+/* ✅ 내용 스타일 */
+.qna-content {
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    height : 400px;
+}
+ 
+/* ✅ 관리자 답변 스타일 */ 
+.qna-answer {
+    background: #e9f7ef;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    margin-bottom: 20px;
+}
+
+
+.qna-delete-btn:hover {
+    background: #c82333;
+}
+
+/* ✅ 목록으로 돌아가기 버튼 */
+.qna-back-btn {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+	text-decoration: none;
+	}
+.qna-back-btn:hover {
+	color:white;
+}
+	
+
+

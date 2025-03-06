@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.yam.admin.dto.AdminDTO;
@@ -25,14 +24,12 @@ public class AdminController {
 		return "main";
 	}
 
-	
-
 	// "/dashboard" 요청을 처리하고, "templates/dashboard/dashboard.html"을 반환
 	@GetMapping("/dashboard")
 	public String dashboard(Model model) {
 		List<AdminDTO> stats = adminService.getAdminDTO();
 		model.addAttribute("stats", stats);
-		return "dashboard/dashboard"; // "templates/dashboard/dashboard.html"을 의미
+		return "dashboard"; // "templates/dashboard/dashboard.html"을 의미
 	}
 
 }

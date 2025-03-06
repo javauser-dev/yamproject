@@ -16,7 +16,10 @@
 		
 		<link href="/assets/dist/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/common.css" rel="stylesheet" />
+		<link href="/css/block.css" rel="stylesheet" />
+		 
 	</th:block>
+	 
 	
 	<!-- 상단 navbar  -->  
 	<th:block th:fragment="header">
@@ -29,18 +32,25 @@
 	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/reserve">예약</a>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/main">메인페이지</a> 
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/adminboard">게시판</a>
+	       <a class="me-5 py-2 link-body-emphasis text-decoration-none dropdown-toggle" href="#" role="button" id="boardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+           		게시판
+       		</a>
+        			<ul class="dropdown-menu" aria-labelledby="boardDropdown"> 
+           				 <li><a class="dropdown-item" href="/noticeList">공지사항</a></li> 
+            			<li><a class="dropdown-item" href="/article/freeBoardList">자유게시판</a></li>
+       				</ul>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/qna">QnA</a> 
 	        <!-- <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Support</a>
 	        <a class="py-2 link-body-emphasis text-decoration-none" href="#">Pricing</a> -->
 	      </nav>
 	      
-	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-	    <!--     <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/board/boardList">회원가입</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">로그인</a> -->
-	        <a class="py-2 link-body-emphasis text-decoration-none" href="/login">로그아웃</a>
-	      </nav>
-	    </div>
+	     <!-- 로그인 여부에 따라 버튼 변경 -->
+      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+		<th:block>
+          <a class="py-2 link-body-emphasis text-decoration-none" href="/logout">로그아웃</a>
+        </th:block>
+      </nav>
+	    </div> 
 	  </header>
 	</th:block> 
 	
@@ -51,7 +61,7 @@
 		<div class="container text-center">
 			<p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
 				개인정보보호책임자: 김철수 | 이메일 : javauser1234@naver.com | 서울특별시 강남구 테헤란로 14길 6
-			</p>
+			</p><br />
 			&copy; 2025 YAM
 		</div>
 		</footer>

@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/css/admin.css">
-</head>
-<body>
+</head> 
+<body>  
 <aside class="sidebar">
-    <div class="profile">
-        <img src="/images/default-profile.jpg" class="profile-img" alt="Admin Profile">
-        <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-        <h3>Admin<span class="status-dot">•</span></h3>
-    </div> 
- 
+   <div class="profile">
+<img th:src="${admin != null and admin.profileImagePath != null and admin.profileImagePath != '' ? admin.profileImagePath : '/images/default-profile.png'}">
+     <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
+    <h3>Admin<span class="status-dot">•</span></h3> 
+</div>
+   
     <ul class="menu">
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">사용자 관리</a>
@@ -48,8 +48,8 @@
         </li>
     </ul> 
 </aside>
+
 <script th:src="@{/js/admin.js}"></script>
+
 </body>
 </html>
-
-
