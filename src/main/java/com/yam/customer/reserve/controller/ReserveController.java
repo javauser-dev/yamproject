@@ -318,7 +318,7 @@ public class ReserveController {
            // 예약 정보 업데이트 로직 (customerReserveRepository.save() 사용)
             // 주의: updatedReserve에는 id, shop, deposit 필드도 포함되어 있어야 함! (hidden 필드로 전달)
            customerReserveRepository.save(updatedReserve); //JPA의 save는 update 쿼리도 수행
-            redirectAttributes.addFlashAttribute("message", "예약이 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "예약내역이 수정되었습니다.");
             return "redirect:/customer/reserve/reserveInquiry"; // 수정 후 목록으로
 
         } catch (Exception e) {

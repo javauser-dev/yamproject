@@ -62,6 +62,15 @@
     </div>
 
     <a th:href="@{/customer/memberInfo}"><button type="button">회원 정보</button></a>
+    <!-- JavaScript (알림 표시) -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var message = /*[[${message}]]*/ null;  // 서버에서 전달된 message flash attribute 가져오기
+        if (message) {
+            alert(message); // message가 있으면 알림 창 표시
+        }
+        /*]]>*/
+    </script>
  </div>
 </body>
 </html>
