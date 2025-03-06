@@ -7,112 +7,136 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script th:src="@{/js/customer/memberInfo.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/customer/memberInfo.css}">
-    <!-- 필요한 경우 추가적인 스타일을 여기에 -->
-    <style>
-    	/* 에러 메시지 스타일 */
-        .error-message {
-           color: red;  /* 빨간색 */
-        }
-        /* 프로필 이미지 미리보기 스타일 */
-        #profileImagePreview {
-            width: 150px; /* 원하는 크기로 조절 */
-            height: 150px;
-            border-radius: 50%; /* 원형으로 만들기 (선택 사항) */
-            object-fit: cover; /* 이미지가 비율을 유지하며 채워지도록 */
-            margin-bottom: 10px; /* 여백 */
-        }
-	</style>
 </head>
 <body>
-    <div>
-    <h1>회원 정보</h1>
-        <div>
-            <label>아이디</label>
-            <span th:text="${member.customerId}"></span>
-        </div>
-        <!--  hidden -->
-        <input type="hidden" name="customerId" th:value="${member.customerId}" />
+    <div class="container">
+        <h1>회원 정보</h1>
 
         <!-- 비밀번호 변경 폼 -->
         <form id="updatePasswordForm" th:action="@{/customer/updatePassword}" method="post">
-            <div>
-                <label for="newPassword">새 비밀번호</label>
-                <input type="password" id="newPassword" name="newPassword"  placeholder="변경하려면 입력"/>
-                <button type="submit">비밀번호 변경</button>
-                <span>영문(대소문자), 숫자, 특수문자, 8~15글자</span>
-                <span id="newPasswordError" class = "error-message"></span>
-            </div>
+            <table>
+                <tr>
+                    <th><label for="newPassword">새 비밀번호</label></th>
+                    <td>
+                      <div class="input-button-wrapper">
+                        <input type="password" id="newPassword" name="newPassword" placeholder="변경하려면 입력" />
+                        <button type="submit" class="form-button">비밀번호 변경</button>
+                      </div>
+                        <span class="input-info">영문(대소문자), 숫자, 특수문자, 8~15글자</span>
+                        <span id="newPasswordError" class="error-message"></span>
+                    </td>
+                </tr>
+            </table>
         </form>
 
-        <!-- 닉네임 변경 폼-->
-	     <form id="updateNicknameForm" th:action="@{/customer/updateNickname}" method="post">
-	     <input type="hidden" name="customerId" th:value="${member.customerId}" />
-        <div>
-            <label for="customerNickname">닉네임</label>
-            <!-- 기존 값 표시 (span)-->
-            <input type="text" id="customerNickname" name="customerNickname" th:value = "${member.customerNickname}" />
-             <!--  ㄱ-ㅎ: 한글 자음, ㅏ-ㅣ: 한글 모음, 가-힣: 한글 완성형 -->
-            <!--  <button type = "button" id="checkNicknameBtn">중복 검사</button>  -->
-            <button type = "submit">닉네임 변경</button>
-            <span>영문(대소문자), 숫자, 특수문자, 한글, 2~8글자</span>
-             <span id="customerNicknameError" class = "error-message"></span>
-            <input type = "hidden" id="originalNickname" th:value = "${member.customerNickname}"/>
-        </div>
-      </form>
+        <!-- 닉네임 변경 폼 -->
+        <form id="updateNicknameForm" th:action="@{/customer/updateNickname}" method="post">
+            <input type="hidden" name="customerId" th:value="${member.customerId}" />
+            <table>
+                <tr>
+                    <th><label for="customerNickname">닉네임</label></th>
+                    <td>
+                      <div class="input-button-wrapper">
+                        <input type="text" id="customerNickname" name="customerNickname" th:value="${member.customerNickname}" />
+                        <button type="submit" class="form-button">닉네임 변경</button>
+                      </div>
+                        <span class="input-info">영문(대소문자), 숫자, 특수문자, 한글, 2~8글자</span>
+                         <span id="customerNicknameError" class="error-message"></span>
+                        <input type="hidden" id="originalNickname" th:value="${member.customerNickname}" />
+                    </td>
+                </tr>
+            </table>
+        </form>
 
-        <!-- 이메일 변경 폼-->
-      <form id = "updateEmailForm" th:action="@{/customer/updateEmail}" method = "post">
-       <input type="hidden" name="customerId" th:value="${member.customerId}" />
-        <div>
-            <label for="customerEmail">이메일</label>
-            <input type = "email" id = "customerEmail" name = "customerEmail" th:value="${member.customerEmail}"/>
-            <button type="button" id="sendVerificationCodeBtn" >인증번호받기</button>
-            <span id = "customerEmailError" class = "error-message"></span>
-            <input type="hidden" id="originalEmail" th:value="${member.customerEmail}" />
-            <!-- 인증 번호 입력 필드 (처음에는 숨김) -->
-            <div id="verificationCodeDiv" style="display: none;">
-                <label for="verificationCode">인증번호</label>
-                <input type="text" id="verificationCode" name="verificationCode" required/>
-                 <span id = "verificationCodeError" class = "error-message"></span>
-                <button type="button" id="verifyCodeBtn">인증하기</button>
-                <button type = "submit" style = "display: none" id = "updateEmailBtn">이메일 변경</button>
-            </div>
-          </div>
-       </form>
+        <!-- 이메일 변경 폼 -->
+        <form id="updateEmailForm" th:action="@{/customer/updateEmail}" method="post">
+            <input type="hidden" name="customerId" th:value="${member.customerId}" />
+            <table>
+                <tr>
+                    <th><label for="customerEmail">이메일</label></th>
+                    <td>
+                      <div class="input-button-wrapper">
+                        <input type="email" id="customerEmail" name="customerEmail" th:value="${member.customerEmail}" />
+                        <button type="button" id="sendVerificationCodeBtn" class="form-button">인증번호받기</button>
+                      </div>
+                        <span id="customerEmailError" class="error-message"></span>
+                        <input type="hidden" id="originalEmail" th:value="${member.customerEmail}" />
 
-        <!-- 정보 표시 부분 -->
-        <div>
-            <label>이름</label>
-            <span th:text="${member.customerName}"></span>
-        </div>
-        <div>
-            <label>생년월일</label>
-            <span th:text="${#temporals.format(member.customerBirthDate, 'yyyy-MM-dd')}"></span>
-        </div>
-        <div>
-            <label>성별</label>
-            <span>
-                <span th:if="${member.customerGender == 'M'}">남성</span>
-                <span th:if="${member.customerGender == 'F'}">여성</span>
-            </span>
-        </div>
-        <div>
-            <label>가입일</label>
-            <span th:text="${#temporals.format(member.customerCreateDate, 'yyyy-MM-dd')}"></span>
-        </div>
+                        <!-- 인증 번호 입력 필드 -->
+                        <div id="verificationCodeDiv">
+                            <table>
+                              <tr>
+                                <th>
+                                   <label for="verificationCode">인증번호</label>
+                                </th>
+                                <td>
+                                 <div class="input-button-wrapper">
+                                  <input type="text" id="verificationCode" name="verificationCode" required />
+                                  <button type="button" id="verifyCodeBtn" class="form-button">인증하기</button>
+                                 </div>
+                                  <span id="verificationCodeError" class="error-message"></span>
+                                  <button type="submit" style="display: none" id="updateEmailBtn" class = "form-button">이메일 변경</button>
+                                </td>
+                              </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
 
-        <!-- 프로필 사진 변경 부분 추가 -->
-        <div>
-            <label>프로필 사진</label>
-            <img id="profileImagePreview" th:src="${member.customerProfileImage != null and member.customerProfileImage != '' ? member.customerProfileImage : '/upload/customer_image_default.png'}" alt="프로필 사진 미리보기">
-            <form id="updateProfileImageForm" th:action="@{/customer/updateProfileImage}" method="post" enctype="multipart/form-data">
-                <input type="file" id="profileImage" name="profileImage" accept="image/*">
-                <button type="submit">사진 변경</button>
-            </form>
-        </div>
+         <!-- 정보 표시 부분 -->
+        <table>
+            <tr>
+              <th><label>아이디</label></th>
+              <td><span th:text="${member.customerId}"></span></td>
+            </tr>
+            <tr>
+                <th><label>이름</label></th>
+                <td><span th:text="${member.customerName}"></span></td>
+            </tr>
+            <tr>
+                <th><label>생년월일</label></th>
+                <td><span th:text="${#temporals.format(member.customerBirthDate, 'yyyy-MM-dd')}"></span></td>
+            </tr>
+             <tr>
+                <th><label>성별</label></th>
+                <td>
+                  <span>
+                    <span th:if="${member.customerGender == 'M'}">남성</span>
+                    <span th:if="${member.customerGender == 'F'}">여성</span>
+                  </span>
+                </td>
+            </tr>
+            <tr>
+              <th><label>가입일</label></th>
+              <td> <span th:text="${#temporals.format(member.customerCreateDate, 'yyyy-MM-dd')}"></span></td>
+            </tr>
+        </table>
 
-    	<a th:href="@{/customer/myPage}"><button type = "button">마이페이지</button></a>
-    	<a th:href="@{#}"><button type="button" id="withdrawBtn">회원탈퇴</button></a>
+
+
+        <!-- 프로필 사진 변경 부분 -->
+       <form id="updateProfileImageForm" th:action="@{/customer/updateProfileImage}" method="post" enctype="multipart/form-data">
+         <table>
+            <tr>
+                <th><label>프로필 사진</label></th>
+                <td>
+                    <img id="profileImagePreview" th:src="${member.customerProfileImage != null and member.customerProfileImage != '' ? member.customerProfileImage : '/upload/customer_image_default.png'}" alt="프로필 사진 미리보기">
+                    <div class = "input-button-wrapper">
+                      <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                      <button type="submit" class="form-button">사진 변경</button>
+                    </div>
+                </td>
+            </tr>
+         </table>
+        </form>
+
+
+        <div class = "button-group">
+            <a th:href="@{/customer/myPage}"><button type="button" class = "form-button">마이페이지</button></a>
+            <a th:href="@{#}"><button type="button" id="withdrawBtn" class = "form-button">회원탈퇴</button></a>
+        </div>
     </div>
 </body>
 </html>
