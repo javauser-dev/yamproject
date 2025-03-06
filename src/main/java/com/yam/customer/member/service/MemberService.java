@@ -2,6 +2,7 @@ package com.yam.customer.member.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -152,5 +153,9 @@ public class MemberService {
         }
 
         lastDeletionCheckTime = now; // 마지막 확인 시간 업데이트
+    }
+ 	
+ 	public List<Member> findAllMembers() {
+        return memberRepository.findAll();
     }
 }
