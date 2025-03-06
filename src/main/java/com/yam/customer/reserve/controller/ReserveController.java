@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -324,6 +325,32 @@ public class ReserveController {
              // 예외 처리
             redirectAttributes.addFlashAttribute("errorMessage", "예약 수정 중 오류 발생: " + e.getMessage());
             return "redirect:/customer/reserve/updateForm?id=" + updatedReserve.getId(); // 수정 폼으로
+        }
+    }
+    
+    // 예약 취소 처리
+    @Transactional // 트랜잭션 처리
+    @GetMapping("/cancel") // 또는 @PostMapping("/cancel")
+    public String cancelReserve(@RequestParam("id") Long reserveId, RedirectAttributes redirectAttributes) {
+
+        try {
+            // 1. 예약 정보 조회
+            CustomerReserve reserve = customerReserveRepository.findById(reserveId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid reserve Id:" + reserveId));
+
+            // 2. 예약 취소 상태로 변경 (reserveCancel = 1)
+            reserve.setReserveCancel(1);
+
+            // 3. 변경 사항 저장
+            customerReserveRepository.save(reserve);
+
+            redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
+            return "redirect:/customer/myPage"; // 마이페이지로 리다이렉트
+
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "예약 취소 중 오류 발생: " + e.getMessage());
+            return "redirect:/customer/reserve/detail?id=" + reserveId; // 예약 상세로
         }
     }
 }
