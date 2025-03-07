@@ -1,7 +1,9 @@
 package com.yam.admin.info.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class AdminInforController {
 
     private final MemberService memberService;
+    
+    @GetMapping("/main")
+    public String mainPage() {
+        return "admin/info/main";
+    }
 
     @GetMapping("/members")
-    public String memberList(Model model) {
-        List<Member> members = memberService.findAllMembers();
-        model.addAttribute("members", members);
-        return "admin/info/memberList"; // 뷰 이름 (templates/admin/info/memberList.html)
-    }
-    
-    @GetMapping("/test")
-    public String test() {
-    	return "admin/info/test";
+    public String memberList(Model model,
+    						@PageableDefault(size = 10, sort = "customerId", direction = Sort.Direction.ASC) Pageable pageable) { // Pageable 파라미터 추가
+		Page<Member> members = memberService.findAllMembersSortById(pageable);
+		model.addAttribute("members", members);
+		return "admin/info/memberList";
     }
 }

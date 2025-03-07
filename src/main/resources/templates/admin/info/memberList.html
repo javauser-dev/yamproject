@@ -3,17 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>회원 목록</title>
-    <style>
-      table {
-        border-collapse : collapse;
-        width : 100%;
-      }
-      th, td{
-        border : 1px solid black;
-        padding : 8px;
-        text-align : center;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/memberList.css}">
 </head>
 <body>
     <h1>회원 목록</h1>
@@ -26,7 +16,6 @@
                 <th>이름</th>
                 <th>이메일</th>
                 <th>가입일</th>
-                <th>프로필사진</th>
             </tr>
         </thead>
         <tbody>
@@ -36,19 +25,40 @@
                 <td th:text="${member.customerNickname}"></td>
                 <td th:text="${member.customerName}"></td>
                 <td th:text="${member.customerEmail}"></td>
-                <td th:text="${#temporals.format(member.customerRegDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td>
-                  <!--/* 이미지 표시 (프로필 사진이 있는 경우) */-->
-                   <img th:if="${member.customerProfileImage != null and member.customerProfileImage != ''}"
-                     th:src="@{'/upload/' + ${member.customerProfileImage}}" alt="프로필 사진" width="50" height="50">
-
-                   <!--/* 프로필 사진이 없는 경우 대체 텍스트 또는 기본 이미지 */-->
-                  <span th:unless="${member.customerProfileImage != null and member.customerProfileImage != ''}">
-                    (프로필 사진 없음)
-                  </span>
-                </td>
+                <td th:text="${#temporals.format(member.customerCreateDate, 'yy년 M월 d일')}"></td>
             </tr>
         </tbody>
     </table>
+
+     <!-- 페이징 처리 -->
+     <div class="pagination" th:if="${members.totalPages > 1}">
+        <!--/*  첫 페이지 */-->
+        <a th:if="${members.number > 0}" th:href="@{/admin/info/members(page=0, size=${members.size}, sort=${param.sort})}">처음</a>
+        <span th:unless="${members.number > 0}">처음</span>
+
+        <!--/* 이전 페이지 */-->
+        <a th:if="${members.hasPrevious()}" th:href="@{/admin/info/members(page=${members.number - 1}, size=${members.size}, sort=${param.sort})}">이전</a>
+        <span th:unless="${members.hasPrevious()}">이전</span>
+
+        <!--/* 페이지 번호 목록 (10개씩) */-->
+        <span th:with="start=${(members.number / 10) * 10}, end=${members.totalPages > 10 ? (((members.number / 10) * 10 + 9) > members.totalPages - 1 ? members.totalPages -1 : (members.number / 10) * 10 + 9) : members.totalPages - 1}">
+            <span th:each="page : ${#numbers.sequence(start, end)}">
+                <a th:if="${page != members.number}" th:href="@{/admin/info/members(page=${page}, size=${members.size}, sort=${param.sort})}" th:text="${page + 1}"></a>
+                <span th:if="${page == members.number}" th:text="${page + 1}" class="current-page"></span>
+            </span>
+        </span>
+
+        <!--/* 다음 페이지 */-->
+        <a th:if="${members.hasNext()}" th:href="@{/admin/info/members(page=${members.number + 1}, size=${members.size}, sort=${param.sort})}">다음</a>
+        <span th:unless="${members.hasNext()}">다음</span>
+
+        <!--/* 마지막 페이지 */-->
+        <a th:if="${members.number < members.totalPages -1}" th:href="@{/admin/info/members(page=${members.totalPages - 1}, size=${members.size}, sort=${param.sort})}">마지막</a>
+        <span th:unless="${members.number < members.totalPages -1}">마지막</span>
+    </div>
+    
+    <div class="button-container">
+        <a href="/admin/info/main" class="main-button">메인화면으로</a>
+    </div>
 </body>
 </html>

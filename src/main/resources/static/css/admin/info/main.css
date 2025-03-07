@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.main-container {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 50px; /* 원하는 간격으로 조절 */
+}
+
+.image-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.image-container {
+    /* 필요한 스타일 (현재는 없음) */
+}
+
+.image-container img {
+    width: 250px;
+    height: 250px;
+    border-radius: 8px;
+}
+
+.image-container a {
+    display: block;
+}

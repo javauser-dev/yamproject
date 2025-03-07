@@ -80,6 +80,11 @@
 		    <groupId>nz.net.ultraq.thymeleaf</groupId>
 		    <artifactId>thymeleaf-layout-dialect</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>org.thymeleaf.extras</groupId>
+		    <artifactId>thymeleaf-extras-java8time</artifactId>
+		    <version>3.0.4.RELEASE</version> <!-- 여기에 맞는 버전 지정 -->
+		</dependency>
 	</dependencies>
 
 	<build>

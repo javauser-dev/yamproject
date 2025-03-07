@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -158,4 +160,8 @@ public class MemberService {
  	public List<Member> findAllMembers() {
         return memberRepository.findAll();
     }
+ 	
+ 	public Page<Member> findAllMembersSortById(Pageable pageable) { // 반환 타입 변경, 파라미터 추가
+        return memberRepository.findAll(pageable);
+     }
 }
