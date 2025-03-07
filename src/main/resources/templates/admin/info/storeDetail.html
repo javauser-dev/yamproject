@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>가게 상세 정보</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/storeDetail.css}">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+    .error-message {
+        color : red;
+    }
+    </style>
+</head>
+<body>
+    <h1>가게 상세 정보</h1>
+
+     <!-- 에러 메시지 표시 -->
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+    </div>
+    
+    <!-- 변경 완료 메시지 표시 -->
+    <div th:if="${message}" class="success-message">
+        <th:block th:with="msg=${message}">
+            <script>
+                alert("[[${msg}]]");
+            </script>
+        </th:block>
+    </div>
+
+    <table>
+        <tr>
+            <th><label>번호</label></th>
+            <td><span th:text="${store.storeNo}"></span></td>
+        </tr>
+
+        <!-- 닉네임 수정 -->
+        <tr>
+	        <th><label>닉네임</label></th>
+	        <td>
+	            <form th:action="@{/admin/info/updateStoreNickname}" method="post">
+	                <input type="hidden" name="storeNo" th:value="${store.storeNo}" />
+	                <input type="text" name="newNickname" id="newStoreNickname" th:value="${store.storeNickname}" required />
+	                <span id="storeNicknameCheckResult" class="error-message"></span>
+	                <button type="submit" id="nicknameSubmitBtn">변경하기</button>
+	            </form>
+	        </td>
+	    </tr>
+
+        <!-- 비밀번호 수정 -->
+        <tr>
+            <th><label>비밀번호</label></th>
+            <td>
+                <form th:action="@{/admin/info/updateStorePassword}" method="post">
+                    <input type="hidden" name="storeNo" th:value="${store.storeNo}" />
+                    <input type="password" name="newPassword"  required />
+                    <button type="submit">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <tr>
+            <th><label>사업자 번호</label></th>
+            <td><span th:text="${store.storeBusinessNumber}"></span></td>
+        </tr>
+
+        <!-- 가게 이름 수정 -->
+        <tr>
+            <th><label>가게 이름</label></th>
+            <td>
+                <form th:action="@{/admin/info/updateStoreName}" method="post">
+                    <input type="hidden" name="storeNo" th:value="${store.storeNo}" />
+                    <input type="text" name="newStoreName" th:value="${store.storeName}" required />
+                    <button type="submit">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <!-- 이메일 수정 -->
+        <tr>
+            <th><label>이메일</label></th>
+            <td>
+                <form th:action="@{/admin/info/updateStoreEmail}" method="post">
+                    <input type="hidden" name="storeNo" th:value="${store.storeNo}" />
+                    <input type="email" name="newEmail"
+				       th:with="email=${store.storeEmail},
+				                len=${email != null ? #strings.length(email) : 0},
+				                maskedEmail=${email != null and len > 4 ? #strings.substring(email, 0, 4) + #strings.repeat('*', len - 4) : email}"
+				       th:value="${maskedEmail}"
+				       required />
+                    <button type="submit">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <tr>
+            <th><label>가입일</label></th>
+            <td><span th:text="${#temporals.format(store.storeSubDate, 'yy년 MM월 dd일')}"></span></td>
+        </tr>
+    </table>
+
+    <div class = "list-button-div">
+        <a href="/admin/info/stores" class="list-button">가게 목록</a>
+    </div>
+	<script th:inline="javascript">
+	    $(document).ready(function() {
+	        // 초기 상태: 변경 버튼 활성화, 에러 메시지 숨김
+	        $('#nicknameSubmitBtn').prop('disabled', false);
+	
+	        $('#newStoreNickname').on('focusout', function() {
+	            var newNickname = $(this).val();
+	            var storeNo = /*[[${store.storeNo}]]*/ '';
+	
+	            $.ajax({
+	                url: '/admin/info/checkStoreNickname',
+	                type: 'GET',
+	                data: { nickname: newNickname, storeNo: storeNo },
+	                success: function(response) {
+	                    if (response === 'duplicate') {
+	                        $('#storeNicknameCheckResult').text('중복된 닉네임입니다.');
+	                        $('#storeNicknameCheckResult').addClass('visible'); // 3. 에러 메시지 표시
+	                        $('#nicknameSubmitBtn').prop('disabled', true);
+	                    } else {
+	                        $('#storeNicknameCheckResult').text('');
+	                        $('#storeNicknameCheckResult').removeClass('visible'); // 4. 에러 메시지 숨김
+	                        $('#nicknameSubmitBtn').prop('disabled', false);
+	                    }
+	                },
+	                error: function() {
+	                    $('#storeNicknameCheckResult').text('서버 오류 발생.');
+	                    $('#storeNicknameCheckResult').addClass('visible');  // 에러 메시지 표시
+	                    $('#nicknameSubmitBtn').prop('disabled', true);
+	                }
+	            });
+	        });
+	    });
+	</script>
+</body>
+</html>

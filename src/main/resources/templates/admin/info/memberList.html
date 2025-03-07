@@ -8,8 +8,23 @@
 <body>
     <h1>회원 목록</h1>
 
+    <!-- 검색 폼 -->
+    <div class="search-form-container">
+        <form action="/admin/info/members" method="get">
+            <select name="searchType">
+                <option value="id">ID</option>
+                <option value="nickname">닉네임</option>
+                <option value="all">ID + 닉네임</option>
+            </select>
+            <input type="text" name="searchKeyword" placeholder="검색어 입력">
+            <input type="hidden" name="size" th:value="${members.size}">
+            <input type="hidden" name="sort" th:value="${param.sort}">
+            <button type="submit">검색</button>
+        </form>
+    </div>
+
     <table>
-        <thead>
+       <thead>
             <tr>
                 <th>회원ID</th>
                 <th>닉네임</th>
@@ -19,44 +34,47 @@
             </tr>
         </thead>
         <tbody>
-            <!--/* Thymeleaf 반복문 */-->
             <tr th:each="member : ${members}">
-                <td th:text="${member.customerId}"></td>
+                <td><a th:href="@{/admin/info/memberDetail(customerId=${member.customerId})}" th:text="${member.customerId}"></a></td>
                 <td th:text="${member.customerNickname}"></td>
-                <td th:text="${member.customerName}"></td>
-                <td th:text="${member.customerEmail}"></td>
+                <td th:text="${member.customerName != null and #strings.length(member.customerName) > 1} ? ${#strings.substring(member.customerName, 0, 1) + #strings.repeat('*', #strings.length(member.customerName) - 1)} : (member.customerName?: '')"></td>
+                <td th:text="${member.customerEmail != null and #strings.length(member.customerEmail) > 4} ? ${#strings.substring(member.customerEmail, 0, 4) + #strings.repeat('*', #strings.length(member.customerEmail) - 4)} : (member.customerEmail?: '')"></td>
                 <td th:text="${#temporals.format(member.customerCreateDate, 'yy년 M월 d일')}"></td>
             </tr>
         </tbody>
     </table>
+    <!-- 검색 결과 없음 메시지 -->
+    <p th:if="${members.isEmpty()}">검색 결과가 없습니다.</p>
 
+
+    <!-- 페이징 처리 -->
      <!-- 페이징 처리 -->
      <div class="pagination" th:if="${members.totalPages > 1}">
         <!--/*  첫 페이지 */-->
-        <a th:if="${members.number > 0}" th:href="@{/admin/info/members(page=0, size=${members.size}, sort=${param.sort})}">처음</a>
-        <span th:unless="${members.number > 0}">처음</span>
+        <a th:if="${members.number > 0}" th:href="@{/admin/info/members(page=0, size=${members.size}, sort=${param.sort} , searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}">처음</a>
+        <a th:unless="${members.number > 0}" class = "disabled">처음</a>
 
         <!--/* 이전 페이지 */-->
-        <a th:if="${members.hasPrevious()}" th:href="@{/admin/info/members(page=${members.number - 1}, size=${members.size}, sort=${param.sort})}">이전</a>
-        <span th:unless="${members.hasPrevious()}">이전</span>
+        <a th:if="${members.hasPrevious()}" th:href="@{/admin/info/members(page=${members.number - 1}, size=${members.size}, sort=${param.sort}, searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}">이전</a>
+        <a th:unless="${members.hasPrevious()}" class = "disabled">이전</a>
 
         <!--/* 페이지 번호 목록 (10개씩) */-->
-        <span th:with="start=${(members.number / 10) * 10}, end=${members.totalPages > 10 ? (((members.number / 10) * 10 + 9) > members.totalPages - 1 ? members.totalPages -1 : (members.number / 10) * 10 + 9) : members.totalPages - 1}">
-            <span th:each="page : ${#numbers.sequence(start, end)}">
-                <a th:if="${page != members.number}" th:href="@{/admin/info/members(page=${page}, size=${members.size}, sort=${param.sort})}" th:text="${page + 1}"></a>
-                <span th:if="${page == members.number}" th:text="${page + 1}" class="current-page"></span>
-            </span>
-        </span>
+        <th:block th:with="start=${(members.number / 10) * 10}, end=${members.totalPages > 10 ? (((members.number / 10) * 10 + 9) > members.totalPages - 1 ? members.totalPages -1 : (members.number / 10) * 10 + 9) : members.totalPages - 1}">
+            <th:block th:each="page : ${#numbers.sequence(start, end)}">
+                <a th:if="${page != members.number}" th:href="@{/admin/info/members(page=${page}, size=${members.size}, sort=${param.sort}, searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}" th:text="${page + 1}"></a>
+                <a th:if="${page == members.number}" th:text="${page + 1}" class="current-page"></a>
+            </th:block>
+        </th:block>
 
         <!--/* 다음 페이지 */-->
-        <a th:if="${members.hasNext()}" th:href="@{/admin/info/members(page=${members.number + 1}, size=${members.size}, sort=${param.sort})}">다음</a>
-        <span th:unless="${members.hasNext()}">다음</span>
+        <a th:if="${members.hasNext()}" th:href="@{/admin/info/members(page=${members.number + 1}, size=${members.size}, sort=${param.sort}, searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}">다음</a>
+        <a th:unless="${members.hasNext()}" class = "disabled">다음</a>
 
         <!--/* 마지막 페이지 */-->
-        <a th:if="${members.number < members.totalPages -1}" th:href="@{/admin/info/members(page=${members.totalPages - 1}, size=${members.size}, sort=${param.sort})}">마지막</a>
-        <span th:unless="${members.number < members.totalPages -1}">마지막</span>
+        <a th:if="${members.number < members.totalPages -1}" th:href="@{/admin/info/members(page=${members.totalPages - 1}, size=${members.size}, sort=${param.sort}, searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}">마지막</a>
+        <a th:unless="${members.number < members.totalPages -1}" class = "disabled">마지막</a>
     </div>
-    
+
     <div class="button-container">
         <a href="/admin/info/main" class="main-button">메인화면으로</a>
     </div>

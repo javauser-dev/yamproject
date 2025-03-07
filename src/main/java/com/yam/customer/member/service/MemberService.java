@@ -163,5 +163,52 @@ public class MemberService {
  	
  	public Page<Member> findAllMembersSortById(Pageable pageable) { // 반환 타입 변경, 파라미터 추가
         return memberRepository.findAll(pageable);
-     }
+    }
+ 	
+ 	public Page<Member> searchMembers(String searchType, String searchKeyword, Pageable pageable) {
+        if ("id".equals(searchType)) {
+            return memberRepository.findByCustomerIdContaining(searchKeyword, pageable);
+        } else if ("nickname".equals(searchType)) {
+            return memberRepository.findByCustomerNicknameContaining(searchKeyword, pageable);
+        } else { // "all" 또는 다른 잘못된 값이 들어온 경우
+            // ID와 닉네임 양쪽에서 검색
+            return memberRepository.findByCustomerIdContainingOrCustomerNicknameContaining(searchKeyword, searchKeyword, pageable);
+        }
+    }
+ 	
+ 	public void adminUpdateNickname(String customerId, String newNickname) {
+        Member member = memberRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+        member.setCustomerNickname(newNickname);
+        // memberRepository.save(member); // @Transactional에 의해 자동 저장
+    }
+     
+    public void adminUpdateEmail(String customerId, String newEmail) {
+        Member member = memberRepository.findById(customerId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+        member.setCustomerEmail(newEmail);
+    }
+     
+    public void adminUpdateProfileImage(String customerId, String imageUrl) {
+        Member member = memberRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+        member.setCustomerProfileImage(imageUrl);
+        // @Transactional에 의해 자동 저장
+    }
+    
+    // 닉네임 중복 확인
+    public boolean adminIsNicknameDuplicated(String nickname) {
+        return memberRepository.existsByCustomerNickname(nickname);
+    }
+    
+    public void adminUpdatePassword(String customerId, String newPassword) {
+        Member member = memberRepository.findById(customerId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다. id=" + customerId));
+
+        member.setCustomerPassword(newPassword);
+        // memberRepository.save(member); // @Transactional에 의해 자동 저장
+    }
 }
