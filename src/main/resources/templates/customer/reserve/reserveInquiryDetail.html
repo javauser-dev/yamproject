@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 상세 정보</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveInquiryDetail.css}">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7889ae8e7bccb3ae39749e54079e3019&libraries=services"></script>
+    <script th:src="@{/js/customer/reserve/reserveInquiryDetail.js}"></script>
+    <!-- Google Fonts (선택 사항) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">예약 상세 정보</h1>
+
+        <section class="shop-image-section">
+            <img th:src="@{/upload/shop_default.jpg}" alt="매장 사진" class="shop-image">
+        </section>
+
+        <section class="reserve-info-section">
+            <h2>예약 정보</h2>
+            <table class="reserve-table">
+               <thead>
+                <tr>
+                    <th>예약 번호</th>
+                    <th>가게 이름</th>
+                    <th>예약 날짜</th>
+                    <th>예약 시간</th>
+                    <th>인원 수</th>
+                    <th>예약금</th>
+                </tr>
+                </thead>
+               <tbody>
+                <tr>
+                    <td th:text="${reserve.id}"></td>
+                    <td th:text="${reserve.shop.shopName}"></td>
+                    <td th:text="${#temporals.format(reserve.reserveDate, 'yyyy.MM.dd')}"></td>
+                    <td th:text="${#temporals.format(reserve.reserveTime, 'HH:mm')}"></td>
+                    <td th:text="${reserve.guestCount} + '명'"></td>
+                    <td th:text="${reserve.deposit} + '원'"></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="shop-info-section">
+            <h2>매장 정보</h2>
+             <div class="shop-details">
+                <div><span class="info-label">전화번호:</span> <span th:text="${reserve.shop.shopPhone}" class="info-value"></span></div>
+                <div><span class="info-label">매장 설명:</span> <span th:text="${reserve.shop.shopShortDesc}" class="info-value"></span></div>
+                <div><span class="info-label">운영 시간:</span> <span th:text="|${reserve.shop.shopOpentime} ~ ${reserve.shop.shopClosetime}|" class="info-value"></span></div>
+            </div>
+        </section>
+
+        <section class="location-section">
+            <h2>위치</h2>
+            <div class="address-display">
+                <strong>주소:</strong> <span th:text="${reserve.shop.shopAddress}"></span>
+            </div>
+            <div id="map"></div>
+        </section>
+
+        <div class="button-group">
+            <a th:href="@{/customer/reserve/updateForm(id=${reserve.id})}" class="btn btn-primary">예약 수정</a>
+            <button type="button" th:onclick="'confirmCancel(' + ${reserve.id} + ', ' + ${reserve.reserveCheck} + ')'" class="btn btn-danger">예약 취소</button>
+            <a th:href="@{/customer/reserve/reserveInquiry}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        window.onload = function() {
+          initMap(/*[[${reserve.shop.shopAddress}]]*/ '', /*[[${reserve.shop.shopName}]]*/ '');
+        };
+    /*]]>*/
+    </script>
+</body>
+</html>
