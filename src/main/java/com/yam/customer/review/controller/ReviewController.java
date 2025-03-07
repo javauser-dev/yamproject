@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +26,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor 
 @RequestMapping("/review")
 public class ReviewController {
-
+	
+	@Autowired
     private final ReviewService reviewService;
 
     // 파일 업로드 경로 (application.properties에 설정된 값)

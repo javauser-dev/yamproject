@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,14 +64,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getReviewList(Sort sort) {
-        return reviewRepository.findAll(sort);
+    public List<Review> getReviewList() {
+        return reviewRepository.findAll();
     }
 
     @Override
     public List<Review> searchReviews(String keyword, String searchType) {
         if ("tag".equalsIgnoreCase(searchType)) {
-            return reviewRepository.findByTagContaining(keyword);
+            return reviewRepository.findByTagsContaining(keyword);
         } else {
             return reviewRepository.findByStoreNameContainingOrContentContaining(keyword, keyword);
         }

@@ -12,5 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByStoreNameContainingOrContentContaining(String storeName, String content);
 
     // 태그 검색: 태그에 키워드 포함
-    List<Review> findByTagContaining(String tag);
+    List<Review> findByTagsContaining(String tag);
+
 }

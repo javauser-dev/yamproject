@@ -1,4 +1,4 @@
-package com.yam.customer.review.domain;
+ package com.yam.customer.review.domain;
 
 import java.time.LocalDateTime;
 

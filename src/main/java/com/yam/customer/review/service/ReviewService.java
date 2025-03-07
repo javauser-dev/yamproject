@@ -75,8 +75,6 @@ public class ReviewService {
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
-
 import com.yam.customer.review.domain.Review;
 
 
@@ -94,8 +92,8 @@ public interface ReviewService {
     // 리뷰 삭제
     void deleteReview(Long id);
 
-    // 정렬 옵션에 따른 전체 리뷰 목록 조회
-    List<Review> getReviewList(Sort sort);
+    // 전체 리뷰 목록 조회 (정렬 조건 없이 전체 조회)
+    List<Review> getReviewList();
 
     // 검색: searchType이 "tag"이면 태그 검색, 그 외는 단어(매장명, 내용) 검색
     List<Review> searchReviews(String keyword, String searchType);
