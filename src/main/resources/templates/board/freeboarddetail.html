@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+   		<link rel="stylesheet" href="/css/board.css">
+		<title>메인화면</title>
+		
+	</head> 
+	<body>
+		<main> 
+	  		<div class="container py-4">
+	  		<!-- 기본 레이아웃 (block.html) - 관리자 아닌 경우만 표시 -->
+            <th:block th:if="${session.userRole != 'ADMIN'}">
+                <div th:replace="template/client/fragments/block :: header"></div>
+            </th:block>
+
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+                <div class="detail-container">
+        <h2 th:text="${board.boardTitle}"></h2>
+
+        <div class="detail-info">
+            <span>작성자: <span th:text="${board.customerId}"></span></span>
+            <span>작성일: <span th:text="${#temporals.format(board.createBoard, 'yyyy-MM-dd HH:mm')}"></span></span>
+            <span>조회수: <span th:text="${board.likeChar}"></span></span>
+        </div>
+
+        <div class="detail-content">
+            <p th:text="${board.boardContent}"></p>
+        </div>
+
+       <div class="button-group">
+    <button id="likeButton" class="like-button">👍 추천 (<span id="likeCount" th:text="${board.likeChar}"></span>)</button>
+    <a href="/board/freeboardList" class="back-button">목록으로</a>
+</div>
+    </div>
+            <footer th:replace="template/client/fragments/adminblock :: footer"></footer>
+    </div>
+    </main>
+    <script th:inline="javascript">
+    document.getElementById("likeButton").addEventListener("click", function() {
+        const boardNumber = /*[[${board.boardNumber}]]*/ null;  // ✅ 안전한 Thymeleaf 변수 사용
+
+        fetch(`/board/like/${boardNumber}`, { method: "POST" })
+        .then(response => response.text())
+        .then(updatedLikes => {
+            document.getElementById("likeCount").innerText = updatedLikes;
+        })
+        .catch(error => console.error("좋아요 요청 오류:", error));
+    });
+</script>
+
+</body>
+</html>
+ 
