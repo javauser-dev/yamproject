@@ -1,89 +1,3 @@
-/*
-package com.yam.store.service;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import com.yam.store.Store;
-import com.yam.store.dto.StoreDTO;
-import com.yam.store.email.controller.StoreRepository;
-
-import jakarta.transaction.Transactional;
-
-@Service
-public class StoreService {
-
-    @Autowired
-    private StoreRepository storeRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder; // 비밀번호 암호화
-
-    @Transactional
-    public void registerStore(StoreDTO storeDTO) {
-        validateStore(storeDTO); // 🔹 유효성 검사 추가
-
-        // 🔹 중복 이메일 체크
-        if (storeRepository.findByEmail(storeDTO.getEmail()).isPresent()) {
-            throw new RuntimeException("이미 존재하는 이메일입니다.");
-        }
-
-        Store store = Store.builder()
-            .name(storeDTO.getName())
-            .email(storeDTO.getEmail())
-            .password(passwordEncoder.encode(storeDTO.getPassword())) // 비밀번호 암호화
-            .phone(storeDTO.getPhone())
-            .businessNumber(storeDTO.getBusinessNumber())
-            .agree(storeDTO.isAgree())
-            .enabled(false) // 이메일 인증 전까지 비활성화
-            .verificationToken(UUID.randomUUID().toString()) // 🔹 이메일 인증 토큰 생성
-            .build();
-
-        storeRepository.save(store);
-
-        // 🔹 이메일 인증 메일 발송
-        sendVerificationEmail(store);
-    }
-
-    // ✅ 이메일 인증 처리 메서드
-    public boolean verifyEmail(String token) {
-        Store store = storeRepository.findByVerificationToken(token);
-
-        if (store != null) {
-            store.setEnabled(true); // 이메일 인증 성공 시 활성화
-            store.setVerificationToken(null); // 인증 후 토큰 삭제
-            storeRepository.save(store);
-            return true;
-        }
-        return false;
-    }
-
-    // 🔹 이메일 발송 메서드 추가
-    private void sendVerificationEmail(Store store) {
-        String subject = "회원가입 이메일 인증";
-        String verificationUrl = "http://localhost:8080/api/store/verify?token=" + store.getVerificationToken();
-        String message = "이메일 인증을 완료하려면 다음 링크를 클릭하세요: " + verificationUrl;
-
-        
-    }
-
-    // ✅ 유효성 검사 메서드
-    private void validateStore(StoreDTO storeDTO) {
-        if (!storeDTO.getName().matches("^[가-힣a-zA-Z]{2,10}$")) {
-            throw new IllegalArgumentException("이름은 2~10자의 한글 또는 영문만 입력 가능합니다.");
-        }
-        if (!storeDTO.getPassword().matches("^.{8,20}$")) {
-            throw new IllegalArgumentException("비밀번호는 8~20자 사이여야 합니다.");
-        }
-        if (!storeDTO.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
-        }
-    }
-}
-*/
-
 package com.yam.store.service;
 
 import java.util.Optional;
@@ -96,8 +10,8 @@ import org.springframework.stereotype.Service;
 import com.yam.store.Store;
 import com.yam.store.dto.StoreDTO;
 import com.yam.store.dto.StoreUpdateDTO;
-import com.yam.store.email.controller.StoreRepository;
-import com.yam.store.email.service.EmailService;
+import com.yam.store.email.service.EmailService2;
+import com.yam.store.repository.StoreRepository;
 import com.yam.store.security.JwtProvider;
 
 import jakarta.transaction.Transactional;
@@ -107,35 +21,44 @@ public class StoreService {
 
     @Autowired
     private StoreRepository storeRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private JwtProvider jwtProvider;
+
     @Autowired
-    private EmailService emailService;
+    private EmailService2 emailService;
 
     // ✅ 사업자 회원가입 (이메일 인증 포함)
     @Transactional
     public void registerStore(StoreDTO storeDTO) {
-        validateStore(storeDTO);
+        validateStore(storeDTO);  // 유효성 검사 호출
 
-        if (storeRepository.findByEmail(storeDTO.getEmail()).isPresent()) {
+        // 이메일 중복 확인
+        if (storeRepository.findByStoreEmail(storeDTO.getStoreEmail()).isPresent()) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
 
+        // 비밀번호 암호화 후 Store 객체 생성
         Store store = Store.builder()
-            .name(storeDTO.getName())
-            .email(storeDTO.getEmail())
-            .password(passwordEncoder.encode(storeDTO.getPassword())) // ✅ 비밀번호 암호화
-            .phone(storeDTO.getPhone())
-            .businessNumber(storeDTO.getBusinessNumber())
-            .agree(storeDTO.isAgree())
-            .enabled(false)
-            .verificationToken(UUID.randomUUID().toString())
-            .build();
+                .storeName(storeDTO.getStoreName())
+                .storeNickname(storeDTO.getStoreNickname())
+                .storeEmail(storeDTO.getStoreEmail())
+                .storePassword(passwordEncoder.encode(storeDTO.getStorePassword()))  // ✅ 비밀번호 암호화
+                .storePhone(storeDTO.getStorePhone())
+                .storeBusinessNumber(storeDTO.getStoreBusinessNumber())
+                .agree(storeDTO.isAgree())
+                .enabled(false)  // 이메일 인증 완료 전까지 비활성화
+                .verificationToken(UUID.randomUUID().toString())  // 인증 토큰 생성
+                .build();
 
+        // DB에 저장
         storeRepository.save(store);
-        emailService.sendVerificationEmail(store.getEmail()); // ✅ 이메일 전송
+
+        // 이메일 인증 메일 발송
+        emailService.sendVerificationEmail(store.getStoreEmail());
     }
 
     // ✅ 이메일 인증 처리
@@ -153,10 +76,9 @@ public class StoreService {
 
     // ✅ 로그인
     public String login(String email, String password) {
-        Store store = storeRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사업자 정보를 찾을 수 없습니다."));
+        Store store = storeRepository.findByStoreEmail(email).orElseThrow(() -> new RuntimeException("사업자 정보를 찾을 수 없습니다."));
 
-        if (!passwordEncoder.matches(password, store.getPassword())) {
+        if (!passwordEncoder.matches(password, store.getStorePassword())) {
             throw new RuntimeException("비밀번호가 틀렸습니다.");
         }
 
@@ -164,89 +86,125 @@ public class StoreService {
             throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
         }
 
-        return jwtProvider.createToken(store.getEmail(), "STORE");
+        return jwtProvider.createToken(store.getStoreEmail(), "STORE");
     }
 
-    // ✅ 사업자 정보 업데이트
-    public boolean updateStoreInfo(StoreUpdateDTO dto) {
-        Optional<Store> storeOptional = storeRepository.findByEmail(dto.getOldEmail());
+    public boolean updateStoreInfo(StoreUpdateDTO dto, String loggedInEmail) {
+        // 로그인된 이메일을 기준으로 사업자 찾기
+        Optional<Store> storeOptional = storeRepository.findByStoreEmail(loggedInEmail);
 
-        if (storeOptional.isPresent()) {
-            Store store = storeOptional.get();
-
-            // ✅ 이메일 변경 (중복 검사 포함)
-            if (!dto.getNewEmail().equals(dto.getOldEmail())) {
-                if (storeRepository.existsByEmail(dto.getNewEmail())) {
-                    return false;
-                }
-                store.setEmail(dto.getNewEmail());
-                store.setEmailVerified(false);
-            }
-
-            // ✅ 비밀번호 암호화 후 저장
-            if (dto.getNewPassword() != null && !dto.getNewPassword().isEmpty()) {
-                store.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-            }
-
-            storeRepository.save(store);
-            return true;
-        }
-        return false;
-    }
-
-    // ✅ 이메일 변경
-    public void updateEmail(String oldEmail, String newEmail, String verificationCode) {
-        Store store = storeRepository.findByEmail(oldEmail)
-                .orElseThrow(() -> new IllegalArgumentException("사업자를 찾을 수 없습니다."));
-
-        if (!emailService.verifyCode(newEmail, verificationCode)) {
-            throw new IllegalArgumentException("인증 코드가 올바르지 않습니다.");
+        if (storeOptional.isEmpty()) {
+            return false; // 사업자를 찾을 수 없음
         }
 
-        if (storeRepository.existsByEmail(newEmail)) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        Store store = storeOptional.get();
+
+        // ✅ 현재 비밀번호 검증 (필수 입력사항)
+        if (dto.getCurrentPassword() == null || dto.getCurrentPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("현재 비밀번호를 입력해야 합니다.");
         }
 
-        store.setEmail(newEmail);
-        storeRepository.save(store);
-    }
-
-    // ✅ 비밀번호 변경
-    public void updatePassword(String email, String currentPassword, String newPassword) {
-        Store store = storeRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사업자를 찾을 수 없습니다."));
-
-        if (!passwordEncoder.matches(currentPassword, store.getPassword())) {
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), store.getStorePassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$")) {
-            throw new IllegalArgumentException("비밀번호는 8~20자의 영문, 숫자, 특수문자를 포함해야 합니다.");
+        // ✅ 새 비밀번호 유효성 검사 (8자리 이상, 영어와 숫자 혼합)
+        if (dto.getNewPassword() != null && !dto.getNewPassword().trim().isEmpty()) {
+            if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+                throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+            }
+
+            // 비밀번호 유효성 검사 (8자리 이상, 숫자와 영어 혼합)
+            String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+            if (!dto.getNewPassword().matches(passwordRegex)) {
+                throw new IllegalArgumentException("새 비밀번호는 8자리 이상이어야 하며, 영어와 숫자가 혼합되어야 합니다.");
+            }
+
+            store.setStorePassword(passwordEncoder.encode(dto.getNewPassword()));
         }
 
-        if (currentPassword.equals(newPassword)) {
-            throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 달라야 합니다.");
+        // ✅ 닉네임 변경 (유효성 검사 추가)
+        if (dto.getNickname() != null && !dto.getNickname().trim().isEmpty()) {
+            store.setStoreNickname(dto.getNickname());
         }
 
-        store.setPassword(passwordEncoder.encode(newPassword));
+        // ✅ 전화번호 유효성 검사 (10자리에서 12자리 숫자만 허용)
+        if (dto.getPhone() != null && !dto.getPhone().trim().isEmpty()) {
+            String phoneRegex = "^\\d{10,12}$";
+            if (!dto.getPhone().matches(phoneRegex)) {
+                throw new IllegalArgumentException("전화번호는 10자리에서 12자리 사이의 숫자만 허용됩니다.");
+            }
+            store.setStorePhone(dto.getPhone());
+        }
+
         storeRepository.save(store);
-    }
-    private void validateStore(StoreDTO storeDTO) {
-        // 사업자명 검증 (비어 있으면 안 됨)
-        if (storeDTO.getName() == null || storeDTO.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("사업자명을 입력해야 합니다.");
-        }
+        return true; // 정보가 성공적으로 업데이트됨
     }
     
-    public StoreService(StoreRepository storeRepository) {
-        this.storeRepository = storeRepository;
+    public void removeStore(String storeEmail) {
+        Optional<Store> storeOptional = storeRepository.findByStoreEmail(storeEmail);
+
+        if (storeOptional.isPresent()) {
+            Store store = storeOptional.get();
+            storeRepository.delete(store);  // 사업자 삭제
+        } else {
+            throw new IllegalArgumentException("사업자를 찾을 수 없습니다.");
+        }
     }
-  
-    public Store findByEmail(String email) {
-        return storeRepository.findByEmail(email).orElse(null);
+
+
+    // ✅ 유효성 검사 메서드
+    private void validateStore(StoreDTO storeDTO) throws IllegalArgumentException {
+        // 이메일 유효성 검사
+        if (storeDTO.getStoreEmail() == null || !isValidEmail(storeDTO.getStoreEmail())) {
+            throw new IllegalArgumentException("유효한 이메일을 입력해 주세요.");
+        }
+
+        // 사업자 번호 유효성 검사
+        if (storeDTO.getStoreBusinessNumber() == null || !isValidBusinessNumber(storeDTO.getStoreBusinessNumber())) {
+            throw new IllegalArgumentException("유효한 사업자 번호를 입력해 주세요.");
+        }
+
+        // 비밀번호 유효성 검사
+        if (storeDTO.getStorePassword() == null || !isValidPassword(storeDTO.getStorePassword())) {
+            throw new IllegalArgumentException("비밀번호는 8~20자여야 합니다.");
+        }
+
+        // 전화번호 유효성 검사
+        if (storeDTO.getStorePhone() == null || !isValidPhone(storeDTO.getStorePhone())) {
+            throw new IllegalArgumentException("전화번호는 숫자만 입력 가능합니다.");
+        }
+
+        // 필수 필드 체크
+        if (storeDTO.getStoreName() == null || storeDTO.getStoreName().isEmpty()) {
+            throw new IllegalArgumentException("매장명을 입력해 주세요.");
+        }
+
+        if (storeDTO.getStoreNickname() == null || storeDTO.getStoreNickname().isEmpty()) {
+            throw new IllegalArgumentException("닉네임을 입력해 주세요.");
+        }
+
+        // 약관 동의 체크
+        if (!storeDTO.isAgree()) {
+            throw new IllegalArgumentException("이용 약관에 동의해야 합니다.");
+        }
     }
-    @Transactional
-    public void save(Store store) {
-        storeRepository.save(store);
+
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        return email != null && email.matches(emailPattern);
     }
+
+    private boolean isValidBusinessNumber(String businessNumber) {
+        return businessNumber != null && businessNumber.length() == 10;
+    }
+
+    private boolean isValidPassword(String password) {
+        return password != null && password.length() >= 8 && password.length() <= 20;
+    }
+
+    private boolean isValidPhone(String phone) {
+        return phone != null && phone.matches("^[0-9]+$");
+    }
+
 }

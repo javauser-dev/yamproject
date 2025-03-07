@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+	<!-- 공통 정보  -->
+	<th:block th:fragment="config">
+		<script src="/assets/js/color-modes.js"></script>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>YAM</title>
+			
+		<link rel="shortcut icon" href="/images/yam.png" />
+		<link rel="apple-touch-icon" href="/images/yam.png" />
+		
+		<link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/jumbotron/">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+		
+		<link href="/assets/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="/css/common.css" rel="stylesheet" />
+		<link href="/css/block.css" rel="stylesheet" />
+		 
+	</th:block>
+	 
+	
+	<!-- 상단 navbar  -->  
+	<th:block th:fragment="header">
+	  <header>
+	    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-2 border-bottom">
+	      <a href="/dashboard" class="d-flex align-items-center link-body-emphasis text-decoration-none">
+	        <span class="fs-4"><img src="/images/yam.png" height="25px" width="25px" /> YAM</span>
+	      </a>
+		
+	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/reserve">예약</a>
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/main">메인페이지</a> 
+	       <a class="me-5 py-2 link-body-emphasis text-decoration-none dropdown-toggle" href="#" role="button" id="boardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+           		게시판
+       		</a>
+        			<ul class="dropdown-menu" aria-labelledby="boardDropdown"> 
+           				 <li><a class="dropdown-item" href="/noticeList">공지사항</a></li> 
+            			<li><a class="dropdown-item" href="/article/freeBoardList">자유게시판</a></li>
+       				</ul>
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/qna">QnA</a> 
+	        <!-- <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Support</a>
+	        <a class="py-2 link-body-emphasis text-decoration-none" href="#">Pricing</a> -->
+	      </nav>
+	      
+	     <!-- 로그인 여부에 따라 버튼 변경 -->
+      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+		<th:block>
+          <a class="py-2 link-body-emphasis text-decoration-none" href="/logout">로그아웃</a>
+        </th:block>
+      </nav>
+	    </div> 
+	  </header>
+	</th:block> 
+	
+	<!-- footer -->
+	<th:block th:fragment="footer">
+		<footer class="pt-3 mt-4 text-body-secondary border-top">
+		<!-- th:fragment 옵션으로 아래 코드의 Fragment의 이름을 선언해주고 공통 레이아웃에서 해당 Fragment명을 호출하여 해당 코드를 불러올수 있다. -->
+		<div class="container text-center">
+			<p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
+				개인정보보호책임자: 김철수 | 이메일 : javauser1234@naver.com | 서울특별시 강남구 테헤란로 14길 6
+			</p><br />
+			&copy; 2025 YAM
+		</div>
+		</footer>
+	</th:block>
+	
+</html> 

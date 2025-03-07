@@ -16,44 +16,67 @@
 		
 		<link href="/assets/dist/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/common.css" rel="stylesheet" />
+		<link href="/css/block.css" rel="stylesheet" />
+		
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Black+And+White+Picture&family=Doto:wght@100..900&family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Rowdies:wght@300;400;700&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		
 	</th:block>
 	
 	<!-- 상단 navbar  -->
-	<th:block th:fragment="header">
+	<th:block th:fragment="header" >
 	  <header>
 	    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-2 border-bottom">
 	      <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
 	        <span class="fs-4"><img src="/images/yam.png" height="25px" width="25px" /> YAM</span>
 	      </a>
-		
+		 
 	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/board/boardList">Home</a>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">Store</a>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">Reservation</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">게시판</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">QnA</a>
-	        <!-- <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Support</a>
-	        <a class="py-2 link-body-emphasis text-decoration-none" href="#">Pricing</a> -->
+       		<a class="me-5 py-2 link-body-emphasis text-decoration-none dropdown-toggle" href="#" role="button" id="boardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+           		게시판
+       		</a>
+        			<ul class="dropdown-menu" aria-labelledby="boardDropdown">  
+           			 <li><a class="dropdown-item" href="/noticeList">공지사항</a></li> 
+            		<li><a class="dropdown-item" href="/article/freeBoardList">자유게시판</a></li>
+       			</ul> 
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/userqna">QnA</a>
 	      </nav>
-	      
+	       
 	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-	    <!--     <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/board/boardList">회원가입</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">로그인</a> -->
-	        <a class="me-4 py-2 link-body-emphasis text-decoration-none" href="#">회원가입</a>
-	        <a class="py-2 link-body-emphasis text-decoration-none" href="#">로그인</a>
-	      </nav>
-	    </div>
+	        <th:block th:if="${session.customerId == null and session.storeId == null}">
+	          <!-- 로그아웃 상태: 로그인 버튼 표시 -->
+	          <a class="py-2 link-body-emphasis text-decoration-none" href="/login">로그인</a>
+	        </th:block>
+	        <th:block th:if="${session.customerId != null or session.storeId != null}">
+	          <!-- 로그인 상태: 로그아웃 버튼 표시 및 마이페이지 추가 -->
+	          <th:block th:if="${session.storeId != null}">
+	            <a class="py-2 link-body-emphasis text-decoration-none" href="/store/mypage">마이페이지</a>
+	          </th:block>
+	          <th:block th:if="${session.customerId != null}">
+	            <a class="py-2 link-body-emphasis text-decoration-none" href="/customer/mypage">마이페이지</a>
+	          </th:block>
+	          <a class="py-2 link-body-emphasis text-decoration-none" href="/logout">로그아웃</a>
+	        </th:block>
+	      </nav> 
+	    </div> 
 	  </header>
 	</th:block>
 	
-	<!-- footer -->
 	<th:block th:fragment="footer">
-		<!-- th:fragment 옵션으로 아래 코드의 Fragment의 이름을 선언해주고 공통 레이아웃에서 해당 Fragment명을 호출하여 해당 코드를 불러올수 있다. -->
-		<div class="container">
-			<p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
+		<footer class="container py-5">
+		  <div class="row">
+		    <div class="col-12 col-md">
+		     <p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
 				개인정보보호책임자: 김철수 | 이메일 : javauser1234@naver.com | 서울특별시 강남구 테헤란로 14길 6
-			</p>
-		</div>
+			</p><br />
+			<p class="text-center">&copy; 2025 YAM</p>
+		    </div>
+		  </div>
+		</footer>
 	</th:block>
-	
-</html> 
+</html>

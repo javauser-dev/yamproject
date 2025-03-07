@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+   		<link rel="stylesheet" href="/css/notice.css">
+		<title>메인화면</title>
+		
+	</head>
+	<body>
+		<main> 
+	  		<div class="container py-4">
+	  		<!-- 기본 레이아웃 (block.html) - 관리자 아닌 경우만 표시 -->
+            <th:block th:if="${session.userRole != 'ADMIN'}">
+                <div th:replace="template/client/fragments/block :: header"></div>
+            </th:block>
+
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+        <h2>공지사항</h2>
+    	<table border="1">
+        <tr> 
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th> 
+        </tr>
+        <tr th:each="notice : ${notices}"> 
+			<td><a th:href="@{/noticeList/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
+            <td th:text="${notice.author}"></td>
+            <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+        </tr>
+    </table>
+    <th:block th:if="${session.userRole == 'ADMIN'}">  
+        <a class="notice-create-button" href="/noticeList/create">공지 작성</a> 
+    </th:block>
+    </div>
+        <footer th:replace="template/client/fragments/adminblock :: footer"></footer> 
+ 		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+ 	</main>
+</body>
+</html>

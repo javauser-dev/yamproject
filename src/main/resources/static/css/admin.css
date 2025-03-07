@@ -1,0 +1,155 @@
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}  
+
+
+
+aside { 
+    width: 200px; 
+    color: white;
+    height: 100vh; 
+    padding: 20px;
+}
+
+ .container {
+    display: flex;  /* 가로 배치 */
+    flex-direction: row;  /* 요소를 좌우 배치 */
+    width: 100%;  /* 전체 너비 */
+    height: 100vh;  /* 화면 전체 높이 */
+
+}
+
+main {
+     flex-grow: 1;  /* 남은 공간을 모두 차지 */
+    padding: 20px;
+}
+
+.stats-container {
+    display: flex;  /* 가로 정렬 */
+    justify-content: space-around; /* 요소 간격 균등 배분 */
+    align-items: center; /* 세로 정렬 */
+    margin-top: 100px;
+    margin-left: 0px;
+}
+ 
+.stat-circle {
+	color : black;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 15px;  
+    text-align: center;
+    padding: 10px;
+}
+
+/*그래프 구현 */
+.charts {
+    display: flex;  
+    justify-content: space-around; /* 양쪽 균등 정렬 */
+    align-items: center; /* 세로 정렬 */
+    gap: 150px; /* 두 그래프 사이 간격 */
+    margin-top: 20px;
+    width: 300px; /* 전체 너비 차지 */
+    
+    
+} 
+
+.charts canvas {
+    height: 300px !important; /*!important = 길이 고정*/
+    max-height: 300px;
+}
+
+
+/* 사이드바 스타일 */
+.sidebar {
+    width: 250px;
+    color: white;
+    padding: 20px; 
+    height: 100vh;
+     margin-left:0px;
+}
+
+/* 프로필 스타일 */
+.profile {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+}
+
+.status-dot {
+    color: green;
+    font-size: 14px;
+}
+
+/* 메뉴 스타일 */
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-item {
+    margin-bottom: 10px;
+}
+
+.menu-item > a {
+    display: block;
+    padding: 10px;
+    background: #444;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu-item > a:hover {
+    background: #555;
+}
+
+/* 소메뉴 스타일 */
+.submenu {
+    list-style: none;
+    padding: 5px 10px;
+    display: none;  /* 기본적으로 숨김 */
+}
+
+.submenu.open {
+    display: block; /* 열리면 표시 */
+}
+
+.submenu li a {
+    display: block;
+    padding: 5px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.submenu li a:hover {
+    color: white;
+}
+
+/* 활성화된 메뉴 */
+.menu-item.active > a {
+    background: #666;
+}
+
+/* 활성화된 소메뉴 */
+.menu-item.active .submenu {
+    display: block;
+}

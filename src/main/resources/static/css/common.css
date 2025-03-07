@@ -1,19 +1,28 @@
-@charset "UTF-8";
+/* @charset "UTF-8";
 
-/* 공통 적용 스타일*/
+공통 적용 스타일
 textarea { resize: none; }
-a{color:black;}
-/* 게시판 적용 스타일 */
+
+게시판 적용 스타일
 .board-table-tr-height{ height:300px; } 
-/* .board-table-height{ height:500px; } */ 
+.board-table-height{ height:500px; } 
+.board-textarea{ resize: none; } 
 .board-msg-default-color{ color:#000099; }
 .board-msg-error-color{ color:red; }  
-.board-required{ color:red; }  
-/* .dateArea {display: none;} */
+.board-required{ color:red; }
 
-/* 댓글 적용 스타일 */
-.cdate{ font-size:12px; }
-.reply-count{ color:red; font-size:12px; }
+댓글 적용 스타일 
+#item-template{ display:none; }
+.reply-count{color: red; font-size: 12px;}
 
-/* clone 대상 적용 스타일*/
-#item-template{display:none;}
+open api 적용 스타일
+#map{ height: 500px; }
+#tourMap{ height: 850px; }
+#media-template{ display:none;}
+
+h3.tour-title{
+	font-family: 'Nanum Gothic', sans-serif; 
+	padding-left:5px;
+} 
+
+ */

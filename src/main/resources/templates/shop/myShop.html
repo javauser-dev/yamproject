@@ -1,0 +1,62 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+ 
+        <div class="container">
+            <button onclick="history.back()">⬅</button>
+
+            <h2 th:text="${shop != null ? shop.shopName : '매장명이 없습니다.'}">매장명</h2>
+
+            <div class="button" onclick="editSignatureMenu()" th:text="${shop != null ? shop.shopSignatureMenu : '시그니처 메뉴가 없습니다.'}">시그니처 대표 메뉴</div>
+
+            <div class="image-box" onclick="document.getElementById('fileUpload').click();">
+                <span th:if="${shop == null or shop.filename == ''}">이미지</span>
+                <img th:if="${shop != null and shop.filename != ''}" th:src="@{/images/{filename}(filename=${shop.filename})}" alt="매장 이미지" width="100%">
+                <img th:if="${shop == null or shop.filename == ''}" th:src="@{/images/default.jpg}" alt="기본 이미지" width="100%">
+            </div>
+
+            <input type="file" id="fileUpload" name="file" style="display: none;" onchange="uploadImage()">
+            
+            <div class="button" onclick="editDescription()" th:text="${shop != null ? shop.shopShortDesc : '매장 설명이 없습니다.'}">매장 간단 설명</div>
+
+            <div>
+            	<p th:text="${shop.shopNo}"></p>  <!-- shopNo가 제대로 출력되는지 확인 -->            
+                <a class="button" th:href="@{/shop/shopDetail.html?id=${shop.shopNo}}">매장 소개</a>
+				<a class="button" href="/shop/menu">메뉴 보기</a>
+				<a class="button" href="/shop/review">리뷰</a>
+				<a class="button" href="/shop/reservation">예약하기</a>
+            </div>
+        </div>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	 <script>
+            function uploadImage() {
+                if (!document.getElementById('fileUpload').files.length) {
+                    alert("이미지를 선택하지 않았습니다.");
+                    return;
+                }
+                alert("이미지를 변경하려면 파일을 업로드하세요.");
+                // 파일 업로드 로직 추가 가능
+            }
+
+            function editSignatureMenu() {
+                let newMenu = prompt("새로운 시그니처 메뉴를 입력하세요:");
+                if (newMenu) {
+                    // AJAX 또는 폼 전송을 통해 서버에 업데이트 요청 가능
+                    alert("변경된 메뉴: " + newMenu);
+                }
+            }
+
+            function editDescription() {
+                let newDesc = prompt("매장 설명을 입력하세요:");
+                if (newDesc) {
+                    alert("변경된 설명: " + newDesc);
+                }
+            }
+
+        </script>
+	</th:block>
+	
+</html>

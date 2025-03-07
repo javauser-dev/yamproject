@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,94 +17,106 @@ import org.springframework.web.bind.annotation.RestController;
 import com.yam.store.Store;
 import com.yam.store.dto.StoreDTO;
 import com.yam.store.dto.StoreUpdateDTO;
+import com.yam.store.repository.StoreRepository;
 import com.yam.store.service.StoreService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/store")
 public class StoreController {
 
 	@Autowired
-    private StoreService storeService;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	private StoreService storeService;
+	
+	@Autowired
+	private StoreRepository storeRepository;
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> registerStore(@RequestBody StoreDTO storeDTO) {
-        try {
-            storeService.registerStore(storeDTO);
-            return ResponseEntity.ok(Collections.singletonMap("message", "회원가입 성공"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "회원가입 실패: " + e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Collections.singletonMap("error", "서버 오류 발생"));
-        }
-    }
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyEmail(@RequestParam String token) {
-        boolean verified = storeService.verifyEmail(token);
-        return verified ? ResponseEntity.ok("이메일 인증 완료!") : ResponseEntity.badRequest().body("이메일 인증 실패!");
-    }
-/*
-    @PostMapping("/update")
-    public ResponseEntity<?> updateStore(@RequestBody StoreUpdateDTO request) {
-        try {
-            if (request.getNewEmail() != null && request.getVerificationCode() != null) {
-                storeService.updateEmail(request.getOldEmail(), request.getNewEmail(), request.getVerificationCode());
-                return ResponseEntity.ok("이메일이 변경되었습니다.");
-            }
+	@PostMapping("/register")
+	public ResponseEntity<Map<String, String>> registerStore(@RequestBody StoreDTO storeDTO) {
+		try {
+			storeService.registerStore(storeDTO);
+			return ResponseEntity.ok(Collections.singletonMap("message", "회원가입 성공"));
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body(Collections.singletonMap("error", "회원가입 실패: " + e.getMessage()));
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(Collections.singletonMap("error", "서버 오류 발생"));
+		}
+	}
 
-            if (request.getCurrentPassword() != null && request.getNewPassword() != null) {
-                if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-                    return ResponseEntity.badRequest().body("새 비밀번호가 일치하지 않습니다.");
-                }
-                storeService.updatePassword(request.getOldEmail(), request.getCurrentPassword(), request.getNewPassword());
-                return ResponseEntity.ok("비밀번호가 변경되었습니다.");
-            }
+	@GetMapping("/verify")
+	public ResponseEntity<String> verifyEmail(@RequestParam String token) {
+		boolean verified = storeService.verifyEmail(token);
+		return verified ? ResponseEntity.ok("이메일 인증 완료!") : ResponseEntity.badRequest().body("이메일 인증 실패!");
+	}
 
-            return ResponseEntity.badRequest().body("잘못된 요청입니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-  */
-    @PostMapping("/update")
-    public ResponseEntity<?> updateStore(@RequestBody StoreUpdateDTO request) {
-        try {
-            // 이메일 변경
-            if (request.getNewEmail() != null) {
-                storeService.updateEmail(request.getOldEmail(), request.getNewEmail(), request.getVerificationCode());
-                return ResponseEntity.ok("이메일이 변경되었습니다.");
-            }
+	@PostMapping("/update")
+	public ResponseEntity<?> updateStore(@RequestBody StoreUpdateDTO request, HttpSession session) {
+	    // 로그인된 사업자 정보 얻기
+	    Store loggedInStore = (Store) session.getAttribute("loggedInStore");
 
-            // 비밀번호 변경
-            if (request.getCurrentPassword() != null && request.getNewPassword() != null) {
-                if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-                    return ResponseEntity.badRequest().body("새 비밀번호가 일치하지 않습니다.");
-                }
-                storeService.updatePassword(request.getOldEmail(), request.getCurrentPassword(), request.getNewPassword());
-                return ResponseEntity.ok("비밀번호가 변경되었습니다.");
-            }
+	    if (loggedInStore == null) {
+	        return ResponseEntity.badRequest().body(new ErrorResponse("로그인이 필요합니다."));
+	    }
 
-            return ResponseEntity.badRequest().body("변경할 정보가 없습니다.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    @PostMapping("/store/edit")
-    public String updateEmail(@RequestParam("newEmail") String newEmail) {
-        // 로그인 구현이 안 됐으므로 임시로 특정 사업자 정보 가져오기
-        Store store = storeService.findByEmail("test@store.com"); // 테스트용 이메일 (나중에 로그인 구현 후 수정)
+	    try {
+	        boolean isUpdated = storeService.updateStoreInfo(request, loggedInStore.getStoreEmail());
 
-        if (store == null) {
-            return "redirect:/error";
-        }
+	        if (isUpdated) {
+	            return ResponseEntity.ok(new SuccessResponse("정보가 성공적으로 업데이트되었습니다."));
+	        } else {
+	            return ResponseEntity.badRequest().body(new ErrorResponse("정보 업데이트 실패!"));
+	        }
+	    } catch (IllegalArgumentException e) {
+	        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+	    }
+	}
 
-        store.setEmail(newEmail);
-        storeService.save(store);
+	// 응답 DTO 클래스
+	class ErrorResponse {
+	    private String message;
 
-        return "redirect:/store/edit?success";
-    }
+	    public ErrorResponse(String message) {
+	        this.message = message;
+	    }
+
+	    public String getMessage() {
+	        return message;
+	    }
+	}
+
+	class SuccessResponse {
+	    private String message;
+
+	    public SuccessResponse(String message) {
+	        this.message = message;
+	    }
+
+	    public String getMessage() {
+	        return message;
+	    }
+	}
+	
+	// Controller 메서드 예시
+	@DeleteMapping("/remove")
+	public ResponseEntity<?> removeStore(HttpSession session) {
+	    // 로그인된 사업자 정보 얻기
+	    Store loggedInStore = (Store) session.getAttribute("loggedInStore");
+
+	    if (loggedInStore == null) {
+	        return ResponseEntity.badRequest().body("로그인이 필요합니다.");
+	    }
+
+	    try {
+	        storeService.removeStore(loggedInStore.getStoreEmail());  // 탈퇴 처리 서비스 호출
+	        session.invalidate();  // 세션 무효화
+	        return ResponseEntity.ok("사업자 탈퇴가 완료되었습니다.");
+	    } catch (Exception e) {
+	        return ResponseEntity.badRequest().body("탈퇴 처리에 실패했습니다. 서버 상태를 확인해주세요.");
+	    }
+	}
+
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+    
+		<title>메인화면</title>
+		
+	</head>
+	<body>
+		<main> 
+	  		<div class="container py-4">
+	  		<!-- 기본 레이아웃 (block.html) - 관리자 아닌 경우만 표시 -->
+            <th:block th:if="${session.userRole != 'ADMIN'}">
+                <div th:replace="template/client/fragments/block :: header"></div>
+            </th:block>
+
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+
+			<!-- 메인 컨텐츠 -->
+	    		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+		    		<div class="ratio ratio-21x9">
+					  <div class="carousel-inner">
+					    <div class="carousel-item active" data-bs-interval="2000">
+					      <img src="images/f1.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f2.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f3.jpg" class="d-block w-100" alt="...">
+					    </div>
+					  </div>
+					</div>
+					  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+					  </button>
+					  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Next</span>
+					  </button>
+				</div>
+
+				<p class="mb-2 text-center">지금바로 예약하기</p>
+
+	    		<div class="row align-items-md-stretch">
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3">
+	    					<h2>게시판 관리</h2>
+	    					<img class="height-70 w-100" alt="매장 매뉴2" src="images/f2.jpg">
+	    					<p>Wine Bar Promotion</p>
+	    					<p>자유 게시판. 입력/수정/삭제 및 댓글 작성까지 처리 완료.</p>
+	    					<button class="btn btn-outline-secondary article" type="button">게시판 리스트</button>
+	    				</div>
+	    			</div>
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 text-bg-dark rounded-3">
+	    					<img class="height-70 w-100" alt="매장 매뉴1" src="images/f1.jpg">
+	    					<h2>갤러리 게시판 관리</h2>
+	    					<p>썸네일 처리 게시판. 입력/수정/삭제 처리 완료. </p>
+	    					<button class="btn btn-outline-light gallery" type="button">갤러리 게시판 리스트</button>
+	    				</div>
+	    			</div>
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3">
+	    					<h2>게시판 관리</h2>
+	    					<p>자유 게시판. 입력/수정/삭제 및 댓글 작성까지 처리 완료.</p>
+	    					<img class="height-70 w-50" alt="매장 매뉴3" src="images/f3.jpg">
+	    					<button class="btn btn-outline-secondary article" type="button">게시판 리스트</button>
+	    				</div>
+	    			</div>
+	    		</div>
+
+	    		<!-- 푸터: 관리자와 사용자 모두 표시 -->
+	    		<div th:replace="template/client/fragments/adminblock :: footer"></div>
+
+			</div>     
+		</main>
+		
+		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/jquery-3.7.1.min.js"></script>
+		<script src="/js/common.js"></script>
+	</body>
+</html>

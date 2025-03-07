@@ -1,44 +1,59 @@
 package com.yam.store.controller;
 
-import java.security.Principal;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.yam.store.Store;
 
-@Controller
-public class StoreViewController {
-    
-	 @GetMapping("/")
-	    public String home() {
-	        return "index"; // "templates/index.html" 반환
-	    }
-	 
-    @GetMapping("/mypage")
-    public String myPage(Model model, @AuthenticationPrincipal Store store) {
-        model.addAttribute("store", store); // 현재 로그인한 사업자 정보 전달
-        return "store/mypage";
-    }
-    
-    @GetMapping("/edit")
-    public String edit(Model model, @AuthenticationPrincipal Store store) {
-        model.addAttribute("store", store); // 현재 로그인한 사업자 정보 전달
-        return "store/edit";
-    }
-    
-    @GetMapping("/login")
-    public String loginPage(@AuthenticationPrincipal Principal principal) {
-        if (principal != null) {
-            return "redirect:/"; // ✅ 이미 로그인된 사용자는 홈으로 리디렉션
-        }
-        return "login"; // ✅ 로그인 페이지 반환 (Thymeleaf 템플릿 경로 확인)
-    }
+import jakarta.servlet.http.HttpSession;
 
-    @GetMapping("/store/store")
-    public String registerPage() {
-        return "store/store"; // 🔥 templates/store/store-register.html 반환
-    }
+@Controller
+@RequestMapping("/store")
+public class StoreViewController {
+
+	@GetMapping("/mypage")
+	public String showMypage(HttpSession session, Model model) {
+	    Store store = (Store) session.getAttribute("loggedInStore");
+
+	    if (store == null) {
+	        System.out.println("로그인된 store가 없습니다.");
+	        return "redirect:/login"; // 로그인 페이지로 리다이렉트
+	    }
+
+	    System.out.println("로그인된 store: " + store.getStoreNickname());
+
+	    // 세션에서 storeNickname을 가져와서 모델에 추가
+	    model.addAttribute("storeNickname", store.getStoreNickname());
+
+	    // 마이페이지로 이동
+	    return "store/mypage"; // Thymeleaf 템플릿 파일 (mypage.html)
+	}
+
+
+
+
+	@GetMapping("/edit")
+	public String showEditPage(HttpSession session, Model model) {
+	    Store store = (Store) session.getAttribute("loggedInStore");
+
+	    // 세션에 store 정보가 있는지 확인
+	    if (store == null) {
+	        System.out.println("세션에 저장된 store 정보가 없습니다.");
+	        return "redirect:/login"; // 로그인 안 된 경우 로그인 페이지로 리다이렉트
+	    }
+
+	    System.out.println("Logged in store email: " + store.getStoreEmail());
+
+	    model.addAttribute("storeEmail", store.getStoreEmail());
+	    return "store/edit"; // 수정 페이지로 리턴
+	}
+
+
+
+	@GetMapping("/signup")
+	public String registerPage() {
+		return "store/signup"; // 🔥 templates/store/store.html 반환
+	}
 }

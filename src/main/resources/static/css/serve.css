@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/*헤더 스타일*/
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: #333;
+    color: white;
+    font-size: 20px;
+}
+
+.heada{
+	font-weight: bold;
+	text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 부모 요소의 색상 유지 */
+    margin-right: 30px;
+}
+.heada:hover{
+	color:yellow;
+}
+/*푸터 스타일*/
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: #333;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+}
+.footerdiv{
+	margin:auto; 
+}
+.carousel-inner{
+	height : 500px;
+}

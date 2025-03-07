@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/admin.css">
+</head> 
+<body>  
+<aside class="sidebar">
+   <div class="profile">
+<img th:src="${admin != null and admin.profileImagePath != null and admin.profileImagePath != '' ? admin.profileImagePath : '/images/default-profile.png'}">
+     <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
+    <h3>Admin<span class="status-dot">•</span></h3> 
+</div>
+   
+    <ul class="menu">
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">사용자 관리</a>
+            <ul class="submenu">
+                <li><a href="#">사업자</a></li>
+                <li><a href="#">회원</a></li>
+                <li><a href="#">탈퇴회원</a></li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">매장 관리</a>
+            <ul class="submenu">
+                <li><a href="#">예약내역</a></li>
+                <li><a href="#">예약취소내역</a></li>
+                <li><a href="#">폐점매장관리</a></li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">게시판 관리</a> 
+            <ul class="submenu">
+                <li><a href="#">공지사항</a></li>
+                <li><a href="#">회원</a></li>
+                <li><a href="#">탈퇴회원</a></li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">Q&A 관리</a>
+            <ul class="submenu">
+                <li><a href="#">메뉴</a></li>
+                <li><a href="#">회원</a></li>
+                <li><a href="#">탈퇴회원</a></li>
+            </ul>
+        </li>
+    </ul> 
+</aside>
+
+<script th:src="@{/js/admin.js}"></script>
+
+</body>
+</html>

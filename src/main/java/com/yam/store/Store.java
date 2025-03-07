@@ -1,10 +1,12 @@
 package com.yam.store;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,44 +29,46 @@ import lombok.ToString;
 @ToString
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name="yam_store")
-@SequenceGenerator(
-		name = "yam_store_generator",
-		sequenceName = "yam_store_seq",
-		initialValue = 1,
-		allocationSize = 1)
+@AllArgsConstructor 
+@Table(name = "yam_store")
+@SequenceGenerator(name = "yam_store_generator", sequenceName = "yam_store_seq", initialValue = 1, allocationSize = 1)
 public class Store {
-	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="yam_store_generator")
-	private Long no;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "yam_store_generator")
+	private Long storeNo;
 	
-	@Column(length=30, unique = true, nullable = false) // ✅ 중복 방지
-    private String businessNumber;
+	@Column(length = 10, nullable = false)
+	private String storeNickname;
 	
-	@Column(length=10, nullable= false)
-	private String name;
-	
-	@Column(length=100, nullable= false)
-	private String password;
-	
-	@Column(length=30, nullable= false)
-	private String phone;
-	
-	@Column(length=50, nullable= false, unique = true)
-	private String email;
-	
-	@Column(length=1, nullable= false)
+	@Column(length = 30, unique = true, nullable = false) // ✅ 중복 방지
+	private String storeBusinessNumber;
+
+	@Column(length = 10, nullable = false)
+	private String storeName;
+
+	@Column(length = 100, nullable = false)
+	private String storePassword;
+
+	@Column(length = 30, nullable = false)
+	private String storePhone;
+
+	@Column(length = 50, nullable = false, unique = true)
+	private String storeEmail;
+
+	@Column(length = 1, nullable = false)
 	private boolean agree;
-	
+
 	@CreationTimestamp
-	@ColumnDefault(value="sysdate")
-	private LocalDateTime subDate;
+	@ColumnDefault(value = "sysdate")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDate storeSubDate;
+
 	
+
 	@Transient
-	private MultipartFile profile;
-	
+	private MultipartFile storeProfile;
+
 	@Column
 	@Builder.Default
 	private String filename = "";

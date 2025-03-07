@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <link rel="stylesheet" href="/css/notice.css">
+    <title>공지사항 수정</title>
+</head> 
+<body>
+    <div class="container notice-edit-container">
+        <h1>공지사항 수정</h1>
+        <form th:action="@{/noticeList/{id}/edit(id=${notice.noticeId})}" method="post">
+            <label for="title">제목</label>
+            <input type="text" id="title" name="title" th:value="${notice.title}" required>
+
+            <label for="content">내용</label>
+            <textarea id="content" name="content" required th:text="${notice.content}"></textarea>
+
+            <div class="button-group">
+                <button type="submit" class="save-btn">저장</button>
+                <a href="/noticeList" class="cancel-btn">취소</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+   
