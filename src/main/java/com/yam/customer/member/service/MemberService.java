@@ -26,6 +26,7 @@ public class MemberService {
 	private final WithdrawnMemberRepository withdrawnMemberRepository;
 	private LocalDateTime lastDeletionCheckTime = LocalDateTime.now(); // 마지막으로 확인한 시간을 기록
 
+	@Transactional
 	public void signup(MemberSignupRequest request) {
 		// MemberSignupRequest -> Member 엔티티로 데이터 복사
 		Member member = new Member();
@@ -38,8 +39,10 @@ public class MemberService {
 		member.setCustomerBirthDate(request.getCustomerBirthDate());
 		member.setCustomerGender(request.getCustomerGender());
 		member.setCustomerApproval("Y");
+		member.setCustomerCreateDate(LocalDateTime.now()); // 🔥 직접 설정
 
 		memberRepository.save(member);
+		memberRepository.flush(); // 🔥 즉시 반영
 	}
 
 	public boolean isCustomerIdDuplicated(String customerId) {

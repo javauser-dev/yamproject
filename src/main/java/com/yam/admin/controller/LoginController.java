@@ -54,18 +54,14 @@ public class LoginController {
 
 		// 관리자 로그인
 		Optional<Admin> adminOpt = adminRepository.findByIdEquals(id);
-		if (adminOpt.isPresent() && adminOpt.get().getPassword().equals(password)) { // 기존 코드 (비암호화 비교)
-			session.setAttribute("adminRole", "ADMIN");
+		if (adminOpt.isPresent() && adminOpt.get().getPassword().equals(password)) {
+			session.setAttribute("userRole", "ADMIN"); // ✅ 변경: session.userRole을 "ADMIN"으로 설정
 			session.setAttribute("adminId", adminOpt.get().getId());
 			session.setAttribute("adminNo", adminOpt.get().getNo());
 
-			// SecurityContext에 ROLE_ADMIN 저장
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					adminOpt.get().getId(), password, List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))); // ROLE_ADMIN
-																											// 설정
+					adminOpt.get().getId(), password, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			System.out.println("🔥 SecurityContext 인증 정보: " + SecurityContextHolder.getContext().getAuthentication());
 
 			response.put("success", true);
 			response.put("role", "ADMIN");
@@ -76,46 +72,42 @@ public class LoginController {
 		// 회원 로그인
 		Optional<Member> userOpt = memberRepository.findByCustomerIdEquals(id);
 		if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getCustomerPassword())) {
-			session.setAttribute("customerRole", "CUSTOMER");
+			session.setAttribute("userRole", "CUSTOMER"); // ✅ 추가
 			session.setAttribute("customerId", userOpt.get().getCustomerId());
 
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 					userOpt.get().getCustomerId(), password, List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			// 🔥 인증 정보 세션에 저장 (추가된 코드)
 			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-			System.out.println("🔥 SecurityContext 인증 정보: " + SecurityContextHolder.getContext().getAuthentication());
 
 			response.put("success", true);
 			response.put("role", "CUSTOMER");
-			response.put("redirect", "/customer/mypage"); // 🔥 로그인 후 바로 마이페이지로 이동
+			response.put("redirect", "/customer/mypage");
 			return ResponseEntity.ok(response);
 		}
 
 		// 사업자 로그인
 		Optional<Store> storeOpt = storeRepository.findByEmailEquals(id);
 		if (storeOpt.isPresent() && passwordEncoder.matches(password, storeOpt.get().getPassword())) {
-			session.setAttribute("storeRole", "STORE");
+			session.setAttribute("userRole", "STORE"); // ✅ 추가
 			session.setAttribute("storeId", storeOpt.get().getEmail());
 
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 					storeOpt.get().getEmail(), password, List.of(new SimpleGrantedAuthority("ROLE_STORE")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			// 🔥 인증 정보 세션에 저장 (추가된 코드)
 			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
 			response.put("success", true);
-			response.put("role", "STORE"); 
+			response.put("role", "STORE");
 			response.put("redirect", "/main");
 			return ResponseEntity.ok(response);
 		}
 
-		// 로그인 실패
 		response.put("success", false);
 		response.put("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
+
 }

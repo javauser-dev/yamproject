@@ -25,9 +25,9 @@ $(document).ready(function() {
         if (customerId === "" || !/^[a-zA-Z0-9]{2,8}$/.test(customerId)) {
            return;
         }
-
+ 
         $.ajax({
-            url: "/customer/checkId",
+            url: "/customer/checkId", 
             type: "GET",
             data: { customerId: customerId },
             success: function(response) {
@@ -190,15 +190,43 @@ $(document).ready(function() {
             error: function() {
                 alert("서버와의 통신 중 오류가 발생했습니다.");
             }
-        });
+        }); 
     });
 
-    // 회원 가입 폼 submit 이벤트 (signupForm에서만)
-    if ($("#signupForm").length > 0) {
-      $("#signupForm").submit(function(event){
-        // ...
-      });
-    }
+	$(document).ready(function () {
+	    $("#signupForm").submit(function (event) {
+	        event.preventDefault();  // 🚨 기본 제출 방지
+
+	        var formData = {
+	            customerId: $("#customerId").val().trim(),
+	            customerPassword: $("#customerPassword").val().trim(),
+	            customerNickname: $("#customerNickname").val().trim(),
+	            customerName: $("#customerName").val().trim(),
+	            customerEmail: $("#customerEmail").val().trim(),
+	            customerBirthDate: $("#customerBirthDate").val().trim(),
+	            customerGender: $("input[name='customerGender']:checked").val()
+	        };
+
+	        console.log("📡 전송 데이터: ", formData); // ✅ 콘솔에서 데이터 확인
+
+	        $.ajax({
+	            type: "POST",
+	            url: "/customer/signup",
+	            contentType: "application/json", // 🚨 JSON 형태로 서버에 전송
+	            data: JSON.stringify(formData),
+	            success: function (response) {
+	                console.log("✅ 회원가입 성공: ", response);
+	                alert("회원가입이 완료되었습니다.");
+	                window.location.href = "/customer/signup-success";  // 성공 시 리디렉션
+	            },
+	            error: function (xhr) {
+	                console.error("🚨 회원가입 실패: ", xhr.responseText);
+	                alert("회원가입에 실패했습니다. 입력값을 확인해주세요.");
+	            }
+	        });
+	    });
+	});
+
 
     // 회원 정보 수정 폼 submit 이벤트 (memberInfoForm에서만)
     if ($("#memberInfoForm").length > 0) {

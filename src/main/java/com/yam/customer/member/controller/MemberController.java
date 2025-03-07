@@ -60,16 +60,15 @@ public class MemberController {
 	@PostMapping("/signup")
 	public String signup(@ModelAttribute("memberSignupRequest") @Valid MemberSignupRequest request,
 			BindingResult bindingResult, Model model, HttpSession session) {
-
 		if (bindingResult.hasErrors()) {
-			return "customer/signup";
+			return "customer/signup"; // 유효성 검증 실패
 		}
 
-		// 이메일 인증 여부 확인.
+		// 이메일 인증 여부 확인
 		Boolean verified = (Boolean) session.getAttribute("verified");
 		if (verified == null || !verified) {
 			model.addAttribute("errorMessage", "이메일 인증이 필요합니다.");
-			return "customer/signup"; // 다시 signup 페이지로
+			return "customer/signup";
 		}
 
 		// 인증된 이메일 주소와 입력한 이메일 주소가 같은지 확인
@@ -81,12 +80,10 @@ public class MemberController {
 
 		try {
 			memberService.signup(request);
-			session.removeAttribute("verified"); // 세션에서 인증 정보 삭제
+			session.removeAttribute("verified");
 			session.removeAttribute("verifiedEmail");
-			// return "redirect:/customer/login";
-			model.addAttribute("customerName", request.getCustomerName()); // 가입자 이름 추가.
-			return "customer/signupSuccess"; // signupSuccess.html로 이동
-
+			model.addAttribute("customerName", request.getCustomerName());
+			return "customer/signupSuccess";
 		} catch (IllegalArgumentException e) {
 			model.addAttribute("errorMessage", e.getMessage());
 			return "customer/signup";

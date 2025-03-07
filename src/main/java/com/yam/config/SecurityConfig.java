@@ -30,19 +30,18 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(authz -> authz
-						.requestMatchers("/api/signup", "/customer/signup", "/store/signup", "/store/register")
+						.requestMatchers("/api/signup", "/customer/signup", "/store/signup", "/store/register",
+								"/customer/checkId", "/customer/checkNickname", "/customer/sendVerificationCode",
+								"/customer/verifyCode", "/login/**", "/customer/signup-success")
 						.permitAll().requestMatchers("/admin/**", "/dashboard/**").hasAuthority("ROLE_ADMIN")
 						.requestMatchers("/store/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STORE")
 						.requestMatchers("/customer/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_CUSTOMER").anyRequest()
 						.permitAll())
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/main").invalidateHttpSession(true)
 						.deleteCookies("JSESSIONID").permitAll())
-				.securityContext(securityContext -> securityContext.requireExplicitSave(false) // ✅ SecurityContext 자동
-				// 저장
-				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // ✅ 로그인
-				// 시 세션
-				// 유지
-				).userDetailsService(userDetailsService).formLogin().disable();
+				.securityContext(securityContext -> securityContext.requireExplicitSave(false))
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+				.userDetailsService(userDetailsService).formLogin().disable();
 
 		return http.build();
 	}

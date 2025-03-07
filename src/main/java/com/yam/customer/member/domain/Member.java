@@ -23,38 +23,38 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "customer_manage")
-@EntityListeners(AuditingEntityListener.class) 
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
 
-    @Id
-    private String customerId;
+	@Id
+	private String customerId;
 
-    @Column(nullable = false, length = 60)
-    private String customerPassword;
+	@Column(nullable = false, length = 60)
+	private String customerPassword;
 
-    @Column(nullable = false)
-    private String customerNickname;
+	@Column(nullable = false)
+	private String customerNickname;
 
-    @Column(nullable = false)
-    private String customerName;
+	@Column(nullable = false)
+	private String customerName;
 
-    @Column(nullable = false)
-    private String customerEmail;
+	@Column(nullable = false)
+	private String customerEmail;
 
-    @Column(nullable = false)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate customerBirthDate;
+	@Column(nullable = false)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate customerBirthDate;
 
-    @Column(nullable = false, length = 1)
-    private String customerGender;
+	@Column(nullable = false, length = 1)
+	private String customerGender;
 
-    @Column(nullable = false)
-    private String customerApproval;
+	@Column(nullable = true)
+	private String customerApproval;
 
-    @Column
-    private String customerProfileImage;
+	@Column
+	private String customerProfileImage;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime customerCreateDate; // 가입일 필드 추가
+	@CreatedDate
+	@Column(updatable = false)
+	private LocalDateTime customerCreateDate; // 가입일 필드 추가
 }
