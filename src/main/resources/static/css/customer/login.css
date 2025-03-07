@@ -1,0 +1,82 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 350px; /* 로그인 폼 너비 조절 */
+    max-width: 90%; /* 최대 너비 (모바일 반응형) */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* 입력 필드 그룹 */
+.form-group {
+    display: flex;         /* Flexbox 사용 */
+    align-items: center;    /* 수직 중앙 정렬 */
+    margin-bottom: 15px;  /* 그룹 간 간격 */
+}
+
+.form-group label {
+    width: 30%;         /* 레이블 너비 */
+    text-align: left;  /* 텍스트 왼쪽 정렬 */
+    margin-right: 10px;   /* 레이블과 입력 필드 사이 간격 */
+    font-weight: bold;    /* (선택 사항) 굵은 글꼴 */
+    flex-shrink: 0;       /* 레이블은 줄어들지 않음 */
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    flex-grow: 1;       /* 남은 공간 채우기 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* 버튼 가운데 정렬 및 가로 배치 */
+.button-container {
+    text-align: center;
+    display: flex;        /* Flexbox 추가 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    gap: 10px;             /* 버튼 사이 간격 */
+}
+
+button[type="submit"],
+button.signup-button { /* 회원가입 버튼에도 동일 스타일 적용 */
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    /* display: inline-block;  <-- flexbox 내에서는 필요 없음 */
+    /* width: auto;  <-- flex item은 기본적으로 내용에 맞게 너비 조정 */
+}
+
+/* 회원가입 버튼에 다른 색상 (선택 사항) */
+button.signup-button {
+    background-color: #28a745; /* 녹색 계열 */
+}
+
+
+/* 에러 메시지 스타일 */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
