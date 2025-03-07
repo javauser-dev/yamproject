@@ -10,7 +10,7 @@ import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
-
+ 
 @Service
 @RequiredArgsConstructor
 public class MemberDetailsService implements UserDetailsService {

@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class CustomUserDetails implements UserDetails {
-
+ 
     private final Member member;
 
     @Override

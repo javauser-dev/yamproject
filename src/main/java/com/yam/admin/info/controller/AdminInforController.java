@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/admin/info") // URL 매핑
 public class AdminInforController {
-
+ 
     private final MemberService memberService;
     
     @GetMapping("/main")

@@ -16,7 +16,7 @@ import com.yam.shop.Shop;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+ 
 @Service
 @RequiredArgsConstructor
 @Transactional //선언적으로 트랜잭션 관리

@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.reserve.domain.CustomerReserve;
-
+ 
 public interface CustomerReserveRepository extends JpaRepository<CustomerReserve, Long> {
 
 	// 가장 최근 예약 ID를 찾는 쿼리 (수정)

@@ -18,7 +18,7 @@ import com.yam.customer.member.vo.MemberSignupRequest;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
+ 
 @Service
 @RequiredArgsConstructor
 @Transactional
