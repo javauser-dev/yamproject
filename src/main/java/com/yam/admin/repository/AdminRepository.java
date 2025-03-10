@@ -25,4 +25,11 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 	@Query("UPDATE Admin a SET a.profileImagePath = :profileImagePath WHERE a.id = :adminId")
 	void updateProfileImage(@Param("adminId") String adminId, @Param("profileImagePath") String profileImagePath);
 
+	// 전체 신규 회원 수
+	@Query(value = "SELECT COUNT(*) FROM CUSTOMER_MANAGE", nativeQuery = true)
+	int countNewUsers();
+
+	// 전체 탈퇴 회원 수
+	@Query(value = "SELECT COUNT(*) FROM WITHDRAWN_CUSTOMER", nativeQuery = true)
+	int countDeletedUsers();
 }

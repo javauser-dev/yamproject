@@ -1,6 +1,8 @@
 package com.yam.admin.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +61,18 @@ public class AdminService {
 			throw new IllegalArgumentException("관리자를 찾을 수 없습니다.");
 		}
 	}
+
+	public Map<String, Integer> getMemberStatistics() {
+		Map<String, Integer> stats = new HashMap<>();
+
+		// 🔹 회원 데이터 조회
+		int newUsers = adminRepository.countNewUsers();
+		int deletedUsers = adminRepository.countDeletedUsers();
+
+		// 🔹 Map에 데이터 저장
+		stats.put("newUsers", newUsers);
+		stats.put("deletedUsers", deletedUsers);
+		return stats;
+	}
+
 }

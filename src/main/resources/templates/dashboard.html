@@ -11,16 +11,19 @@
 <th:block layout:fragment="content">
     <div class="container">
      
-     <div class="content-wrapper2">4444
+     <div class="content-wrapper2">
                 <!-- 사이드바 -->
      <aside class="sidebar" th:replace="template/client/fragments/sidebar :: aside"></aside>
         <div class="content-wrapper">
+        <p>안녕하세요, <span th:text="${session.adminName} ?: '관리자'"></span>님!</p>
             <!-- 메인 콘텐츠 -->
                 <h2>회원 가입/탈퇴 통계</h2>
                 <div class="charts"> 
-                    <canvas id="chart1"></canvas>
-                    <canvas id="chart2"></canvas>
-                </div> 
+				    <canvas id="chart1"></canvas> 
+				    <canvas id="chart2"></canvas>
+				    <canvas id="chart3"></canvas> <!-- 🔹 추가된 도넛 차트 -->
+				</div>  
+ 
                 
                 <div class="stats-container">
                     <div class="stat-circle">3,154 <br> 방문자 수</div>
@@ -29,14 +32,11 @@
                 </div>
         </div>
         </div>
-
-        <!-- 푸터 -->
     </div>
-</th:block>
-<th:block layout:fragment="script">
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script th:src="@{/js/chart.js}"></script>
-    <script th:src="@{/js/admin.js}"></script>
-    </th:block>
-</body>
-</html>
+	</th:block>
+	<th:block layout:fragment="script">
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	    <script th:src="@{/js/chart.js}"></script>
+	    <script th:src="@{/js/admin.js}"></script>
+	    </th:block>
+	</html>

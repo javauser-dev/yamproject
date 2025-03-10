@@ -1,20 +1,20 @@
 
 
-
-
 .content-wrapper2{
 	display: flex;  /* 가로 정렬 */
 	flex-direction: row;  /* 요소를 좌우 배치 */
 	flex:1;
 }
 
-
+ 
 
 aside { 
     width: 200px; 
     color: white;
     height: 100vh; 
     padding: 20px;
+    margin-right : 50px;
+    
 }
 
 
@@ -45,17 +45,17 @@ main {
     font-size: 15px;  
     text-align: center;
     padding: 10px;
+    margin-right : 20px;
 }
 
-/*그래프 구현 */
+/*그래프 구현 */ 
 .charts {
-    display: flex;  
+    display: flex;   
     justify-content: space-around; /* 양쪽 균등 정렬 */
     align-items: center; /* 세로 정렬 */
-    gap: 150px; /* 두 그래프 사이 간격 */
+    gap: 80px; /* 두 그래프 사이 간격 */
     margin-top: 20px;
-    width: 300px; /* 전체 너비 차지 */
-    
+    width: 220px; /* 전체 너비 차지 */
     
 } 
 .charts canvas {
@@ -69,7 +69,6 @@ main {
     color: white;
     padding: 20px; 
     height: 100vh;
-     margin-left:0px;
 }
 
 /* 프로필 스타일 */
@@ -81,7 +80,7 @@ main {
 .profile-img {
     width: 200px;
     height: 200px;
-    border-radius: 50%;
+    border-radius: 50%; 
     cursor: pointer;
     border: 2px solid white;
 }

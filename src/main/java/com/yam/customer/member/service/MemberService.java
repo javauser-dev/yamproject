@@ -2,7 +2,11 @@ package com.yam.customer.member.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +30,6 @@ public class MemberService {
 	private final WithdrawnMemberRepository withdrawnMemberRepository;
 	private LocalDateTime lastDeletionCheckTime = LocalDateTime.now(); // 마지막으로 확인한 시간을 기록
 
-	@Transactional
 	public void signup(MemberSignupRequest request) {
 		// MemberSignupRequest -> Member 엔티티로 데이터 복사
 		Member member = new Member();
@@ -39,10 +42,10 @@ public class MemberService {
 		member.setCustomerBirthDate(request.getCustomerBirthDate());
 		member.setCustomerGender(request.getCustomerGender());
 		member.setCustomerApproval("Y");
-		member.setCustomerCreateDate(LocalDateTime.now()); // 🔥 직접 설정
+
+		member.setCustomerRole("ROLE_CUSTOMER");
 
 		memberRepository.save(member);
-		memberRepository.flush(); // 🔥 즉시 반영
 	}
 
 	public boolean isCustomerIdDuplicated(String customerId) {
@@ -154,5 +157,66 @@ public class MemberService {
 		}
 
 		lastDeletionCheckTime = now; // 마지막 확인 시간 업데이트
+	}
+
+	public List<Member> findAllMembers() {
+		return memberRepository.findAll();
+	}
+
+	public Page<Member> findAllMembersSortById(Pageable pageable) { // 반환 타입 변경, 파라미터 추가
+		return memberRepository.findAll(pageable);
+	}
+
+	public Page<Member> searchMembers(String searchType, String searchKeyword, Pageable pageable) {
+		if ("id".equals(searchType)) {
+			return memberRepository.findByCustomerIdContaining(searchKeyword, pageable);
+		} else if ("nickname".equals(searchType)) {
+			return memberRepository.findByCustomerNicknameContaining(searchKeyword, pageable);
+		} else { // "all" 또는 다른 잘못된 값이 들어온 경우
+			// ID와 닉네임 양쪽에서 검색
+			return memberRepository.findByCustomerIdContainingOrCustomerNicknameContaining(searchKeyword, searchKeyword,
+					pageable);
+		}
+	}
+
+	public void adminUpdateNickname(String customerId, String newNickname) {
+		Member member = memberRepository.findById(customerId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+		member.setCustomerNickname(newNickname);
+		// memberRepository.save(member); // @Transactional에 의해 자동 저장
+	}
+
+	public void adminUpdateEmail(String customerId, String newEmail) {
+		Member member = memberRepository.findById(customerId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+		member.setCustomerEmail(newEmail);
+	}
+
+	public void adminUpdateProfileImage(String customerId, String imageUrl) {
+		Member member = memberRepository.findById(customerId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+
+		member.setCustomerProfileImage(imageUrl);
+		// @Transactional에 의해 자동 저장
+	}
+
+	// 닉네임 중복 확인
+	public boolean adminIsNicknameDuplicated(String nickname) {
+		return memberRepository.existsByCustomerNickname(nickname);
+	}
+
+	public void adminUpdatePassword(String customerId, String newPassword) {
+		Member member = memberRepository.findById(customerId)
+				.orElseThrow(() -> new IllegalArgumentException("해당 회원이 없습니다. id=" + customerId));
+
+		member.setCustomerPassword(newPassword);
+		// memberRepository.save(member); // @Transactional에 의해 자동 저장
+	}
+
+	// ✅ 회원 조회 메서드 (customerId 기준)
+	public Optional<Member> findById(String customerId) {
+		return memberRepository.findById(customerId);
 	}
 }

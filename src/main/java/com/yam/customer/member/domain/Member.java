@@ -48,7 +48,7 @@ public class Member {
 	@Column(nullable = false, length = 1)
 	private String customerGender;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String customerApproval;
 
 	@Column
@@ -57,4 +57,7 @@ public class Member {
 	@CreatedDate
 	@Column(updatable = false)
 	private LocalDateTime customerCreateDate; // 가입일 필드 추가
+
+	@Column(nullable = true, length = 20)
+	private String customerRole = "ROLE_CUSTOMER"; // 🔹 기본값 "ROLE_CUSTOMER" 추가
 }

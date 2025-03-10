@@ -1,8 +1,12 @@
 package com.yam.admin.controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,17 @@ public class AdminController {
 		List<AdminDTO> stats = adminService.getAdminDTO();
 		model.addAttribute("stats", stats);
 		return "dashboard"; // "templates/dashboard/dashboard.html"을 의미
+	}
+
+	@GetMapping("/stats")
+	public ResponseEntity<Map<String, Integer>> getMemberStats() {
+		try {
+			Map<String, Integer> stats = adminService.getMemberStatistics();
+			return ResponseEntity.ok(stats);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyMap());
+		}
 	}
 
 }

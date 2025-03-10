@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="/css/board.css">
+</head>
+<body>
+    <form method="post" th:object="${board}" th:action="@{/board/create}">
+        <div class="form-container"> 
+            <h2>게시글 작성</h2>   
+            
+            <div class="form-group">
+                <label>카테고리:</label>
+                <select th:field="*{boardCategory}">
+                    <option value="자유">자유</option>
+                    <option value="불만">불만</option>
+                    <option value="추천">추천</option>
+                </select> 
+            </div>
+
+            <div class="form-group">
+                <label>닉네임:</label> 
+                <input type="text" th:value="${nickname}" readonly />
+            </div>
+
+            <div class="form-group">
+                <label>제목:</label>
+                <input type="text" th:field="*{boardTitle}" required />
+            </div>
+
+            <div class="form-group">
+                <label>내용:</label>
+                <textarea th:field="*{boardContent}" required></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-button">등록</button>
+                <a href="/board/freeboardList" class="cancel-button">취소</a>
+            </div>
+        </div>
+    </form>
+    <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

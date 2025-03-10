@@ -55,16 +55,25 @@ public class LoginController {
 		// 관리자 로그인
 		Optional<Admin> adminOpt = adminRepository.findByIdEquals(id);
 		if (adminOpt.isPresent() && adminOpt.get().getPassword().equals(password)) {
-			session.setAttribute("userRole", "ADMIN"); // ✅ 변경: session.userRole을 "ADMIN"으로 설정
-			session.setAttribute("adminId", adminOpt.get().getId());
-			session.setAttribute("adminNo", adminOpt.get().getNo());
+			Admin admin = adminOpt.get();
 
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					adminOpt.get().getId(), password, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+			// ✅ 세션에 저장
+			session.setAttribute("userRole", "ADMIN");
+			session.setAttribute("adminId", admin.getId());
+			session.setAttribute("adminNo", admin.getNo());
+			session.setAttribute("adminName", admin.getName()); // ✅ 관리자 이름 추가
+
+			// ✅ 로그 확인
+			System.out.println("✅ 관리자 로그인 성공: " + admin.getName());
+			System.out.println("✅ 세션 값 확인: " + session.getAttribute("adminName"));
+
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getId(),
+					password, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			response.put("success", true);
 			response.put("role", "ADMIN");
+			response.put("adminName", admin.getName());
 			response.put("redirect", "/dashboard");
 			return ResponseEntity.ok(response);
 		}
@@ -72,14 +81,18 @@ public class LoginController {
 		// 회원 로그인
 		Optional<Member> userOpt = memberRepository.findByCustomerIdEquals(id);
 		if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getCustomerPassword())) {
-			session.setAttribute("userRole", "CUSTOMER"); // ✅ 추가
+			session.setAttribute("userRole", "CUSTOMER");
 			session.setAttribute("customerId", userOpt.get().getCustomerId());
 
-			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					userOpt.get().getCustomerId(), password, List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+			String userRole = userOpt.get().getCustomerRole();
+			if (userRole == null || userRole.isEmpty()) {
+				userRole = "ROLE_CUSTOMER"; // 기본값 설정
+			}
 
-			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+					userOpt.get().getCustomerId(), password, List.of(new SimpleGrantedAuthority(userRole)));
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext()); // 🔹 보장
 
 			response.put("success", true);
 			response.put("role", "CUSTOMER");

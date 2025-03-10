@@ -6,14 +6,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -35,6 +39,8 @@ import com.yam.customer.member.vo.EmailVerificationRequest;
 import com.yam.customer.member.vo.MemberSignupRequest; // DTO import
 import com.yam.customer.member.vo.NicknameRequest;
 import com.yam.customer.member.vo.PasswordChangeRequest;
+import com.yam.customer.reserve.domain.CustomerReserve;
+import com.yam.customer.reserve.repository.CustomerReserveRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -47,6 +53,7 @@ public class MemberController {
 
 	private final MemberService memberService;
 	private final EmailService emailService;
+	private final CustomerReserveRepository customerReserveRepository;
 
 	@Value("${file.upload.path}")
 	private String uploadPath; // 상대경로
@@ -60,15 +67,16 @@ public class MemberController {
 	@PostMapping("/signup")
 	public String signup(@ModelAttribute("memberSignupRequest") @Valid MemberSignupRequest request,
 			BindingResult bindingResult, Model model, HttpSession session) {
+
 		if (bindingResult.hasErrors()) {
-			return "customer/signup"; // 유효성 검증 실패
+			return "customer/signup";
 		}
 
-		// 이메일 인증 여부 확인
+		// 이메일 인증 여부 확인.
 		Boolean verified = (Boolean) session.getAttribute("verified");
 		if (verified == null || !verified) {
 			model.addAttribute("errorMessage", "이메일 인증이 필요합니다.");
-			return "customer/signup";
+			return "customer/signup"; // 다시 signup 페이지로
 		}
 
 		// 인증된 이메일 주소와 입력한 이메일 주소가 같은지 확인
@@ -80,10 +88,12 @@ public class MemberController {
 
 		try {
 			memberService.signup(request);
-			session.removeAttribute("verified");
+			session.removeAttribute("verified"); // 세션에서 인증 정보 삭제
 			session.removeAttribute("verifiedEmail");
-			model.addAttribute("customerName", request.getCustomerName());
-			return "customer/signupSuccess";
+			// return "redirect:/customer/login";
+			model.addAttribute("customerName", request.getCustomerName()); // 가입자 이름 추가.
+			return "customer/signupSuccess"; // signupSuccess.html로 이동
+
 		} catch (IllegalArgumentException e) {
 			model.addAttribute("errorMessage", e.getMessage());
 			return "customer/signup";
@@ -163,62 +173,88 @@ public class MemberController {
 
 	@GetMapping("/login")
 	public String showLoginForm() {
-		return "login"; // templates/customer/login.html
+		return "customer/login"; // templates/customer/login.html
 	}
 
 	@GetMapping("/mypage")
-	public String myPage(Model model) {
+	public String myPage(Model model, HttpSession session) {
+		// ✅ 현재 인증된 사용자 가져오기
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		if (authentication == null || !authentication.isAuthenticated()) {
-			System.out.println("🚨 인증 정보 없음! 로그인이 필요함.");
-			return "redirect:/login"; // 로그인 페이지로 리다이렉트
+		if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+			return "redirect:/login"; // 인증되지 않은 경우 로그인 페이지로 이동
 		}
 
-		String customerId = authentication.getName(); // 현재 로그인한 사용자 ID 가져오기
+		String customerId = (String) session.getAttribute("customerId");
+
+		// ✅ principal이 UserDetails이면 ID 가져오기
+		if (authentication.getPrincipal() instanceof UserDetails) {
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+			customerId = userDetails.getUsername();
+		} else if (authentication.getPrincipal() instanceof String) {
+			// principal이 String인 경우 (일반적으로 익명 사용자)
+			customerId = (String) authentication.getPrincipal();
+		}
+
+		if (customerId == null) {
+			return "redirect:/login";
+		}
+
+		// ✅ 데이터베이스에서 회원 정보 조회
 		Member member = memberService.getMemberById(customerId);
-
 		if (member == null) {
-			return "redirect:/login"; // 회원 정보가 없으면 로그인 페이지로
+			return "redirect:/login"; // 회원 정보를 찾을 수 없는 경우 로그인 페이지로 이동
 		}
 
-		String profileImageUrl = member.getCustomerProfileImage();
-		if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-			profileImageUrl = "/upload/customer_image_default.png";
-		}
+		// ✅ 프로필 이미지 설정
+		String profileImageUrl = (member.getCustomerProfileImage() == null
+				|| member.getCustomerProfileImage().isEmpty()) ? "/upload/customer_image_default.png"
+						: member.getCustomerProfileImage();
 
+		// ✅ 모델에 회원 정보 추가
 		model.addAttribute("profileImageUrl", profileImageUrl);
-		model.addAttribute("customerNickname", member.getCustomerNickname());
+		model.addAttribute("customerName", member.getCustomerName());
+		// 모델에 데이터 추가
+		model.addAttribute("customerNickname", member.getCustomerNickname()); // ✅ 닉네임 추가
+		model.addAttribute("profileImageUrl", profileImageUrl);
+
+		// ✅ 최근 예약 내역 추가
+		Pageable topThree = PageRequest.of(0, 3);
+		List<CustomerReserve> recentReserves = customerReserveRepository
+				.findTop3ByMemberIdOrderByReserveDateDesc(customerId, topThree);
+		model.addAttribute("recentReserves", recentReserves);
 
 		return "customer/mypage";
 	}
 
 	@GetMapping("/memberInfo")
-	public String showMemberInfo(Model model) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	public String showMemberInfo(HttpSession session, Model model) {
+		// 🔹 1. 세션에서 로그인한 사용자 ID 가져오기
+		String customerId = (String) session.getAttribute("customerId");
 
-		if (authentication == null || !authentication.isAuthenticated()) {
-			System.out.println("🚨 인증 정보 없음! 로그인이 필요함.");
-			return "redirect:/customer/login"; // 로그인 페이지로 리다이렉트
+		if (customerId == null) {
+			return "redirect:/login"; // 로그인되지 않은 경우 로그인 페이지로 이동
 		}
 
-		String customerId = authentication.getName(); // 현재 로그인한 사용자 ID 가져오기
+		// 🔹 2. DB에서 회원 정보 조회
 		Member member = memberService.getMemberById(customerId);
 
-		if (member == null) {
-			return "redirect:/customer/login"; // 회원 정보가 없으면 로그인 페이지로
+		if (member == null) { // 만약 회원 정보가 없다면 (예: 탈퇴한 회원)
+			return "redirect:/login";
 		}
 
+		// 🔹 3. 프로필 이미지 설정 (기본 이미지 적용)
 		String profileImageUrl = member.getCustomerProfileImage();
 		if (profileImageUrl == null || profileImageUrl.isEmpty()) {
-			profileImageUrl = "/upload/customer_image_default.png";
+			profileImageUrl = "/upload/customer_image_default.png"; // 기본 이미지 경로
 		}
 
+		// 🔹 4. 모델에 데이터 추가
 		model.addAttribute("profileImageUrl", profileImageUrl);
-		model.addAttribute("customerNickname", member.getCustomerNickname());
-		model.addAttribute("member", member); // 회원 정보 추가
+		model.addAttribute("member", member); // ✅ `member` 정보를 Thymeleaf에서 사용할 수 있도록 추가
 
-		return "customer/memberInfo"; // 회원 정보 페이지 반환
+		// 🔹 5. 회원 정보 페이지로 이동
+		return "customer/memberInfo"; // templates/customer/memberInfo.html
 	}
 
 	@PostMapping("/updatePassword")
@@ -237,7 +273,7 @@ public class MemberController {
 			// 서비스 계층을 통해 비밀번호 변경
 			memberService.updatePassword(customUserDetails.getMember().getCustomerId(), request.getNewPassword());
 			redirectAttributes.addFlashAttribute("updateSuccess", true);
-			return "redirect:/customer/myPage"; // 성공 시 마이페이지로
+			return "redirect:/customer/mypage"; // 성공 시 마이페이지로
 
 		} catch (Exception e) {
 			// 예외 처리
@@ -264,7 +300,7 @@ public class MemberController {
 		try {
 			memberService.updateNickname(customUserDetails.getMember().getCustomerId(), request.getCustomerNickname());
 			redirectAttributes.addFlashAttribute("updateSuccess", true); // 성공 메시지 추가
-			return "redirect:/customer/myPage"; // 성공 시 마이페이지로 리다이렉트
+			return "redirect:/customer/mypage"; // 성공 시 마이페이지로 리다이렉트
 
 		} catch (Exception e) {
 			// 예외 처리 (로그 기록, 사용자에게 친절한 에러 메시지 표시 등)
@@ -314,7 +350,7 @@ public class MemberController {
 			session.removeAttribute("verifiedEmail");
 
 			redirectAttributes.addFlashAttribute("updateSuccess", true);
-			return "redirect:/customer/myPage";
+			return "redirect:/customer/mypage";
 
 		} catch (Exception e) {
 			Member member = customUserDetails.getMember();
@@ -365,7 +401,7 @@ public class MemberController {
 		memberService.updateProfileImage(customUserDetails.getMember().getCustomerId(), imageUrl);
 
 		redirectAttributes.addFlashAttribute("updateSuccess", true);
-		return "redirect:/customer/myPage";
+		return "redirect:/customer/mypage";
 	}
 
 	@GetMapping("/withdrawalForm")
@@ -379,7 +415,7 @@ public class MemberController {
 			@RequestParam("withdrawalReason") String withdrawalReason, RedirectAttributes redirectAttributes,
 			HttpSession session) {
 
-		String customerId = customUserDetails.getUsername();
+		String customerId = (String) session.getAttribute("customerId");
 
 		try {
 			// withdrawn_customer 테이블로 이동
@@ -392,7 +428,7 @@ public class MemberController {
 			session.invalidate();
 
 			redirectAttributes.addFlashAttribute("message", "회원 탈퇴가 완료되었습니다.");
-			return "redirect:/customer/login"; // 로그인 페이지 또는 메인 페이지
+			return "redirect:/login"; // 로그인 페이지 또는 메인 페이지
 
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴 처리 중 오류가 발생했습니다: " + e.getMessage());

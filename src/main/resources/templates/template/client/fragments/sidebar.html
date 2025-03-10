@@ -8,21 +8,24 @@
 <body>  
 <aside class="sidebar">
    <div class="profile">
-<img th:src="${admin != null and admin.profileImagePath != null and admin.profileImagePath != '' ? admin.profileImagePath : '/images/default-profile.png'}">
+<img class="profile-img" th:src="${admin != null and admin.profileImagePath != null and admin.profileImagePath != '' ? admin.profileImagePath : '/images/default-profile.png'}">
      <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
-    <h3>Admin<span class="status-dot">•</span></h3> 
+    <div class="admin-info">
+    <p id="adminNameDisplay"><span th:text="${session.adminName} ?: '관리자'"></span> 관리자님</p>
+</div>
 </div>
    
     <ul class="menu">
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">사용자 관리</a>
             <ul class="submenu">
-                <li><a href="#">사업자</a></li>
                 <li><a href="#">회원</a></li>
+                <li><a href="#">사업자</a></li>
                 <li><a href="#">탈퇴회원</a></li>
+                <li><a href="#">탈퇴사업자</a></li>
             </ul>
         </li>
-        <li class="menu-item">
+        <li class="menu-item"> 
             <a href="javascript:void(0);" class="menu-toggle">매장 관리</a>
             <ul class="submenu">
                 <li><a href="#">예약내역</a></li>
@@ -33,23 +36,27 @@
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">게시판 관리</a> 
             <ul class="submenu">
-                <li><a href="#">공지사항</a></li>
-                <li><a href="#">회원</a></li>
-                <li><a href="#">탈퇴회원</a></li>
+                <li><a href="/noticeList">공지사항</a></li>
+                <li><a href="#">자유게시판</a></li>
+                <li><a href="#">사업자게시판</a></li>
             </ul>
         </li>
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">Q&A 관리</a>
             <ul class="submenu">
-                <li><a href="#">메뉴</a></li>
-                <li><a href="#">회원</a></li>
-                <li><a href="#">탈퇴회원</a></li>
+                <li><a href="#">Q&A로 이동</a></li>
             </ul>
         </li>
     </ul> 
-</aside>
-
-<script th:src="@{/js/admin.js}"></script>
-
+</aside> 
+	<script th:src="@{/js/admin.js}"></script>
+	<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    const adminName = sessionStorage.getItem("adminName");
+	    if (adminName) {
+	        document.getElementById("adminNameDisplay").innerText = adminName;
+	    }
+	});
+</script>
 </body>
 </html>
