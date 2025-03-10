@@ -15,8 +15,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center; /* 내용 가운데 정렬 */
-    max-width: 500px; /* 최대 너비 제한 */
-    width: 90%; /* 반응형 너비 */
+    max-width: 80vh;
 }
 
 h1 {

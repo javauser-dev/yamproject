@@ -1,19 +1,27 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
+
 <head>
-    <meta charset="UTF-8">
     <title>결제 완료</title>
+    <!-- paymentSuccess.html에만 필요한 CSS가 있다면 여기에 추가 -->
 </head>
+
 <body>
-    <h1>결제가 완료되었습니다.</h1>
-    <p>결제 금액: <span th:text="${deposit}"></span>원</p>
-    <p>resultCode: <span th:text="${resultCode}"></span></p>
-    <p>paymentId: <span th:text="${paymentId}"></span></p>
+<th:block layout:fragment="content">
+    <div class="payment-success-container">  <!-- 전체를 감싸는 div 추가 -->
+        <h1>결제가 완료되었습니다.</h1>
+        <p>결제 금액: <span th:text="${deposit}"></span>원</p>
+        <p>resultCode: <span th:text="${resultCode}"></span></p>
+        <p>paymentId: <span th:text="${paymentId}"></span></p>
 
-     <!-- 예약 페이지로 돌아가는 버튼 -->
-    <button onclick="goToReserveForm()">예약 페이지로 이동</button>
+        <!-- 예약 페이지로 돌아가는 버튼 -->
+        <button class="reserve-button" onclick="goToReserveForm()">예약 페이지로 이동</button> <!-- 클래스 추가 -->
+    </div>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/paymentSuccess.css}">
+</th:block>
 
-     <script th:inline="javascript">
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
         function goToReserveForm() {
 
             var shopNo = /*[[${shopNo}]]*/ null;
@@ -32,6 +40,6 @@
             location.href = url; // 현재 페이지에서 바로 이동
         }
     </script>
-
+</th:block>
 </body>
 </html>

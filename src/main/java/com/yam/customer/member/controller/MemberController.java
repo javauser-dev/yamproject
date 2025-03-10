@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +56,9 @@ public class MemberController {
     
     @Value("${file.upload.path}")
     private String uploadPath;  //상대경로
+    
+    // Logger 추가 (Slf4j 사용)
+    private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
     @GetMapping("/signup")
     public String showSignupForm(Model model) {
@@ -114,8 +119,23 @@ public class MemberController {
              return  ResponseEntity.ok("available");
          }
     }
+    
+    // 회원 가입 시 닉네임 중복 검사 (새로운 매핑)
+    @GetMapping("/signCheckNickname")
+    @ResponseBody
+    public ResponseEntity<String> signCheckNickname(@RequestParam("customerNickname") String customerNickname) {
+        // currentCustomerId는 사용하지 않음.
+        boolean isDuplicated = memberService.isCustomerNicknameDuplicated(customerNickname, null);
 
-    @GetMapping("/checkNickname")
+        if (isDuplicated) {
+            return ResponseEntity.ok("duplicated");
+        } else {
+            return ResponseEntity.ok("available");
+        }
+    }
+
+    // 회원 정보 수정 시 닉네임 중복 검사
+    @PostMapping("/checkNickname") // 변경
     @ResponseBody
     public ResponseEntity<String> checkNickname(@RequestParam("customerNickname") String customerNickname,
             @RequestParam(value = "currentCustomerId", required = false) String currentCustomerId) {
@@ -231,30 +251,37 @@ public class MemberController {
      }
      
      @PostMapping("/updatePassword")
-     public String updatePassword(@ModelAttribute("passwordChangeRequest") @Valid PasswordChangeRequest request, //DTO 사용
+     public String updatePassword(@ModelAttribute("passwordChangeRequest") @Valid PasswordChangeRequest request,
                                    BindingResult bindingResult,
                                    @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                    RedirectAttributes redirectAttributes,
                                     Model model) {
 
+         // 1. 유효성 검사
          if (bindingResult.hasErrors()) {
-              Member member = customUserDetails.getMember();
+             Member member = customUserDetails.getMember(); // 또는 memberService에서 다시 조회
              model.addAttribute("member", member);
-             return "customer/memberInfo"; // 유효성 검사 실패 시
+
+             return "customer/memberInfo"; // 다시 회원 정보 페이지로
          }
 
+         // 2. 사용자 ID 가져오기
+         String customerId = customUserDetails.getUsername();
+
+         // 3. 비밀번호 변경
          try {
-             // 서비스 계층을 통해 비밀번호 변경
-             memberService.updatePassword(customUserDetails.getMember().getCustomerId(), request.getNewPassword());
-             redirectAttributes.addFlashAttribute("updateSuccess", true);
-             return "redirect:/customer/myPage"; // 성공 시 마이페이지로
+             memberService.updatePassword(customerId, request.getNewPassword());
+             redirectAttributes.addFlashAttribute("updateSuccess", true); // 성공 메시지 (선택 사항)
+
+             return "redirect:/customer/myPage"; // 성공 -> 마이페이지로 리다이렉트
 
          } catch (Exception e) {
-           // 예외 처리
-             model.addAttribute("errorMessage", "비밀번호 변경 중 오류 발생: " + e.getMessage());
-             Member member = customUserDetails.getMember();
+             // 예외 처리
+             logger.error("Error updating password for user {}: {}", customerId, e.getMessage(), e);
+             Member member = customUserDetails.getMember(); // 또는 memberService에서 다시 조회
              model.addAttribute("member", member);
-             return "customer/memberInfo";
+             model.addAttribute("errorMessage", "비밀번호 변경 중 오류가 발생했습니다."); // 에러 메시지
+             return "customer/memberInfo"; // 실패 -> 다시 회원 정보 페이지로
          }
      }
      

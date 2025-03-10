@@ -3,6 +3,7 @@ package com.yam.customer.reserve.service;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yam.customer.reserve.domain.ReservationPayment;
@@ -41,8 +42,8 @@ public class PaymentService {
         reservationPaymentRepository.save(payment);
     }
     
-    // 환불 처리 메서드 추가
-    @Transactional
+    // 환불 처리 메서드 (트랜잭션 전파 설정 변경)
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // 또는 Propagation.REQUIRED
     public void processRefund(Long customerReserveId) {
         // 1. customerReserveId를 사용하여 ReservationPayment 조회
         ReservationPayment payment = reservationPaymentRepository.findByCustomerReserveId(customerReserveId);

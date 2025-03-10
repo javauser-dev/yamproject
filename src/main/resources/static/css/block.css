@@ -1,50 +1,50 @@
-        /* 기본적으로 메뉴를 숨김 */
-        .board-menu {
-            display: flex;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            gap: 15px;
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            visibility: hidden;
-        }
+/* 기본적으로 메뉴를 숨김 */
+.board-menu {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 15px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    visibility: hidden;
+}
 
-        /* 활성화되면 나타나는 효과 */
-        .board-menu.active {
-            opacity: 1;
-            transform: translateX(0);
-            visibility: visible;
-        }
+/* 활성화되면 나타나는 효과 */
+.board-menu.active {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+}
 
-        /* 가로 정렬 스타일 */
-        .board-menu li {
-            display: inline-block;
-            background: #3498db;
-            padding: 10px 15px;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+/* 가로 정렬 스타일 */
+.board-menu li {
+    display: inline-block;
+    background: #3498db;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
 
-        .board-menu li:hover {
-            background: #2980b9;
-        }
+.board-menu li:hover {
+    background: #2980b9;
+}
 
-        /* 버튼 스타일 */
-        #boardToggle {
-            display: inline-block;
-            background: #2ecc71;
-            padding: 10px 15px;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+/* 버튼 스타일 */
+#boardToggle {
+    display: inline-block;
+    background: #2ecc71;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
 
-        #boardToggle:hover {
-            background: #27ae60;
-        }
+#boardToggle:hover {
+    background: #27ae60;
+}

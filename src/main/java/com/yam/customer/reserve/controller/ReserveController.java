@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,10 +30,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yam.customer.reserve.domain.CustomerReserve;
 import com.yam.customer.reserve.repository.CustomerReserveRepository;
+import com.yam.customer.reserve.repository.ShopRepository;
 import com.yam.customer.reserve.service.PaymentService;
 import com.yam.customer.reserve.service.ReserveService;
 import com.yam.customer.reserve.vo.PaymentRequestDto;
 import com.yam.customer.reserve.vo.ReserveRequestDto;
+import com.yam.shop.Shop;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -45,6 +48,7 @@ public class ReserveController {
 
     private final ReserveService reserveService;
     private final CustomerReserveRepository customerReserveRepository;
+    private final ShopRepository shopRepository;
     private final PaymentService paymentService;  // PaymentService 주입
     //private final HttpSession httpSession; // 사용 안하면 제거해도 됨
     private static final Logger logger = LoggerFactory.getLogger(ReserveController.class);
@@ -58,6 +62,14 @@ public class ReserveController {
                               @RequestParam(value = "error", required = false) String error,
                               Model model, // Model 추가
                               HttpSession session) { // Authentication 제거
+    	
+    	// ShopRepository를 사용하여 Shop 엔티티 가져오기
+        Shop shop = shopRepository.findById(shopNo)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매장이 존재하지 않습니다."));
+
+        // 모델에 shopName 추가
+        model.addAttribute("shopName", shop.getShopName());
+
 
         // 세션에 예약 정보 저장 (reserveForm에서도 세션 사용)
         // session.setAttribute("customerId", customerId); // customerId는 reserveForm.js에서 처리
@@ -212,22 +224,31 @@ public class ReserveController {
     public String reserveComplete(HttpSession httpSession, Model model) {
         String merchantPayKey = (String) httpSession.getAttribute("merchantPayKey");
         Integer paymentAmount = (Integer) httpSession.getAttribute("paymentAmount");
-        ReserveRequestDto reserveDto = (ReserveRequestDto) httpSession.getAttribute("reserveDto");
+        ReserveRequestDto reserveRequestDto = (ReserveRequestDto) httpSession.getAttribute("reserveDto");
 
+        // reserveRequestDto가 null인 경우 예외 처리 (세션 만료 등)
+        if (reserveRequestDto == null) {
+            // 적절한 오류 처리 (예: 예약 페이지로 리다이렉트, 오류 메시지 표시)
+             model.addAttribute("errorMessage", "예약 정보가 만료되었습니다.");
+             return "redirect:/customer/reserve/new"; // 또는 다른 적절한 페이지
+        }
+
+         // ShopRepository를 사용하여 Shop 엔티티 가져오기
+        Shop shop = shopRepository.findById(reserveRequestDto.getShopNo())
+                .orElseThrow(() -> new IllegalArgumentException("해당 매장이 존재하지 않습니다."));
+
+
+        // Model에 shopName 추가
+        model.addAttribute("shopName", shop.getShopName());
         model.addAttribute("merchantPayKey", merchantPayKey);
         model.addAttribute("paymentAmount", paymentAmount);
-        model.addAttribute("reserveDto", reserveDto);
+        model.addAttribute("reserveDto", reserveRequestDto); // ReserveRequestDto를 그대로 전달 (또는 필요한 필드만)
 
+        // 세션에서 속성 제거 (필요한 것만)
         httpSession.removeAttribute("paymentSuccess");
         httpSession.removeAttribute("merchantPayKey");
         httpSession.removeAttribute("paymentAmount");
-        //httpSession.removeAttribute("reserveDto"); // 주석 처리
-        httpSession.removeAttribute("shopNo");
-          httpSession.removeAttribute("reserveDate");
-        httpSession.removeAttribute("reserveTime");
-        httpSession.removeAttribute("guestCount");
-        httpSession.removeAttribute("deposit");
-        httpSession.removeAttribute("customerId");  //customerId 삭제
+        httpSession.removeAttribute("reserveDto"); // ReserveRequestDto는 제거 (더 이상 필요 없음)
 
         return "customer/reserve/reserveComplete";
     }
@@ -254,62 +275,6 @@ public class ReserveController {
         }
         return customerId != null ? customerId : ""; // customerId 반환 (없으면 빈 문자열)
     }
-    
-    /*@GetMapping("/reserveInquiry")
-    public String reserveInquiry(Model model, HttpSession session) {
-        String customerId = (String) session.getAttribute("customerId");
-        if (customerId == null || customerId.isEmpty()) {
-             // customerId가 세션에 없으면, Authentication에서 가져와 세션에 저장
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                customerId = userDetails.getUsername();
-                session.setAttribute("customerId", customerId); //세션에도 저장
-            } else {
-              //로그인 되어있지 않으면 로그인 페이지로 리다이렉트
-              return "redirect:/customer/login";
-            }
-        }
-
-        // ReserveService를 사용하여 전체 예약 목록 가져오기
-        List<CustomerReserve> allReserves = reserveService.getAllReservesByCustomerId(customerId); // 메서드 이름 확인
-
-        model.addAttribute("allReserves", allReserves); // 모델에 추가
-        return "customer/reserve/reserveInquiry"; // 뷰 이름
-    }*/
-    
-    /*@GetMapping("/reserveInquiry")
-    public String reserveInquiry(Model model, HttpSession session,
-                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        String customerId = (String) session.getAttribute("customerId");
-        if (customerId == null || customerId.isEmpty()) {
-            // customerId가 세션에 없으면, Authentication에서 가져와 세션에 저장
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                customerId = userDetails.getUsername();
-                session.setAttribute("customerId", customerId); //세션에도 저장
-            } else {
-              //로그인 되어있지 않으면 로그인 페이지로 리다이렉트
-              return "redirect:/customer/login";
-            }
-        }
-
-        // Pageable 객체를 사용하여 예약 목록 가져오기
-        Page<CustomerReserve> allReservesPage = reserveService.getAllReservesByCustomerId(customerId, pageable);
-
-        // 페이징 그룹 정보 계산
-        int currentPage = allReservesPage.getNumber(); // 현재 페이지 (0부터 시작)
-        int totalPages = allReservesPage.getTotalPages();
-        int pageSize = 10; // 한 페이지 그룹에 표시할 페이지 수
-        int startPage = (currentPage / pageSize) * pageSize;  //현재 페이지가 속한 그룹의 첫 페이지
-        int endPage = Math.min(startPage + pageSize - 1, totalPages - 1); //현재 페이지가 속한 그룹의 마지막 페이지
-
-        model.addAttribute("allReserves", allReservesPage);
-        model.addAttribute("startPage", startPage);        //페이지 그룹의 첫 페이지
-        model.addAttribute("endPage", endPage);            //페이지 그룹의 마지막 페이지
-        return "customer/reserve/reserveInquiry";
-    }*/
     
     @GetMapping("/reserveInquiry")
     public String reserveInquiry(Model model, HttpSession session,
@@ -403,8 +368,8 @@ public class ReserveController {
     }
     
     // 예약 취소 처리
-    @Transactional // 트랜잭션 처리
-    @GetMapping("/cancel") // 또는 @PostMapping("/cancel")
+    @Transactional
+    @GetMapping("/cancel")
     public String cancelReserve(@RequestParam("id") Long reserveId, RedirectAttributes redirectAttributes) {
 
         try {
@@ -412,29 +377,38 @@ public class ReserveController {
             CustomerReserve reserve = customerReserveRepository.findById(reserveId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid reserve Id:" + reserveId));
 
-            // 2. 예약 취소 상태로 변경 (reserveCancel = 1)
+            // 2. 예약 취소 상태로 변경
             reserve.setReserveCancel(1);
+            customerReserveRepository.save(reserve); // 여기서 JpaSystemException 발생 가능성
 
-            // 3. 변경 사항 저장
-            customerReserveRepository.save(reserve);
-            
-            // 4. 환불 처리 (PaymentService 호출)
+            // 3. 환불 처리
             try {
                 paymentService.processRefund(reserveId);
             } catch (IllegalArgumentException e) {
-                // 결제 정보가 없는 경우 (환불할 필요 없음)
-                //  - 로그를 남기고, 사용자에게는 예약 취소 메시지만 보여줌
-                logger.warn("결제 정보 없음 (환불 불필요), 예약 ID: {}", reserveId);
-                // redirectAttributes.addFlashAttribute("errorMessage", "결제 정보가 없어 환불 처리되지 않았습니다."); // 필요하다면 추가 메시지.
+                // 결제 정보가 없는 경우 (환불 불필요).  로그만 남기고 계속 진행.
+                logger.warn("No payment info found for reserveId {}.  Refund not needed.", reserveId);
             }
 
             redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
-            return "redirect:/customer/myPage"; // 마이페이지로 리다이렉트
+            return "redirect:/customer/myPage";
 
+        } catch (IllegalArgumentException e) {
+            // 예약 정보가 없거나, 잘못된 ID인 경우
+            logger.error("Invalid reserve Id: {}", reserveId, e);
+            redirectAttributes.addFlashAttribute("errorMessage", "잘못된 예약 ID입니다: " + reserveId);
+            return "redirect:/customer/reserve/reserveInquiry"; // or appropriate error page
+
+        } catch (JpaSystemException e) {
+            // JPA 관련 예외 (데이터베이스 제약 조건 위반, 연결 문제 등)
+            logger.error("JPA error during reserve cancellation for reserveId {}: ", reserveId, e);
+            redirectAttributes.addFlashAttribute("errorMessage", "예약 취소 중 데이터베이스 오류가 발생했습니다.");
+            return "redirect:/customer/reserve/detail?id=" + reserveId;
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "예약 취소 중 오류 발생: " + e.getMessage());
-            return "redirect:/customer/reserve/detail?id=" + reserveId; // 예약 상세로
+            // 기타 예외
+            logger.error("Unexpected error during reserve cancellation for reserveId {}: ", reserveId, e);
+            redirectAttributes.addFlashAttribute("errorMessage", "예약 취소 중 예상치 못한 오류가 발생했습니다.");
+            return "redirect:/customer/reserve/detail?id=" + reserveId;
         }
     }
 }

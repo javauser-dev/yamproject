@@ -1,14 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>회원가입</title>
-    <!-- jQuery CDN -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script th:src="@{/js/customer/signup.js}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/signup.css}">
-</head>
-<body>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
+
+<th:block layout:fragment="content">
     <div class="container">
     <h1>회원가입</h1>
 
@@ -24,38 +17,31 @@
         <div class="form-group">
             <label for="customerPassword">비밀번호:</label>
             <input type="password" id="customerPassword" name="customerPassword" th:field="*{customerPassword}"
-            	   pattern="^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@$!%*?&])[a-zA-Z0-9@$!%*?&]{8,15}$" required/>
-            <span class = "input-info">영문(대소문자), 숫자, 특수문자 포함 8~15글자</span>
-            <span id = "customerPasswordError" class="error-message"></span>
-        </div>       
-        <!-- <div class="form-group">
-            <label for="customerPassword">비밀번호:</label>
-            <input type="password" id="customerPassword" name="customerPassword" th:field="*{customerPassword}"
-            	   pattern="^(?:[a-zA-Z]{8,15}|[0-9]{8,15}|[@$!%*?&]{8,15})$" required/>
+                  pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$" required/>
             <span class = "input-info">영문(대소문자), 숫자, 특수문자, 8~15글자</span>
             <span id = "customerPasswordError" class="error-message"></span>
-        </div> -->
-        <div class="form-group">
-            <label for="customerNickname">닉네임:</label>
-            <input type="text" id="customerNickname" name="customerNickname" th:field="*{customerNickname}"
-            	    th:pattern="'^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣!@#$%^&*()_+=\\-`~{}\\[\\]:;,.<>/?]{2,8}$'" required/>
-            <span class="input-info">영문(대소문자), 숫자, 특수문자, 한글, 2~8글자</span>
-            <span id = "customerNicknameError" class="error-message"></span>
         </div>
+        <div class="form-group">
+		    <label for="customerNickname">닉네임:</label>
+		    <input type="text" id="customerNickname" name="customerNickname" th:field="*{customerNickname}"
+		           pattern="^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{2,8}$" required/>
+		    <span class="input-info">영문(대소문자), 숫자, 한글, 2~8글자</span>
+		    <span id="customerNicknameError" class="error-message"></span>
+		</div>
         <div class="form-group">
             <label for="customerName">이름:</label>
             <input type="text" id="customerName" name="customerName" th:field="*{customerName}"
-            	   pattern="^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{1,18}$" required/>
+                  pattern="^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{1,18}$" required/>
             <span class = "input-info">영문(대소문자), 한글, 1~18글자</span>
             <span id = "customerNameError" class="error-message"></span>
         </div>
 
         <div class="form-group">
-		    <label for="customerEmail">이메일:</label>
-		    <input type="email" id="customerEmail" name="customerEmail" th:field="*{customerEmail}" required/>
-		    <button type="button" id="sendVerificationCodeBtn" class = "form-button">인증번호받기</button>
-		    <span id = "customerEmailError" class="error-message"></span>
-		</div>
+          <label for="customerEmail">이메일:</label>
+          <input type="email" id="customerEmail" name="customerEmail" th:field="*{customerEmail}" required/>
+          <button type="button" id="sendVerificationCodeBtn" class = "form-button">인증번호받기</button>
+          <span id = "customerEmailError" class="error-message"></span>
+      </div>
         <!-- 인증 번호 입력 필드 (처음에는 숨김) -->
         <div id="verificationCodeDiv" style="display: none;" class = "form-group">
             <label for="verificationCode">인증번호:</label>
@@ -71,10 +57,10 @@
             <span th:if="${#fields.hasErrors('customerBirthDate')}" th:errors="*{customerBirthDate}"></span>
         </div>
         <div class="form-group">
-		    <label>성별:</label>
+          <label>성별:</label>
             <label for="male"><input type="radio" id="male" name="customerGender" th:field="*{customerGender}" value="M" required/>남성</label>
-		    <label for="female"><input type="radio" id="female" name="customerGender" th:field="*{customerGender}" value="F" required/>여성</label>
-		</div>
+          <label for="female"><input type="radio" id="female" name="customerGender" th:field="*{customerGender}" value="F" required/>여성</label>
+      </div>
 
          <!-- "회원가입에 동의합니다" 부분 -->
         <div class="form-group agree-group">
@@ -89,10 +75,14 @@
             <button type="submit" class = "form-button">회원가입</button> <!-- form-button 클래스 추가 -->
         </div>
     </form>
-	<!-- 에러 메시지 표시 -->
+   <!-- 에러 메시지 표시 -->
     <div th:if="${errorMessage}" style="color: red;">
         <p th:text="${errorMessage}"></p>
     </div>
 </div>
-</body>
-</html>
+<link rel="stylesheet" th:href="@{/css/customer/signup.css}">
+</th:block>
+<th:block layout:fragment="script">
+ 	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script th:src="@{/js/customer/signup.js}"></script>
+</th:block>

@@ -73,15 +73,16 @@ public class MemberService {
          return memberRepository.findById(customerId).orElse(null);
      }
     
+     @Transactional
      public void updatePassword(String customerId, String newPassword) {
          Member member = memberRepository.findById(customerId)
-                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
+                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + customerId));
 
-         // 비밀번호 암호화 (새 비밀번호가 비어있지 않은 경우)
-         if (newPassword != null && !newPassword.isEmpty()) {
-             member.setCustomerPassword(passwordEncoder.encode(newPassword));
-         }
-         // 변경된 내용은 트랜잭션 내에서 자동으로 저장됨 (save 호출 불필요)
+         // 비밀번호 암호화 (반드시 필요!)
+         String encodedPassword = passwordEncoder.encode(newPassword);
+         member.setCustomerPassword(encodedPassword); // 암호화된 비밀번호 저장
+
+         // memberRepository.save(member); // @Transactional + Dirty Checking으로 자동 저장
      }
      
      public void updateNickname(String customerId, String newNickname) {

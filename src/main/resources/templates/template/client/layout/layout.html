@@ -5,7 +5,7 @@
 	</head>
 	<body>
 		<main>
-	  		<div class="container py-4">
+	  		<div class="container py-4 mb-50">
     			<header class="pb-3 mb-4">
     				<th:block th:insert="~{template/client/fragments/block :: header}"></th:block>
     			</header>
@@ -13,7 +13,8 @@
     			<th:block layout:fragment="content"></th:block>
     		
     			<footer class="pt-3 mt-4 text-body-secondary border-top">
-					&copy; 2025 YAM "Your Awesome Menu"
+					<!-- &copy; 2025 YAM "Your Awesome Menu" -->
+					<th:block th:insert="~{template/client/fragments/block :: footer}"></th:block>
 				</footer>
 			</div>    
 		</main>
@@ -21,7 +22,8 @@
 		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="/js/jquery-3.7.1.min.js"></script>
 		<script src="/js/common.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 		<th:block layout:fragment="script"></th:block>
 	</body>
 </html>
-

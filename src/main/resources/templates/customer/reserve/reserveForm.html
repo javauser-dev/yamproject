@@ -1,27 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
+
 <head>
-    <meta charset="UTF-8">
     <title>예약하기</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveForm.css}">
+    <!-- 여기 필요한 CSS 추가 -->
+
+    <!-- jQuery 추가 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 네이버 페이 SDK 추가 -->
     <script src="https://nsp.pay.naver.com/sdk/js/naverpay.min.js"></script>
-    <!-- reserveForm.js 추가 -->
-    <script th:src="@{/js/customer/reserve/reserveForm.js}"></script>
 
 </head>
+
 <body>
-    <h1>예약 정보</h1>
+<th:block layout:fragment="content">
+	<div class="reserve-form-container">
+     <h1>예약 정보</h1>
 
      <form id="reserveForm">
         <div>
             <label for="customerId">고객 ID:</label>
             <input type="text" id="customerId" name="customerId" th:value="${customerId}" readonly> <!-- customerId는 reserveForm.js에서 처리 -->
         </div>
-        <div>
+        <!-- <div>
             <label for="shopNo">매장 ID:</label>
             <input type="text" id="shopNo" name="shopNo" th:value="${shopNo}" readonly>
-        </div>
+        </div> -->
+        <!-- 매장 번호 (hidden) -->
+        <!-- <input type="hidden" th:field="*{shopNo}" id="shopNo" /> -->
+        <input type="hidden" id="shopNo" name="shopNo" th:value="${shopNo}" />
+        <div>
+		    <label for="shopName">매장 이름:</label>  <!-- 레이블 변경 -->
+		    <input type="text" id="shopName" name="shopName" th:value="${shopName}" readonly> <!-- shopName 사용 -->
+		</div>
         <div>
             <label for="reserveDate">예약 날짜:</label>
             <input type="date" id="reserveDate" name="reserveDate" th:value="${reserveDate}" readonly> <!-- reserveDto.reserveDate -> reserveDate -->
@@ -48,5 +60,10 @@
     </form>
 
     <span id="errorMessage" style="color: red;"></span> <!-- 에러 메시지용 span -->
-</body>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+     <script th:src="@{/js/customer/reserve/reserveForm.js}"></script>
+</th:block>
 </html>

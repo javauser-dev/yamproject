@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
 <head>
     <meta charset="UTF-8">
     <title>회원 탈퇴</title>
 </head>
 <body>
-    <h1>회원 탈퇴</h1>
-    <p>탈퇴 사유를 입력해주세요.</p>
+<th:block layout:fragment="content">
+    <div class="container"> <!-- CSS 클래스 적용 (선택 사항) -->
+        <h1>회원 탈퇴</h1>
+        <p>탈퇴 사유를 입력해주세요.</p>
 
-    <form th:action="@{/customer/withdraw}" method="post">
-        <textarea name="withdrawalReason" rows="5" cols="50" required></textarea><br>
-        <button type="submit">탈퇴</button>
-        <a th:href="@{/customer/memberInfo}"><button type="button">취소</button></a>
-    </form>
+        <form th:action="@{/customer/withdraw}" method="post" id="withdrawalForm">
+            <textarea name="withdrawalReason" rows="5" cols="50" required></textarea><br>
+             <div class="button-wrapper">
+                <button type="submit" class="form-button" onclick="return confirm('정말로 탈퇴하시겠습니까?');">탈퇴</button>
+                <a th:href="@{/customer/memberInfo}"><button type="button" class="form-button">취소</button></a>
+              </div>
+        </form>
+    </div>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/withdrawalForm.css}">
+</th:block>
 </body>
 </html>

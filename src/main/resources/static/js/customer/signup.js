@@ -44,25 +44,17 @@ $(document).ready(function() {
         });
     });
 
-     // 닉네임 중복 검사 (blur 이벤트)
-     $("#customerNickname").blur(function() {
+	// 닉네임 중복 검사 (blur 이벤트) - 회원 가입 페이지
+    $("#customerNickname").blur(function() {
         let customerNickname = $(this).val().trim();
-        if (customerNickname === "" || !/^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣!@#$%^&*()_+=-`~{}\[\]:;,.<>/?]{2,8}$/.test(customerNickname)) {
-              return;
+        if (customerNickname === "" || !/^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{2,8}$/.test(customerNickname)) {
+            return;
         }
 
-        // 회원 정보 수정 페이지에서는 현재 사용자 ID를 함께 보냄
-        let data = { customerNickname: customerNickname };
+        let data = { customerNickname: customerNickname }; // data 객체 생성
 
-        // 현재 customerId 가져오기 (memberInfoForm에서)
-        let currentCustomerId = $("#customerId").val(); // hidden 필드 값
-        if (currentCustomerId) {
-            data.currentCustomerId = currentCustomerId;
-        }
-
-
-        $.ajax({ // checkDuplication 함수 사용 안함
-            url: "/customer/checkNickname",
+        $.ajax({
+            url: "/customer/signCheckNickname", // 변경된 URL
             type: "GET",
             data: data,
             success: function(response) {
@@ -70,7 +62,7 @@ $(document).ready(function() {
                     $("#customerNicknameError").text("중복된 닉네임입니다.");
                     $("#customerNickname").val(""); // 입력 값 지우기
                 } else {
-                    $("#customerNicknameError").text("");
+					$("#customerNicknameError").text("");
                 }
             },
             error: function() {
@@ -79,41 +71,24 @@ $(document).ready(function() {
         });
     });
 	
-	// 비밀번호 실시간 검증(keyup)
-     $("#customerPassword").keyup(function(){
+	// 비밀번호 실시간 검증 (blur 이벤트 사용)
+    $("#customerPassword").blur(function() {
         let customerPassword = $(this).val().trim();
-        let passwordMsg =  $("#customerPasswordError");
-        let passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@$!%*?&])[a-zA-Z0-9@$!%*?&]{8,15}$/;
+        let passwordMsg = $("#customerPasswordError");
+        let passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
 
-        if(customerPassword === ""){
-            passwordMsg.text("");
+        if (customerPassword === "") {
+            passwordMsg.text("필수 입력 항목입니다."); // 빈 문자열일 때 메시지
             return;
         }
 
-        if(!passwordRegex.test(customerPassword)){
+        if (!passwordRegex.test(customerPassword)) {
             passwordMsg.text("비밀번호는 영문자, 숫자, 특수문자를 포함하여 8~15글자여야 합니다.");
-        } else{
+        } else {
             passwordMsg.text("");
         }
     });
 
-    // 비밀번호 실시간 검증(keyup)
-     /*$("#customerPassword").keyup(function(){
-        let customerPassword = $(this).val().trim();
-        let passwordMsg =  $("#customerPasswordError");
-        let passwordRegex = /^(?:[a-zA-Z]{8,15}|[0-9]{8,15}|[@$!%*?&]{8,15})$/;
-
-        if(customerPassword === ""){
-            passwordMsg.text("");
-            return;
-        }
-
-        if(!passwordRegex.test(customerPassword)){
-            passwordMsg.text("비밀번호는 영문자, 숫자, 특수문자 중 하나 이상을 사용하여 8~15글자여야 합니다.");
-        } else{
-            passwordMsg.text("");
-        }
-    });*/
 
    // 이름 실시간 검증(keyup, signupForm에서만)
     if ($("#signupForm").length > 0) {
@@ -214,14 +189,14 @@ $(document).ready(function() {
     // 회원 가입 폼 submit 이벤트 (signupForm에서만)
     if ($("#signupForm").length > 0) {
       $("#signupForm").submit(function(event){
-        // ...
-      });
+
+	  });
     }
 
     // 회원 정보 수정 폼 submit 이벤트 (memberInfoForm에서만)
     if ($("#memberInfoForm").length > 0) {
       $("#memberInfoForm").submit(function(event){
-        // ...
+
       });
     }
 });

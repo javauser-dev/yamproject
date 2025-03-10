@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
 <head>
-    <meta charset="UTF-8">
     <title>예약 변경</title>
     <!-- CSS 파일 링크 -->
     <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/updateForm.css}">
@@ -9,52 +8,54 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="container">
-    <h1>예약 변경</h1>
+<th:block layout:fragment="content">
+    <div class="update-form-container"> <!-- 전체 컨테이너에 클래스 추가 -->
+        <h1>예약 변경</h1>
 
-    <form th:action="@{/customer/reserve/update}" th:object="${reserve}" method="post">
-        <input type="hidden" th:field="*{id}" />
-        <input type="hidden" th:field="*{shop}" />
-        <input type="hidden" th:field="*{deposit}" />
-        <input type="hidden" th:field="*{member.customerId}" />
+        <form th:action="@{/customer/reserve/update}" th:object="${reserve}" method="post">
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{shop}" />
+            <input type="hidden" th:field="*{deposit}" />
+            <input type="hidden" th:field="*{member.customerId}" />
 
-        <table class="reserve-table">
-            <thead>
-            <tr>
-                <th>예약 번호</th>
-                <th>가게 이름</th>
-                <th>예약 날짜</th>
-                <th>예약 시간</th>
-                <th>인원 수</th>
-                <th>예약금</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <!-- 예약 번호 (읽기 전용) -->
-                <td th:text="${reserve.id}" class="read-only"></td>
-                 <!-- 가게 이름 (읽기 전용) -->
-                <td th:text="${reserve.shop.shopName}" class="read-only"></td>
-                <!-- 예약 날짜 (수정 가능) -->
-                <td><input type="date" th:field="*{reserveDate}" required /></td>
-                <!-- 예약 시간 (수정 가능) -->
-                <!-- <td><input type="time" th:field="*{reserveTime}" required /></td> -->
-                <td><input type="time" th:field="*{reserveTime}" required step="1800" /></td>
-                <!-- 인원 수 (수정 가능) -->
-                <td><input type="number" th:field="*{guestCount}" min="1" required /></td>
-                 <!-- 예약금 (읽기 전용) -->
-                <td th:text="${reserve.deposit} + '원'" class="read-only"></td>
-            </tr>
-            </tbody>
-        </table>
+            <table class="reserve-table">
+                <thead>
+                <tr>
+                    <th>예약 번호</th>
+                    <th>가게 이름</th>
+                    <th>예약 날짜</th>
+                    <th>예약 시간</th>
+                    <th>인원 수</th>
+                    <th>예약금</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <!-- 예약 번호 (읽기 전용) -->
+                    <td th:text="${reserve.id}" class="read-only"></td>
+                     <!-- 가게 이름 (읽기 전용) -->
+                    <td th:text="${reserve.shop.shopName}" class="read-only"></td>
+                    <!-- 예약 날짜 (수정 가능) -->
+                    <td><input type="date" th:field="*{reserveDate}" required class="form-control" /></td>
+                    <!-- 예약 시간 (수정 가능) -->
+                    <!-- <td><input type="time" th:field="*{reserveTime}" required /></td> -->
+                    <td><input type="time" th:field="*{reserveTime}" required step="1800" class="form-control"/></td>
+                    <!-- 인원 수 (수정 가능) -->
+                    <td><input type="number" th:field="*{guestCount}" min="1" required class="form-control"/></td>
+                     <!-- 예약금 (읽기 전용) -->
+                    <td th:text="${reserve.deposit} + '원'" class="read-only"></td>
+                </tr>
+                </tbody>
+            </table>
 
-        <div class="button-wrapper">
-            <button type="submit" class="form-button">수정 완료</button>
-            <a th:href="@{/customer/reserve/detail(id=${reserve.id})}">
-                <button type="button" class="form-button back-button">예약정보로 돌아가기</button>
-            </a>
-        </div>
-    </form>
-</div>
+            <div class="button-wrapper">
+                <button type="submit" class="form-button">수정 완료</button>
+                <a th:href="@{/customer/reserve/detail(id=${reserve.id})}">
+                    <button type="button" class="form-button back-button">예약정보로 돌아가기</button>
+                </a>
+            </div>
+        </form>
+    </div>
+</th:block>
 </body>
 </html>

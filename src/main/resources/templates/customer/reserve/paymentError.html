@@ -1,14 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>결제 오류</title>
-</head>
-<body>
-    <h1>결제 오류</h1>
-    <p>결제 처리 중 오류가 발생했습니다.</p>
-    <p>다시 시도해주세요.</p>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
 
-</body>
+<head>
+    <title>결제 오류</title>
+    <!-- paymentError.html에만 필요한 CSS가 있다면 여기에 추가 -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/paymentError.css}">
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="payment-error-container">
+        <h1>결제 오류</h1>
+        <p>결제 중 오류가 발생했습니다.</p>
+
+        <!-- 오류 메시지 (있다면) -->
+        <p th:if="${errorMessage}" th:text="${errorMessage}" class="error-message"></p>
+		<p th:if="${resultCode}" class = "error-message">[[${resultCode}]]</p>
+        <!-- 추가 정보 (필요하다면) -->
+        <!-- <p>자세한 내용은 고객센터에 문의해주세요.</p> -->
+
+        <!-- 다시 시도 버튼 -->
+        <button class="retry-button" onclick="history.back()">이전 페이지로 돌아가기</button>
+    </div>
+</th:block>
 </html>

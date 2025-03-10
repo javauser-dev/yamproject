@@ -18,10 +18,12 @@
 		<link href="/css/common.css" rel="stylesheet" />
 		<link href="/css/block.css" rel="stylesheet" />
 		
+		
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Black+And+White+Picture&family=Doto:wght@100..900&family=Edu+AU+VIC+WA+NT+Pre:wght@400..700&family=Rowdies:wght@300;400;700&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-		
+	
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> 
 	</th:block>
 	
 	<!-- 상단 navbar  -->
@@ -31,66 +33,68 @@
 	      <a href="/" class="d-flex align-items-center link-body-emphasis text-decoration-none">
 	        <span class="fs-4"><img src="/images/yam.png" height="25px" width="25px" /> YAM</span>
 	      </a>
-		
 	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/board/boardList">Home</a>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">Store</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">Reservation</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">게시판</a>
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/shopReserve/shopReserveList">Reservation</a>
+	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/storeCommunity/storeCommunityList">게시판</a>
 	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">QnA</a>
 	        <!-- <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Support</a>
 	        <a class="py-2 link-body-emphasis text-decoration-none" href="#">Pricing</a> -->
 	      </nav>
-	      
 	      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-	    <!--     <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/board/boardList">회원가입</a>
-	        <a class="me-5 py-2 link-body-emphasis text-decoration-none" href="/article/articleList">로그인</a> -->
-	        <a class="me-4 py-4 link-body-emphasis text-decoration-none" href="#">회원가입</a>
-	        <a class="py-4 link-body-emphasis text-decoration-none" href="#">로그인</a>
-	        <!-- 로그인 후 상태 값 변경하는 것 -->
-	        <!-- <a class="py-4 link-body-emphasis text-decoration-none" href="#">마이페이지</a> -->
+	        <th:block th:if="${session.customerId == null and session.storeId == null}">
+	          <!-- 로그아웃 상태: 로그인 버튼 표시 -->
+	          <a class="py-2 link-body-emphasis text-decoration-none" href="/login">로그인</a>
+	        </th:block>
+	        <th:block th:if="${session.customerId != null or session.storeId != null}">
+	          <!-- 로그인 상태: 로그아웃 버튼 표시 및 마이페이지 추가 -->
+	          <th:block th:if="${session.storeId != null}">
+	            <a class="py-2 link-body-emphasis text-decoration-none" href="/store/mypage">마이페이지</a>
+	          </th:block>
+	          <th:block th:if="${session.customerId != null}">
+	            <a class="py-2 link-body-emphasis text-decoration-none" href="/customer/mypage">마이페이지</a>
+	          </th:block>
+	          <a class="py-2 link-body-emphasis text-decoration-none" href="/logout">로그아웃</a>
+	        </th:block>
 	      </nav>
 	    </div>
 	  </header>
 	</th:block>
 	
-	
-	
 	<th:block th:fragment="footer">
-		<footer class="container py-5">
+		<footer class="container text-center py-5"> <!-- text-center 추가 후 변경 적용되나 확인 -->
 		  <div class="row">
-		    <div class="col-12 col-md">
-		     <!--  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mb-2" role="img" viewBox="0 0 24 24"><title>Product</title><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"/></svg> -->
-		     
-		      <small class="d-block mb-3 text-body-secondary">&copy; 2025 YAM</small>
-		    </div>
 		    <div class="col-6 col-md">
-		     <a href="/images/yam.png" /></a>
-		      <h5>Features</h5>
-		      <ul class="list-unstyled text-small">
-		        <li><a class="link-secondary text-decoration-none" href="#">Cool stuff</a></li>
-		      </ul>
-    		</div>
+		     <!--  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mb-2" role="img" viewBox="0 0 24 24"><title>Product</title><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"/></svg> -->
+		      <hr />
+		      <span class="fs-4"><img src="/images/yam.png" height="40px" width="40px" /><br /> YAM</span>
+		      <small class="d-block mb-3 text-body-secondary">
+		      	1170-9910 <br />
+				평일 11:00 - 18:00 / 점심 13:00 - 14:00 / 토요일, 일요일, 공휴일 휴무<br />
+				(주)YAM　대표이사 : 백승민　사업자등록번호 : 193-15-19930 [사업자정보확인]<br />
+				통신판매업신고번호 : 제2025-01053호　주소 : 서울특별시 강남구 테헤란로 14길 6<br />
+				개인정보보호책임자 : 오명민 
+				<br />
+				COPYRIGHT by YAM ALL RIGHT RESERVED
+		      	&copy; 2025 YAM
+		      </small>
+		    </div>
+		   </div>
     	</footer>
 	</th:block>
         
 		<!-- <footer class="pt-3 mt-4 text-body-secondary border-top">
 		th:fragment 옵션으로 아래 코드의 Fragment의 이름을 선언해주고 공통 레이아웃에서 해당 Fragment명을 호출하여 해당 코드를 불러올수 있다.
 		<div class="container text-center">
-			<p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
-				개인정보보호책임자: 김철수 | 이메일 : javauser1234@naver.com | 서울특별시 강남구 테헤란로 14길 6
-			</p>
-			&copy; 2025 YAM
 		</div>
 		</footer> -->
 	</th:block>
 	
 	<!-- <th:block th:fragment="footer">
-		th:fragment 옵션으로 아래 코드의 Fragment의 이름을 선언해주고 공통 레이아웃에서 해당 Fragment명을 호출하여 해당 코드를 불러올수 있다.
+		th:fragment 옵션으로 아래 코드의 Fragment의 이름을 선언해주고 공통 레이아웃에서
+		해당 Fragment명을 호출하여 해당 코드를 불러올수 있다.
 		<div class="container">
-			<p class="text-body-secondary">사업자등록번호: 128-23-45267 | 대표: 홍길동 |
-				개인정보보호책임자: 김철수 | 이메일 : javauser1234@naver.com | 서울특별시 강남구 테헤란로 14길 6
-			</p>
 		</div>
 	</th:block> -->
 	
