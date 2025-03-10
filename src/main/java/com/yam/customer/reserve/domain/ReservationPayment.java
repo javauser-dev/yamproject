@@ -33,7 +33,7 @@ public class ReservationPayment {
     private LocalDateTime paymentDate;
 
     @Column(name = "refund_status", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 1")
-    private int refundStatus; // 1: 환불 미처리, 0: 환불 처리
+    private int refundStatus; // 1: 환불 미처리, 2: 환불 처리
 
     @Column(name = "refund_date")
     private LocalDateTime refundDate;

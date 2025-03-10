@@ -28,6 +28,7 @@ h1 {
 
 /* 테이블 스타일 */
 .reserve-table {
+	margin-top: 20px;
     width: 100%; /* 테이블 너비 */
     border-collapse: collapse;
     table-layout: fixed; /*  고정 테이블 레이아웃 (너비 자동 조절 위해) */
@@ -73,4 +74,27 @@ h1 {
 
 .button-container button:hover {
     background-color: #0056b3; /* 호버 시 더 진한 파란색 */
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    padding: 3px 6px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+.pagination span {
+    padding: 3px 6px;
+    margin: 0 5px;
 }

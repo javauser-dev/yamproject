@@ -20,7 +20,24 @@
   <div class="container">
     <h1>전체 예약 조회</h1>
 
-    <div th:if="${not #lists.isEmpty(allReserves)}">
+    <!-- 검색 폼 -->
+    <form th:action="@{/customer/reserve/reserveInquiry}" method="get">
+      <div>
+        <label for="shopName">가게 이름:</label>
+        <input type="text" id="shopName" name="shopName" th:value="${shopName}">
+
+        <label for="reserveDate">예약 날짜:</label>
+        <input type="date" id="reserveDate" name="reserveDate" th:value="${reserveDate}">
+
+        <button type="submit">검색</button>
+        <a th:href="@{/customer/reserve/reserveInquiry}">
+            <button type="button">초기화</button>  <!-- 검색 초기화 버튼 추가 -->
+        </a>
+      </div>
+
+    </form>
+
+    <div th:if="${allReserves.hasContent()}">
         <table class = "reserve-table">
             <thead>
                 <tr>
@@ -33,7 +50,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="reserve : ${allReserves}">
+                <!-- allReserves.content를 순회 -->
+                <tr th:each="reserve : ${allReserves.content}">
                 	<td>
                 		<a th:href="@{/customer/reserve/detail(id=${reserve.id})}" th:text="${reserve.id}"></a>
                 	</td>
@@ -45,14 +63,34 @@
                 </tr>
             </tbody>
         </table>
+
+        <!-- 페이징 처리 -->
+       <div class="pagination">
+           <!-- 이전 페이지 그룹 -->
+          <span th:if="${startPage > 0}">
+              <a th:href="@{/customer/reserve/reserveInquiry(page=${startPage - 1}, size=${allReserves.size}, shopName=${shopName}, reserveDate=${reserveDate})}">이전</a>
+          </span>
+
+          <!-- 페이지 번호 목록 (현재 그룹) -->
+        <span th:each="pageNumber : ${#numbers.sequence(startPage, endPage)}">
+            <a th:href="@{/customer/reserve/reserveInquiry(page=${pageNumber}, size=${allReserves.size}, shopName=${shopName}, reserveDate=${reserveDate})}"
+               th:text="${pageNumber + 1}"
+               th:class="${pageNumber == allReserves.number} ? 'active'"></a>
+        </span>
+
+           <!-- 다음 페이지 그룹 -->
+          <span th:if="${endPage < allReserves.totalPages - 1}">
+              <a th:href="@{/customer/reserve/reserveInquiry(page=${endPage + 1}, size=${allReserves.size}, shopName=${shopName}, reserveDate=${reserveDate})}">다음</a>
+            </span>
+      </div>
     </div>
 
-     <div th:unless="${not #lists.isEmpty(allReserves)}">
-        <p class = "no-reserves">예약 내역이 없습니다.</p> <!-- 예약 내역이 없을 때 표시할 메시지 -->
+     <div th:unless="${allReserves.hasContent()}">
+        <p class = "no-reserves">예약 내역이 없습니다.</p>
     </div>
 
    <div class="button-container">
-    <a th:href="@{/customer/myPage}"> <!-- 마이페이지로 돌아가는 링크 -->
+    <a th:href="@{/customer/myPage}">
         <button type="button">마이페이지로 돌아가기</button>
     </a>
    </div>

@@ -1,7 +1,9 @@
 package com.yam.customer.reserve.service;
 
-import java.util.List;
+import java.time.LocalDate;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +28,7 @@ public class ReserveService {
     private final CustomerReserveRepository customerReserveRepository;
     private final ShopRepository shopRepository;
     private final MemberRepository memberRepository;
-    private final ReservationPaymentRepository reservationPaymentRepository; // 추가
+    private final ReservationPaymentRepository reservationPaymentRepository;
 
     // 예약 생성 (별도 트랜잭션)
     @Transactional
@@ -64,8 +66,8 @@ public class ReserveService {
         return reserve.getId();
     }
     
-    // 전체 예약 목록 가져오기 (추가)
-    @Transactional(readOnly = true) // 읽기 전용 트랜잭션
+    // 전체 예약 목록 가져오기
+    /*@Transactional(readOnly = true) // 읽기 전용 트랜잭션
     public List<CustomerReserve> getAllReservesByCustomerId(String customerId) {
         // CustomerReserveRepository를 사용하여 전체 예약 목록 조회
         // (Member 객체를 통해 조회해야 함)
@@ -74,5 +76,23 @@ public class ReserveService {
 
          // 수정된 부분: 취소되지 않은 예약만 가져오기
          return customerReserveRepository.findByMemberAndReserveCancelIsZero(member);
+    }*/
+    
+    // 전체 예약 목록 가져오기
+    /*@Transactional(readOnly = true)
+    public Page<CustomerReserve> getAllReservesByCustomerId(String customerId, Pageable pageable) {
+        Member member = memberRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + customerId));
+
+        return customerReserveRepository.findByMemberAndReserveCancelIsZero(member, pageable);
+    }*/
+    
+    // 전체 예약 목록 가져오기 (검색 기능 추가)
+    @Transactional(readOnly = true)
+    public Page<CustomerReserve> getAllReservesByCustomerId(String customerId, String shopName, LocalDate reserveDate, Pageable pageable) {
+        Member member = memberRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다. id=" + customerId));
+
+        return customerReserveRepository.findByMemberAndReserveCancelIsZeroAndSearchParams(member, shopName, reserveDate, pageable);
     }
 }

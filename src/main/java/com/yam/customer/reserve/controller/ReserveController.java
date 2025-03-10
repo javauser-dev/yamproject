@@ -1,10 +1,14 @@
 package com.yam.customer.reserve.controller;
-
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -251,7 +255,7 @@ public class ReserveController {
         return customerId != null ? customerId : ""; // customerId 반환 (없으면 빈 문자열)
     }
     
-    @GetMapping("/reserveInquiry")
+    /*@GetMapping("/reserveInquiry")
     public String reserveInquiry(Model model, HttpSession session) {
         String customerId = (String) session.getAttribute("customerId");
         if (customerId == null || customerId.isEmpty()) {
@@ -272,6 +276,76 @@ public class ReserveController {
 
         model.addAttribute("allReserves", allReserves); // 모델에 추가
         return "customer/reserve/reserveInquiry"; // 뷰 이름
+    }*/
+    
+    /*@GetMapping("/reserveInquiry")
+    public String reserveInquiry(Model model, HttpSession session,
+                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        String customerId = (String) session.getAttribute("customerId");
+        if (customerId == null || customerId.isEmpty()) {
+            // customerId가 세션에 없으면, Authentication에서 가져와 세션에 저장
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                customerId = userDetails.getUsername();
+                session.setAttribute("customerId", customerId); //세션에도 저장
+            } else {
+              //로그인 되어있지 않으면 로그인 페이지로 리다이렉트
+              return "redirect:/customer/login";
+            }
+        }
+
+        // Pageable 객체를 사용하여 예약 목록 가져오기
+        Page<CustomerReserve> allReservesPage = reserveService.getAllReservesByCustomerId(customerId, pageable);
+
+        // 페이징 그룹 정보 계산
+        int currentPage = allReservesPage.getNumber(); // 현재 페이지 (0부터 시작)
+        int totalPages = allReservesPage.getTotalPages();
+        int pageSize = 10; // 한 페이지 그룹에 표시할 페이지 수
+        int startPage = (currentPage / pageSize) * pageSize;  //현재 페이지가 속한 그룹의 첫 페이지
+        int endPage = Math.min(startPage + pageSize - 1, totalPages - 1); //현재 페이지가 속한 그룹의 마지막 페이지
+
+        model.addAttribute("allReserves", allReservesPage);
+        model.addAttribute("startPage", startPage);        //페이지 그룹의 첫 페이지
+        model.addAttribute("endPage", endPage);            //페이지 그룹의 마지막 페이지
+        return "customer/reserve/reserveInquiry";
+    }*/
+    
+    @GetMapping("/reserveInquiry")
+    public String reserveInquiry(Model model, HttpSession session,
+                                 @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                 @RequestParam(value = "shopName", required = false) String shopName, //검색 파라미터
+                                 @RequestParam(value = "reserveDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate reserveDate) { //검색 파라미터, 날짜형식
+        String customerId = (String) session.getAttribute("customerId");
+        if (customerId == null || customerId.isEmpty()) {
+        	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                customerId = userDetails.getUsername();
+                session.setAttribute("customerId", customerId); //세션에도 저장
+            } else {
+              //로그인 되어있지 않으면 로그인 페이지로 리다이렉트
+              return "redirect:/customer/login";
+            }
+        }
+
+        // 검색 파라미터와 Pageable 객체를 사용하여 예약 목록 가져오기
+        Page<CustomerReserve> allReservesPage = reserveService.getAllReservesByCustomerId(customerId, shopName, reserveDate, pageable);
+
+        // 페이징 그룹 정보 계산 (기존 코드와 동일)
+        int currentPage = allReservesPage.getNumber();
+        int totalPages = allReservesPage.getTotalPages();
+        int pageSize = 10;
+        int startPage = (currentPage / pageSize) * pageSize;
+        int endPage = Math.min(startPage + pageSize - 1, totalPages - 1);
+
+
+        model.addAttribute("allReserves", allReservesPage);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("shopName", shopName); // 검색어 유지
+        model.addAttribute("reserveDate", reserveDate); // 검색어 유지
+        return "customer/reserve/reserveInquiry";
     }
     
     @GetMapping("/detail") // /customer/reserve/detail 요청 처리
@@ -343,6 +417,16 @@ public class ReserveController {
 
             // 3. 변경 사항 저장
             customerReserveRepository.save(reserve);
+            
+            // 4. 환불 처리 (PaymentService 호출)
+            try {
+                paymentService.processRefund(reserveId);
+            } catch (IllegalArgumentException e) {
+                // 결제 정보가 없는 경우 (환불할 필요 없음)
+                //  - 로그를 남기고, 사용자에게는 예약 취소 메시지만 보여줌
+                logger.warn("결제 정보 없음 (환불 불필요), 예약 ID: {}", reserveId);
+                // redirectAttributes.addFlashAttribute("errorMessage", "결제 정보가 없어 환불 처리되지 않았습니다."); // 필요하다면 추가 메시지.
+            }
 
             redirectAttributes.addFlashAttribute("message", "예약이 취소되었습니다.");
             return "redirect:/customer/myPage"; // 마이페이지로 리다이렉트
