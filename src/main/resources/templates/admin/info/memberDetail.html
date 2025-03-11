@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
 <head>
-    <meta charset="UTF-8">
     <title>회원 정보</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/memberDetail.css}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -11,7 +13,9 @@
     }
     </style>
 </head>
+
 <body>
+<th:block layout:fragment="content">
     <h1>회원 정보</h1>
 
     <!-- 에러 메시지 표시 -->
@@ -33,7 +37,7 @@
             <th><label>회원 ID</label></th>
             <td><span th:text="${member.customerId}"></span></td>
         </tr>
-        
+
          <!-- 비밀번호 변경 -->
         <tr>
             <th><label>비밀번호</label></th>
@@ -108,7 +112,7 @@
     <div class = "list-button-div">
         <a href="/admin/info/members" class="list-button">회원 목록</a>
     </div>
-    
+
     <script th:inline="javascript">
         $(document).ready(function() {
             // 초기 상태: 변경 버튼 활성화
@@ -140,5 +144,6 @@
             });
         });
     </script>
+</th:block>
 </body>
 </html>

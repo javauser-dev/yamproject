@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -40,6 +41,10 @@ import com.yam.customer.member.vo.NicknameRequest;
 import com.yam.customer.member.vo.PasswordChangeRequest;
 import com.yam.customer.reserve.domain.CustomerReserve;
 import com.yam.customer.reserve.repository.CustomerReserveRepository;
+import com.yam.customer.reserve.repository.ShopRepository;
+import com.yam.customer.wishlist.wishlistentity.Wishlist;
+import com.yam.customer.wishlist.wishlistrepository.WishlistRepository;
+import com.yam.shop.Shop;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -53,6 +58,8 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
     private final CustomerReserveRepository customerReserveRepository;
+    private final WishlistRepository wishlistRepository;
+    private final ShopRepository shopRepository;
     
     @Value("${file.upload.path}")
     private String uploadPath;  //상대경로
@@ -216,6 +223,18 @@ public class MemberController {
              Pageable topThree = PageRequest.of(0, 3);
              List<CustomerReserve> recentReserves = customerReserveRepository.findTop3ByMemberIdOrderByReserveDateDesc(customerId, topThree);
              model.addAttribute("recentReserves", recentReserves);
+
+             // 찜 목록 데이터 가져오기 (수정)
+             List<Wishlist> recentWishlists = wishlistRepository.findByCustomerIdOrderByWishIdDesc(customerId, topThree); // wishId 내림차순
+             List<Shop> wishShops = new ArrayList<>();
+             for (Wishlist wishlist : recentWishlists) {
+                 Shop shop = shopRepository.findById(wishlist.getShopNo()).orElse(null);
+                 if (shop != null) {
+                     wishShops.add(shop);
+                 }
+             }
+             model.addAttribute("recentWishlists", recentWishlists);
+             model.addAttribute("wishShops", wishShops);
 
          } else {
              return "redirect:/customer/login";

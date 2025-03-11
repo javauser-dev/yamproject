@@ -1,7 +1,6 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
-    background-color: #f4f4f4;
 }
 
 h1 {
@@ -42,18 +41,17 @@ form button:hover {
 
 /* 테이블 스타일 */
 table {
-    width: 55%;
-    margin: 0 auto;
+    width: 80%;  /* 너비 */
+    margin: 0 auto; /* 가운데 정렬 */
     border-collapse: collapse;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: white;
 }
 
 table thead {
-    background-color: #f8f9fa; /* 헤더 배경색 */
+    background-color: #f8f9fa;
 }
-
 
 table th,
 table td {
@@ -67,25 +65,27 @@ table th {
 }
 
 table tbody tr:nth-child(even) {
-    background-color: #f2f2f2; /* 짝수 행 배경색 */
+    background-color: #f2f2f2;
 }
 
 table tbody tr:hover {
-    background-color: #e0e0e0; /* 마우스 오버 시 배경색 */
+    background-color: #e0e0e0;
 }
 
-/* 페이징 스타일 */
+/* 페이징 스타일 (부트스트랩 스타일과 충돌 방지) */
 .pagination {
     display: flex;
     justify-content: center;
     list-style: none;
     padding: 0;
+     margin: 20px 0; /* 위아래 여백 추가 */
 }
 
 .page-item {
     margin: 0 5px;
 }
 
+/* page-link 스타일 수정: 부트스트랩과 겹치지 않도록 */
 .page-link {
     padding: 5px 10px;
     border: 1px solid #ddd;
@@ -93,10 +93,13 @@ table tbody tr:hover {
     text-decoration: none;
     color: #333;
     background-color: white;
+     transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* 부드러운 전환 효과 */
 }
 
 .page-link:hover {
     background-color: #f0f0f0;
+    color: #0056b3; /* hover 시 글자 색상 변경 */
+     border-color: #0056b3;/* hover 시 테두리 색상 변경 */
 }
 
 .page-item.active .page-link {
@@ -107,21 +110,22 @@ table tbody tr:hover {
 
 .page-item.disabled .page-link {
     color: #ccc;
-    pointer-events: none; /* 클릭 비활성화 */
+    pointer-events: none;
 }
 
 .button-container {
-  text-align: center; /* 버튼을 가운데 정렬 */
-  margin-top: 40px;    /* 버튼 위쪽 여백 */
+  text-align: center;
+  margin-top: 40px;
 }
 
 .main-button {
   padding: 10px 20px;
-  background-color: #007bff; /* 버튼 배경색 */
+  background-color: #007bff;
   color: white;
   text-decoration: none;
   border-radius: 5px;
   border : none;
+  transition: background-color 0.3s; /* 부드러운 전환 효과 */
 }
 .main-button:hover {
   background-color : #0056b3;

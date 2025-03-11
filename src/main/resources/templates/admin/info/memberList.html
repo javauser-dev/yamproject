@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
 <head>
     <meta charset="UTF-8">
     <title>회원 목록</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/memberList.css}">
 </head>
 <body>
+<th:block layout:fragment="content">
     <h1>회원 목록</h1>
 
     <!-- 검색 폼 -->
     <div class="search-form-container">
-        <form action="/admin/info/members" method="get">
+        <form th:action="@{/admin/info/members}" method="get">
             <select name="searchType">
-                <option value="id">ID</option>
-                <option value="nickname">닉네임</option>
-                <option value="all">ID + 닉네임</option>
+                <option value="id" th:selected="${param.searchType == 'id'}">ID</option>
+                <option value="nickname" th:selected="${param.searchType == 'nickname'}">닉네임</option>
+                <option value="all" th:selected="${param.searchType == 'all'}">ID + 닉네임</option>
             </select>
-            <input type="text" name="searchKeyword" placeholder="검색어 입력">
+            <input type="text" name="searchKeyword" th:value="${param.searchKeyword}" placeholder="검색어 입력">
             <input type="hidden" name="size" th:value="${members.size}">
             <input type="hidden" name="sort" th:value="${param.sort}">
             <button type="submit">검색</button>
@@ -44,11 +47,10 @@
         </tbody>
     </table>
     <!-- 검색 결과 없음 메시지 -->
-    <p th:if="${members.isEmpty()}">검색 결과가 없습니다.</p>
+    <p th:if="${members.isEmpty()}" class="no-results">검색 결과가 없습니다.</p>
 
 
     <!-- 페이징 처리 -->
-     <!-- 페이징 처리 -->
      <div class="pagination" th:if="${members.totalPages > 1}">
         <!--/*  첫 페이지 */-->
         <a th:if="${members.number > 0}" th:href="@{/admin/info/members(page=0, size=${members.size}, sort=${param.sort} , searchType=${param.searchType}, searchKeyword=${param.searchKeyword})}">처음</a>
@@ -78,5 +80,6 @@
     <div class="button-container">
         <a href="/admin/info/main" class="main-button">메인화면으로</a>
     </div>
+</th:block>
 </body>
 </html>

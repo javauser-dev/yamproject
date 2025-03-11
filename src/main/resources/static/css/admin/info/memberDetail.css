@@ -1,6 +1,5 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
 }
@@ -18,7 +17,7 @@ table {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto;  /* 가운데 정렬 */
     width: 100%;
     border-collapse: collapse;
 }
@@ -41,10 +40,9 @@ th {
 input[type="text"],
 input[type="email"],
 input[type="file"],
+input[type="password"], /* password 타입 추가 */
 span {
     padding: 8px;
-    /* border: 1px solid #ddd; */
-    /* border-radius: 4px; */
     width: 250px;
     min-width: auto;
     box-sizing: border-box;
@@ -88,4 +86,12 @@ button:hover, .list-button:hover {
     color: red;
     margin-bottom: 10px;
     text-align: center;
+}
+
+/* 추가 스타일 */
+.success-message {
+    /* 성공 메시지 스타일 (선택 사항) */
+    color: green;
+    text-align: center;
+    margin-bottom: 10px;
 }

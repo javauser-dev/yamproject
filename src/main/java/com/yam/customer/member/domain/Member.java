@@ -10,6 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -57,4 +59,7 @@ public class Member {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime customerCreateDate; // 가입일 필드 추가
+    
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole; // 권한
 }

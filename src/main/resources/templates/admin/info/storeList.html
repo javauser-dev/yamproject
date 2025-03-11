@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
 <head>
     <meta charset="UTF-8">
     <title>가게 목록</title>
@@ -7,6 +9,7 @@
      <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/storeList.css}">
 </head>
 <body>
+<th:block layout:fragment="content">
     <h1>가게 목록</h1>
 
     <!-- 검색 폼 (MemberController의 memberList.html 참고) -->
@@ -14,7 +17,7 @@
         <select name="searchType">
             <option value="storeName" th:selected="${searchType == 'storeName'}">가게 이름</option>
             <option value="storeBusinessNumber" th:selected="${searchType == 'storeBusinessNumber'}">사업자 번호</option>
-              <option value="storeNickname" th:selected="${searchType == 'storeNickname'}">닉네임</option>
+            <option value="storeNickname" th:selected="${searchType == 'storeNickname'}">닉네임</option>
 
             <!-- 다른 검색 옵션 추가 -->
         </select>
@@ -40,13 +43,14 @@
                 <td th:text="${store.storeNo}"></td>
                 <td th:text="${store.storeNickname}"></td>
                 <td th:text="${store.storeBusinessNumber}"></td>
-                
+
                 <td>
                     <a th:href="@{/admin/info/storeDetail(storeNo=${store.storeNo})}" th:text="${store.storeName}"></a>
                 </td>
+
+                <td th:text="${store.storeEmail != null and #strings.length(store.storeEmail) > 4} ? ${#strings.substring(store.storeEmail, 0, 4) + #strings.repeat('*', #strings.length(store.storeEmail) - 4)} : (store.storeEmail?: '')"></td>
                 
-                <td th:text="${store.storeEmail}"></td>
-                <td th:text="${store.storeSubDate}"></td>
+                <td th:text="${#temporals.format(store.storeSubDate, 'yy년 MM월 dd일')}"></td>
             </tr>
         </tbody>
     </table>
@@ -60,12 +64,12 @@
 	                <a class="page-link" th:href="@{/admin/info/stores(page=${stores.number - 1}, searchType=${searchType}, searchKeyword=${searchKeyword})}"
 	                   tabindex="-1" aria-disabled="true">Previous</a>
 	            </li>
-	
+
 	            <!-- Page Numbers -->
 	            <li class="page-item" th:each="page : ${#numbers.sequence(0, stores.totalPages - 1)}" th:classappend="${page == stores.number} ? 'active'">
 	                <a class="page-link" th:href="@{/admin/info/stores(page=${page}, searchType=${searchType}, searchKeyword=${searchKeyword})}" th:text="${page + 1}"></a>
 	            </li>
-	
+
 	            <!-- Next -->
 	            <li class="page-item" th:classappend="${!stores.hasNext} ? 'disabled'">
 	                <a class="page-link" th:href="@{/admin/info/stores(page=${stores.number + 1}, searchType=${searchType}, searchKeyword=${searchKeyword})}">Next</a>
@@ -73,9 +77,10 @@
 	        </ul>
 	    </nav>
 	</div>
-	
+
 	<div class="button-container">
         <a href="/admin/info/main" class="main-button">메인화면으로</a>
     </div>
+</th:block>
 </body>
 </html>

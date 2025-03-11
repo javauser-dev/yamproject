@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
 <head>
-    <meta charset="UTF-8">
     <title>관리자 메인 페이지</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/main.css}">
 </head>
+
 <body>
+<th:block layout:fragment="content">
     <div class="main-container">
         <h1>사용자 정보 조회</h1>
 
@@ -23,5 +26,7 @@
             </div>
         </div>
     </div>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/main.css}">
+</th:block>
 </body>
 </html>
