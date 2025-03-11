@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 차단</title>
+</head>
+<body>
+    <h1>회원 차단</h1>
+    <p>ID: <span th:text="${customerId}"></span> 회원을 차단하시겠습니까?</p>
+
+    <form action="/admin/info/banCustomer" method="post">
+        <input type="hidden" name="customerId" th:value="${customerId}" />
+           <!-- 차단 사유 입력 필드 -->
+        <label for="blockReason">차단 사유:</label>
+        <textarea id="blockReason" name="blockReason" rows="4" cols="50" required></textarea>
+        <br>
+        <button type="submit">차단</button>
+    </form>
+    <a th:href="@{/admin/info/memberDetail(customerId=${customerId})}">취소</a>
+</body>
+</html>
