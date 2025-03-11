@@ -6,11 +6,16 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yam.shop.Shop;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -39,7 +44,7 @@ public class Menu {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="yam_menu_generator")
 	private Long no;
 
-	@Column(length=10, nullable= false)
+	@Column(length=50, nullable= false)
 	private String category;
 
 	@Column(length=10, nullable= false)
@@ -70,4 +75,17 @@ public class Menu {
 	@Column(length=70, nullable= false)
 	private String component;
 	
+	// Menu.java에 추가
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "shop_no")
+	private Shop shop;
+	
+	// Menu.java에 추가
+	public void setShop(Shop shop) {
+	    this.shop = shop;
+	    // 매장의 메뉴 목록에도 현재 메뉴 추가
+	    if (shop != null && !shop.getMenus().contains(this)) {
+	        shop.getMenus().add(this);
+	    }
+	}
 }

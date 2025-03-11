@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,6 +41,16 @@ public class LoginController {
 
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+	
+	
+	@GetMapping("/auth/check")
+	public ResponseEntity<?> checkAuth(Authentication authentication) {
+	    if (authentication == null) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+	    }
+	    return ResponseEntity.ok("Authenticated");
+	}
+	
 	@GetMapping("/login")
 	public String loginPage(@RequestParam(required = false) Boolean error, Model model) {
 		if (Boolean.TRUE.equals(error)) {

@@ -1,14 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>회원가입</title>
-    <!-- jQuery CDN -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script th:src="@{/js/signup.js}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/signup.css}">
-</head>
-<body>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
+
+<th:block layout:fragment="content">
     <div class="container">
     <h1>회원가입</h1>
 
@@ -87,5 +80,9 @@
         <p th:text="${errorMessage}"></p>
     </div>
 </div>
-</body>
-</html>
+<link rel="stylesheet" th:href="@{/css/signup.css}">
+</th:block>
+<th:block layout:fragment="script">
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script th:src="@{/js/signup.js}"></script>
+</th:block>
