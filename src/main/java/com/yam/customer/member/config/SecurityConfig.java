@@ -33,7 +33,8 @@ public class SecurityConfig {
             .authorizeHttpRequests((authz) -> authz
                  // 변경된 부분 (AntPathRequestMatcher 사용)
                 .requestMatchers(new AntPathRequestMatcher("/customer/reserve/**")).authenticated()
-                .requestMatchers(new AntPathRequestMatcher("/customer/banCustomer")).hasRole("BAN_CUSTOMER") // BAN_CUSTOMER 롤만 접근 가능
+                //.requestMatchers(new AntPathRequestMatcher("/admin/info/banCustomer")).hasRole("BAN_CUSTOMER") // BAN_CUSTOMER 롤만 접근 가능
+                .requestMatchers(new AntPathRequestMatcher("/admin/info/banCustomer")).hasAuthority("BAN_CUSTOMER") // 권한 확인
                 .anyRequest().permitAll() // 나머지 요청은 모두 허용
             )
             .formLogin((formLogin) -> formLogin

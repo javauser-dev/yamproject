@@ -11,13 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.yam.customer.member.domain.Member;
-import com.yam.customer.member.domain.MemberRole;
 import com.yam.customer.member.domain.WithdrawnMember;
 import com.yam.customer.member.repository.MemberRepository;
 import com.yam.customer.member.repository.WithdrawnMemberRepository;
 import com.yam.customer.member.vo.MemberSignupRequest;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
  
@@ -213,28 +211,5 @@ public class MemberService {
 
         member.setCustomerPassword(newPassword);
         // memberRepository.save(member); // @Transactional에 의해 자동 저장
-    }
-    
-    // 회원차단
-    public void banCustomer(String customerId) {
-        Member member = memberRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다: " + customerId));
-
-        member.setMemberRole(MemberRole.BAN_CUSTOMER);
-        // 필요하다면 추가적인 상태 변경 (예: 승인 상태 변경)
-        // member.setCustomerApproval("N");
-
-        memberRepository.save(member);
-    }
-    
-    //회원 차단 해제
-    @Transactional
-    public void unbanCustomer(String customerId) {
-        Member member = memberRepository.findById(customerId)
-               .orElseThrow(() -> new EntityNotFoundException("해당 ID의 회원을 찾을 수 없습니다: " + customerId));
-
-        // BAN_CUSTOMER 롤 제거, 필요한 경우 다른 롤 부여 (예: 일반 사용자 롤)
-        member.setMemberRole(null);
-        memberRepository.save(member);
     }
 }

@@ -9,9 +9,12 @@
     <p>ID: <span th:text="${customerId}"></span> 회원의 차단을 해제하시겠습니까?</p>
 
     <form action="/admin/info/unbanCustomer" method="post">
-        <input type="hidden" name="customerId" th:value="${customerId}" />
-        <button type="submit">해제</button>
-    </form>
+	    <input type="hidden" name="customerId" th:value="${customerId}" />
+	    <label for="unblockReason">해제 사유:</label>
+	    <textarea id="unblockReason" name="unblockReason" rows="4" cols="50" required></textarea>
+	    <br>
+	    <button type="submit">해제</button>
+	</form>
     <a th:href="@{/admin/info/memberDetail(customerId=${customerId})}">취소</a>
 </body>
 </html>

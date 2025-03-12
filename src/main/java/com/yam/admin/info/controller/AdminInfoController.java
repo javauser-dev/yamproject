@@ -18,7 +18,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +28,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.yam.admin.info.domain.AdminCustomerBlock;
 import com.yam.admin.info.repository.AdminBlockRepository;
+import com.yam.admin.info.service.AdminBanService;
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.repository.MemberRepository;
 import com.yam.customer.member.service.MemberService;
@@ -50,6 +49,7 @@ public class AdminInfoController {
     private final StoreService storeService;
     private MemberRepository memberRepository;
     private AdminBlockRepository adminBlockRepository;
+    private final AdminBanService adminBanService;
    
     @Autowired // 또는 private final ServletContext servletContext; 와 @RequiredArgsConstructor
     private ServletContext servletContext;
@@ -301,67 +301,53 @@ public class AdminInfoController {
     @GetMapping("/memberUnBan")
     public String showMemberUnBanForm(@RequestParam("customerId") String customerId, Model model) {
         // customerId를 사용하여 회원 정보 조회 (예: memberService.getMemberById(customerId))
-        //조회된 회원 정보를 모델에 추가하지 *않아도* 됩니다.  단순 해제 페이지만 보여주면 됨.
-         model.addAttribute("customerId", customerId); // customerId만 넘겨도 됨.
-        return "admin/info/memberUnBan";  // memberUnban.html 반환
+        // 조회된 회원 정보를 모델에 추가하지 *않아도* 됩니다. 단순 해제 페이지만 보여주면 됨.
+        model.addAttribute("customerId", customerId); // customerId만 넘겨도 됨.
+        return "admin/info/memberUnBan"; // memberUnban.html 반환
     }
-    
-    @PostMapping("/banCustomer")
-    @Transactional
-    public String banCustomer(@RequestParam String customerId, @RequestParam String blockReason, Model model) {
-    	try {
-            // 1. Member의 memberRole을 BAN_CUSTOMER로 변경 (MemberService 사용)
-            memberService.banCustomer(customerId);
 
-            // 2. AdminBlock 엔티티 생성 및 저장
-            AdminCustomerBlock adminBlock = new AdminCustomerBlock();
-            adminBlock.setCustomerId(customerId);
-            adminBlock.setBlockReason(blockReason);
-            adminBlock.setBlockState(1); // 차단 상태
-            // adminBlock.setBlockCreateDate(LocalDateTime.now()); // @CreationTimestamp가 자동 설정
-            // adminBlock.setBlockUpdateDate(LocalDateTime.now());  // 필요하면 설정, @UpdateTimestamp 사용
-            adminBlockRepository.save(adminBlock);
-            model.addAttribute("message", "회원이 차단되었습니다.");
+    @PostMapping("/banCustomer")
+    public String banCustomer(@RequestParam String customerId, @RequestParam String blockReason,
+            RedirectAttributes redirectAttributes) {
+        try {
+            adminBanService.banCustomer(customerId, blockReason); // AdminBanService 사용
+            redirectAttributes.addFlashAttribute("message", "회원이 차단되었습니다.");
 
         } catch (EntityNotFoundException e) {
-            model.addAttribute("errorMessage", "해당 ID의 회원을 찾을 수 없습니다.");
-            return "admin/info/memberBan"; // 에러 발생 시 다시 차단 폼으로
-            
-        }  catch (Exception e) {
-            model.addAttribute("errorMessage", "회원 차단 중 오류 발생: " + e.getMessage());
-            return "admin/info/memberBan"; // 에러 발생 시 다시 차단 폼으로
+            redirectAttributes.addFlashAttribute("errorMessage", "해당 ID의 회원을 찾을 수 없습니다.");
+            return "redirect:/admin/info/memberBan?customerId=" + customerId;
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "회원 차단 중 오류 발생: " + e.getMessage());
+            return "redirect:/admin/info/memberBan?customerId=" + customerId;
         }
-    	
-    	return "redirect:/admin/info/memberDetail?customerId=" + customerId; // 성공 시 회원 상세 정보로 리다이렉트
+        //return "redirect:/admin/info/memberDetail?customerId=" + customerId; // 회원 상세 페이지로 리디렉션
+        return "redirect:/admin/info/members";
     }
-    
+
     @PostMapping("/unbanCustomer")
-    @Transactional
-    public String unbanCustomer(@RequestParam String customerId, Model model) {
-    	try {
-            // 1. Member의 memberRole을 null로 변경 (MemberService 사용)
-           memberService.unbanCustomer(customerId);
+    public String unbanCustomer(@RequestParam String customerId,
+                                @RequestParam String unblockReason, // 해제 사유 파라미터 추가
+                                RedirectAttributes redirectAttributes) {
+        try {
+            adminBanService.unbanCustomer(customerId, unblockReason); // AdminBanService 호출 시 해제 사유 전달
+            redirectAttributes.addFlashAttribute("message", "회원 차단이 해제되었습니다.");
 
-           // 2. AdminBlock에서 해당 customerId를 가진 레코드 중 block_state가 1인 것을 찾아서 2로 변경
-           // 여러 개의 차단 기록이 있을 수 있으므로, 최신 기록만 변경하는 것이 좋음
-           AdminCustomerBlock latestBlock = adminBlockRepository.findFirstByCustomerIdAndBlockStateOrderByBlockCreateDateDesc(customerId, 1);
-           if (latestBlock != null) {
-             latestBlock.setBlockState(2); // 차단 해제 상태
-               //latestBlock.setBlockUpdateDate(LocalDateTime.now());// @UpdateTimestamp 사용
-              adminBlockRepository.save(latestBlock);
-           }
-           model.addAttribute("message", "회원 차단이 해제되었습니다.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "해당 ID의 회원을 찾을 수 없습니다.");
+            return "redirect:/admin/info/memberUnBan?customerId=" + customerId;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "회원 차단 해제 중 오류 발생: " + e.getMessage());
+            return "redirect:/admin/info/memberUnBan?customerId=" + customerId;
+        }
 
-       }  catch (EntityNotFoundException e) {
-           model.addAttribute("errorMessage", "해당 ID의 회원을 찾을 수 없습니다.");
-           return "admin/info/memberUnBan";
-       } catch (Exception e) {
-           model.addAttribute("errorMessage", "회원 차단 해제 중 오류 발생: " + e.getMessage());
-           return "admin/info/memberUnBan";
-       }
-      
-       return "redirect:/admin/info/memberDetail?customerId=" + customerId;  // 회원 상세 정보로 리다이렉트
-   }
-    
-    
+        //return "redirect:/admin/info/memberDetail?customerId=" + customerId;
+        return "redirect:/admin/info/members";
+    }
+
+	// 차단된 회원이 접근할 페이지
+    @GetMapping("/banCustomer")
+    public String banCustomerPage() {
+        return "admin/info/banCustomer"; // banCustomer.html 뷰 반환
+    }
 }
