@@ -127,7 +127,17 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
-
+     <!-- api정보를 위해 의존성 추가 -->
+    <dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20230227</version>
+	</dependency>
+	<dependency>
+		<groupId>net.coobird</groupId>
+		<artifactId>thumbnailator</artifactId>
+		<version>0.4.20</version>
+	</dependency> 
 </dependencies>
 
 	<build>

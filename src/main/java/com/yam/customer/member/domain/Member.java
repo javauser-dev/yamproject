@@ -60,4 +60,8 @@ public class Member {
 
 	@Column(nullable = true, length = 20)
 	private String customerRole = "ROLE_CUSTOMER"; // 🔹 기본값 "ROLE_CUSTOMER" 추가
+
+	// ✅ 이메일 인증 여부 추가
+	@Column(name = "customer_email_verified", nullable = true)
+	private Boolean customerEmailVerified = false;
 }

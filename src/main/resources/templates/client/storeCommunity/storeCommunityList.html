@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	<head>
+		<th:block th:insert="~{template/client/fragments/block :: config}"></th:block>	
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> 	  
+	</head>
+	<body> 
+		<main class="mb-20">
+	  		<div class="container py-4">
+	    		<header class="pb-3 mb-2">
+	    			<th:block th:insert="~{template/client/fragments/block :: header}"></th:block>
+	    		</header>
+   				
+   				<th:block layout:fragment="content">
+			   		<div class="text-center"><h3>사업	자 게시판</h3></div>
+			   		<hr />
+					<div id="boardSearch" class="my-2">
+						<form id="searchForm">
+							<!--/* 페이징 처리를 위한 파라미터  */--> 
+							<input type="hidden" name="page" id="page" th:value="${storeCommunityList.pageRequestDTO.page}">
+							<input type="hidden" name="size" id="size" th:value="${storeCommunityList.pageRequestDTO.size}">
+						</form>
+					</div>
+					
+					<div class="board-table-height">	
+						<table class="table table-hover"> 
+							<thead>
+								<tr class="text-center">
+									<tr class="text-center">
+									<th class="col-md-2">글번호</th>
+									<th class="col-md-4">글제목</th>
+									<th class="col-md-2">작성자</th>
+									<th class="col-md-3">등록일</th>
+									<th class="col-md-1">조회수</th> 
+								</tr> 
+							</thead>
+							<tbody class="list">
+    <!-- 리스트가 비어 있는 경우 -->
+    <tr th:if="${#lists.isEmpty(storeCommunityList.dtoList)}">
+        <td colspan="5" class="text-center">등록된 게시물이 존재하지 않습니다.</td>
+    </tr>
+
+    <!-- storeCommunityList.dtoList가 존재하는 경우 반복문 실행 -->
+    <tr class="text-center" th:each="storeCommunity : ${storeCommunityList.dtoList}" th:object="${storeCommunity}" th:data-no="*{storeListNo}">
+        <td th:text="*{storeListNo} ?: 'N/A'"></td>
+        <td class="text-start">
+            <a th:href="@{/storeCommunity/{storeListNo}(storeListNo=*{storeListNo})}" 
+               class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+                <span th:text="*{storeTitle}"></span>
+                <th:block th:if="*{storeContent != null and storeContent.#strings.length(storeContent) > 0}">
+                    <span class="reply-count" th:text="*{'[' + storeContent.#strings.length(storeContent) + ']'}"></span>
+                </th:block>
+            </a> 
+        </td> 
+        <td class="name" th:text="*{name}"></td>
+        <td class="date" th:text="*{#temporals.format(storeCreateAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="*{storeHit}"></td>
+    </tr>
+				</tbody>
+						</table>
+						</div>	
+					
+					<div class="text-end">
+						<button type="button" id="insertFormBtn" class="btn btn-primary btn-sm mb-2">글쓰기</button>
+					</div>
+					
+					<nav aria-label="Page navigation example">
+			  			<ul class="pagination justify-content-center">
+							<!--/* 이전 바로가기 10개 존재 여부를 prev 필드의 값으로 확인. */-->
+			           		<li class="page-item" th:if="${storeCommunityList.prev}">
+			           				<a th:data-number="${storeCommunityList.prevPage}" class="page-link">Previous</a>
+			           		</li>
+							
+					 		<!--/* 바로가기 번호 출력 */--> 
+							<li th:each="number : ${storeCommunityList.pageNumList}" th:classappend="'page-item ' + ${(storeCommunityList.current == number) ? 'active':''}">
+								<a class="page-link" th:text="${number}" th:data-number="${number}"></a>
+							</li>
+			
+						 	<!--/* 다음 바로가기 10개 존재 여부를 next 필드의 값으로 확인. */-->
+							<li class="page-item" th:if="${storeCommunityList.next}">
+								<a th:data-number="${storeCommunityList.nextPage}" class="page-link">Next</a>
+							</li> 
+						</ul>
+					</nav>
+					
+					<div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+    			<span th:text="${errorMessage}"></span>
+					</div>
+				</th:block>
+			</div>
+		</main> 
+
+	<th:block layout:fragment="script">
+		<script src="/js/storeCommunity/storeCommunityList.js"></script>
+		<script src="/js/storeCommunity/storeCommunityCommon.js"></script>
+		
+	</th:block>	
+</html>  
+

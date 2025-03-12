@@ -219,4 +219,12 @@ public class MemberService {
 	public Optional<Member> findById(String customerId) {
 		return memberRepository.findById(customerId);
 	}
+
+	public void save(Member member) {
+		memberRepository.save(member);
+	}
+
+	public Optional<Member> findByCustomerEmail(String customerEmail) {
+		return memberRepository.findByCustomerId(customerEmail);
+	}
 }

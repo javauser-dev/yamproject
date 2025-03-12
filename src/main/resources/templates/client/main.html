@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+		<th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+	</head>
+	<body>
+		<main>
+	  		<div class="container py-4">
+	    		<header class="pb-3 mb-2">
+	    			<th:block th:insert="~{template/client/fragments/block :: header}"></th:block>
+	    		</header>
+	    		
+	    		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+		    		<div class="ratio ratio-21x9">
+					  <div class="carousel-inner">
+					    <div class="carousel-item active" data-bs-interval="2000">
+					      <img src="images/f1.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f2.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f3.jpg" class="d-block w-100" alt="...">
+					    </div>
+					  </div>
+					</div>
+					  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+					  </button>
+					  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Next</span>
+					  </button>
+					
+				</div>
+				
+				<p class="mb-5 text-center ">지금바로 예약하기</p>
+	    		<!-- 슬라이드 넣어보기 -->
+	    		<!-- <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+	    			<div class="container-fluid py-5">
+	    				<h1 class="display-5 fw-bold">Effort Quotes</h1>
+	    				<p class="col-md-8 fs-4">노력 없이 얻는 것은 없다. There are no gains without pains.</p>
+	    				<p class="col-md-8 fs-4">끊임없이 도전하는 자만이 승리한다. The man who moves a mountain begins by carrying away small stones</p>
+	    				<button class="btn btn-primary btn-lg" type="button">Effort Quotes</button>
+	    			</div>
+	    		</div>
+	    		 -->
+	    		<div class="row align-items-md-stretch">
+	
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3 ">
+	    					<h2>Winery Store</h2>
+	    					<img class="height-70 w-100" alt="매장 매뉴2" src="images/f2.jpg">
+	    					<h4>Wine Bar Promotion</h4>
+	    					<p class="c-red">&#92; 150,000</p>
+	    					<p>자유 게시판. 입력/수정/삭제 및 댓글 작성까지 처리 완료.</p>
+	    					<button class="btn btn-outline-secondary article" type="button">예약하기</button>
+	    				</div>
+	    			</div>
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 text-bg-dark rounded-3">
+	    					<img class="height-70 w-100" alt="매장 매뉴1" src="images/f1.jpg">
+	    					<h2>갤러리 게시판 관리</h2>
+	    					<p>썸네일 처리 게시판. 입력/수정/삭제 처리 완료. </p>
+	    					<button class="btn btn-outline-light gallery" type="button">예약하기</button>
+	    				</div>
+	    			</div>
+	    			
+	    			<div class="col-md-4">
+	    				<div class="h-100 p-5 bg-body-tertiary border rounded-3">
+	    					<h2>게시판 관리</h2>
+	    					<p>자유 게시판. 입력/수정/삭제 및 댓글 작성까지 처리 완료.</p>
+	    					<img class="h-70 w-100" alt="매장 매뉴3" src="images/f3.jpg">
+	    					<button class="btn btn-outline-secondary article" type="button">예약하기</button>
+	    				</div>
+	    			</div>
+	    		</div>
+	    		<footer th:insert="~{template/client/fragments/block :: footer}"></footer>
+			</div>    
+		</main>
+		
+		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/jquery-3.7.1.min.js"></script>
+		<script src="/js/common.js"></script>
+		<script>
+			$(".gallery").on("click", ()=>{
+				locationProcess("/board/boardList");
+			});
+			
+			$(".article").on("click", ()=>{
+				locationProcess("/article/articleList");
+			});
+		
+		</script>
+	</body>
+</html>

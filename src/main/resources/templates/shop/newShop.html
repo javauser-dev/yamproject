@@ -1,0 +1,106 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+    <th:block layout:fragment="content">
+    	<form id="shopForm" action="#" th:action="@{/shop/save}" th:object="${shop}" method="post">
+		    <label for="shopName">매장명:</label>
+		    <input type="text" id="shopName" th:field="*{shopName}"><br>
+		
+		    <label for="storeName">사업자명:</label>
+		    <input type="text" id="storeName" th:field="*{storeName}"><br>
+		
+		    <label for="shopBusinessNumber">사업자번호:</label>
+		    <input type="text" id="shopBusinessNumber" th:field="*{shopBusinessNumber}"><br>
+		
+		    <label for="shopSubDate">개업일:</label>
+		    <input type="date" id="shopSubDate" th:field="*{shopSubDate}"><br>
+		
+		    <button type="button" onclick="verifyBusiness()">인증</button><br>
+		
+		    <label for="shopPhone">매장번호:</label>
+		    <input type="text" id="shopPhone" th:field="*{shopPhone}"><br>
+		
+		    <label for="shopAddress">매장주소:</label>
+		    <input type="text" id="shopAddress" th:field="*{shopAddress}"><br>
+		
+		    <button type="submit">매장 추가</button>
+		</form>
+
+    </th:block>
+	
+	<th:block layout:fragment="script">
+		  <script>
+		  function verifyBusiness() {
+	            const businessNumber = $('#shopBusinessNumber').val();  // 수정된 부분
+	            const subDate = $('#shopSubDate').val().replace(/-/g, '');  // 'YYYYMMDD' 포맷으로 변환
+	            const bname = $('#storeName').val();  // 수정된 부분
+
+	            const serviceKey = 'jEEUASAhUGj96H75IpTkbPCLORFLK3dhXoLFy9ApaJGIw65ZxLYGfSkcINdl3wy3gJ8XVQ64aKRHR1D6HGi6Cw==';
+
+	            const payload = {
+	                businesses: [
+	                    {
+	                        b_no: businessNumber,
+	                        start_dt: subDate,
+	                        p_nm: bname
+	                    }
+	                ]
+	            };
+
+	            $.ajax({
+	                url: "https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=" + serviceKey,
+	                type: 'POST',
+	                contentType: 'application/json',
+	                data: JSON.stringify(payload),
+	                success: function(response) {
+	                    console.log(response);
+
+	                    if (response.valid_cnt === 1) {
+	                        alert("인증 성공하였습니다.");
+	                    } else {
+	                        alert("인증에 실패하였습니다.");
+	                    }
+	                },
+	                error: function(error) {
+	                    console.error('요청 중 오류 발생:', error);
+	                }
+	            });
+	        }
+
+	        // 매장 추가 함수
+	        function addStore() {
+	            const name = $('#shopName').val();
+	            const bname = $('#storeName').val();
+	            const businessNumber = $('#shopBusinessNumber').val();
+	            const subDate = $('#shopSubDate').val();
+	            const phone = $('#shopPhone').val();
+	            const address = $('#shopAddress').val();
+
+	            const payload = {
+	                shopName: name,
+	                storeName: bname,
+	                shopBusinessNumber: businessNumber,
+	                shopSubDate: subDate,
+	                shopPhone: phone,
+	                shopAddress: address
+	            };
+
+	            $.ajax({
+	                url: "/shop/addStore", // 서버의 매장 추가 엔드포인트
+	                type: 'POST',
+	                contentType: 'application/json',
+	                data: JSON.stringify(payload),
+	                success: function(response) {
+	                    alert("매장이 성공적으로 추가되었습니다.");
+	                    console.log(response);
+	                },
+	                error: function(error) {
+	                    alert("매장 추가 중 오류가 발생했습니다.");
+	                    console.error('요청 중 오류 발생:', error);
+	                }
+	            });
+	        }
+		</script>
+	</th:block>
+</html>
+			

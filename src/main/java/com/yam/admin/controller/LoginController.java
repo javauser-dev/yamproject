@@ -24,7 +24,7 @@ import com.yam.admin.repository.AdminRepository;
 import com.yam.customer.member.domain.Member;
 import com.yam.customer.member.repository.MemberRepository;
 import com.yam.store.Store;
-import com.yam.store.email.controller.StoreRepository;
+import com.yam.store.repository.StoreRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -52,20 +52,14 @@ public class LoginController {
 	public ResponseEntity<?> apiLogin(@RequestParam String id, @RequestParam String password, HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
 
-		// 관리자 로그인
+		// ✅ 관리자 로그인
 		Optional<Admin> adminOpt = adminRepository.findByIdEquals(id);
 		if (adminOpt.isPresent() && adminOpt.get().getPassword().equals(password)) {
 			Admin admin = adminOpt.get();
-
-			// ✅ 세션에 저장
 			session.setAttribute("userRole", "ADMIN");
 			session.setAttribute("adminId", admin.getId());
 			session.setAttribute("adminNo", admin.getNo());
-			session.setAttribute("adminName", admin.getName()); // ✅ 관리자 이름 추가
-
-			// ✅ 로그 확인
-			System.out.println("✅ 관리자 로그인 성공: " + admin.getName());
-			System.out.println("✅ 세션 값 확인: " + session.getAttribute("adminName"));
+			session.setAttribute("adminName", admin.getName());
 
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(admin.getId(),
 					password, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
@@ -73,26 +67,26 @@ public class LoginController {
 
 			response.put("success", true);
 			response.put("role", "ADMIN");
-			response.put("adminName", admin.getName());
 			response.put("redirect", "/dashboard");
 			return ResponseEntity.ok(response);
 		}
 
-		// 회원 로그인
+		// ✅ 일반 회원 로그인
 		Optional<Member> userOpt = memberRepository.findByCustomerIdEquals(id);
 		if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getCustomerPassword())) {
+			Member member = userOpt.get();
 			session.setAttribute("userRole", "CUSTOMER");
-			session.setAttribute("customerId", userOpt.get().getCustomerId());
+			session.setAttribute("customerId", member.getCustomerId());
 
-			String userRole = userOpt.get().getCustomerRole();
+			String userRole = member.getCustomerRole();
 			if (userRole == null || userRole.isEmpty()) {
 				userRole = "ROLE_CUSTOMER"; // 기본값 설정
 			}
 
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					userOpt.get().getCustomerId(), password, List.of(new SimpleGrantedAuthority(userRole)));
+					member.getCustomerId(), password, List.of(new SimpleGrantedAuthority(userRole)));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext()); // 🔹 보장
+			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
 			response.put("success", true);
 			response.put("role", "CUSTOMER");
@@ -100,21 +94,27 @@ public class LoginController {
 			return ResponseEntity.ok(response);
 		}
 
-		// 사업자 로그인
-		Optional<Store> storeOpt = storeRepository.findByEmailEquals(id);
-		if (storeOpt.isPresent() && passwordEncoder.matches(password, storeOpt.get().getPassword())) {
-			session.setAttribute("userRole", "STORE"); // ✅ 추가
-			session.setAttribute("storeId", storeOpt.get().getEmail());
+		// ✅ 사업자 로그인
+		Optional<Store> storeOpt = storeRepository.findByStoreEmail(id);
+		if (storeOpt.isPresent() && passwordEncoder.matches(password, storeOpt.get().getStorePassword())) {
+			Store store = storeOpt.get();
+			session.setAttribute("userRole", "STORE");
+			session.setAttribute("storeId", store.getStoreEmail());
+
+			String storeRole = store.getStoreRole();
+			if (storeRole == null || storeRole.isEmpty()) {
+				storeRole = "ROLE_CUSTOMER"; // 기본값 설정
+			}
 
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-					storeOpt.get().getEmail(), password, List.of(new SimpleGrantedAuthority("ROLE_STORE")));
+					store.getStoreEmail(), password, List.of(new SimpleGrantedAuthority("ROLE_STORE")));
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
 			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+			session.setAttribute("loggedInStore", store); // ✅ 로그인된 Store 객체 저장
 
 			response.put("success", true);
 			response.put("role", "STORE");
-			response.put("redirect", "/main");
+			response.put("redirect", "store/mypage");
 			return ResponseEntity.ok(response);
 		}
 
@@ -123,4 +123,36 @@ public class LoginController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 
+	// ✅ 네이버 로그인 처리
+	@PostMapping("/api/naver-login")
+	public ResponseEntity<?> naverLogin(@RequestParam String email, @RequestParam String name,
+			@RequestParam String birthDate, HttpSession session) {
+		Map<String, Object> response = new HashMap<>();
+
+		// ✅ 기존 회원 확인 (이메일 기준)
+		Optional<Member> existingMember = memberRepository.findByCustomerId(email);
+		if (existingMember.isPresent()) {
+			Member member = existingMember.get();
+
+			// ✅ 세션 저장
+			session.setAttribute("userRole", "CUSTOMER");
+			session.setAttribute("customerId", member.getCustomerId());
+
+			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+					member.getCustomerId(), null, List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+			response.put("success", true);
+			response.put("role", "CUSTOMER");
+			response.put("redirect", "/customer/mypage");
+			return ResponseEntity.ok(response);
+		}
+
+		// ✅ 신규 회원 가입이 필요한 경우 (회원가입 페이지로 이동)
+		response.put("success", false);
+		response.put("redirect",
+				"/customer/signup?email=" + email + "&name=" + name + "&birthDate=" + birthDate + "&fromNaver=true");
+		return ResponseEntity.ok(response);
+	}
 }

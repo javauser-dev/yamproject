@@ -1,260 +1,268 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
-   layout:decorate="~{template/client/layout/layout}">
-   
-   <th:block layout:fragment="content">
-      <form>
-         <div class="col-auto">
-            <label for="name">이름</label>
-            <input type="text" name="name" id="name" placeholder="이름" class="form-control form-control-sm" />
-         </div>
-         <div class="col-auto">
-            <label for="b_number">사업자번호</label>
-            <input type="text" name="b_number" id="b_number" placeholder="사업자번호" class="form-control form-control-sm" />
-            <button type="button" id="bnBtn"class=" btn btn-primary btn-sm ">인증</button>
-            <input type="hidden" id="bNumberVerified" value="false" />
-         </div> 
-         <div class="col-auto">
-            <label for="passwd">비밀번호</label>
-            <input type="password" id="passwd" name="passwd" placeholder="비밀번호" class="form-control form-control-sm" />
-         </div>
-         <div class="col-auto">
-            <label for="passwdcheck">비밀번호 확인</label>
-            <input type="password" id="passwdcheck" name="passwdcheck" placeholder="비밀번호 확인" class="form-control form-control-sm" />
-         </div>
-         <div class="col-auto">
-            <label for="phone">연락처</label>
-            <input type="text" name="phone" id="phone" placeholder="연락처" class="form-control form-control-sm" />
-         </div>
-         <div>
-             <input type="email" id="email" placeholder="이메일 입력">
-             <button id="verifyBtn" type="button">인증 메일 발송</button>
-             <input type="hidden" id="emailVerified" value="false" />
-         </div>
-         <div>
-            <input type="text" id="verificationCode" placeholder="인증 코드 입력">
-            <button id="checkCodeBtn">코드 확인</button>
-          </div>   
-         <div class="col-auto">
-            <label>회원가입에 동의합니다</label>
-            <input type="checkbox" id="check" />
-         </div>
-         <div class="col-auto">
-            <button type="button" id="signupBtn" class="btn btn-primary btn-sm">회원 가입</button>
-         </div>
-      </form>
-   </th:block>
-   
-   <th:block layout:fragment="script">
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script>
-         $(document).ready(function () {
-             $("#bnBtn").click(function () {
-                var data = {
-                b_no: [$("#b_number").val()], // 실제 존재하는 사업자 번호
-                };
-            
-                 let serviceKey ="jEEUASAhUGj96H75IpTkbPCLORFLK3dhXoLFy9ApaJGIw65ZxLYGfSkcINdl3wy3gJ8XVQ64aKRHR1D6HGi6Cw%3D%3D";
-                 $.ajax({
-                    url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + serviceKey,
-                    type: "POST",
-                    data: JSON.stringify(data),
-                    dataType: "JSON",
-                    contentType: "application/json",
-                    accept: "application/json",
-                    success: function (result) {
-                     if(result.data[0].b_stt_cd == 1){
-                          $("#bnBtn").val("사업자 인증이 완료되었습니다.").prop("disabled", true).css("color", "gray").html("인증완료");
-                          $("#bNumberVerified").attr("value", "true"); // 🔹 확실히 값 변경
-                      }else if(result.data[0].b_stt_cd == 2 || result.data[0].b_stt_cd == 3){
-                           alert("정상 사업자가 아닙니다.");
-                      }else{alert("사업자 번호가 잘못되었습니다.");}
-                  },
-                   error: function (error) {
-                   console.log("에러: ", error);
-                   },
-               });
-             });
-         
-         
-         document.addEventListener("DOMContentLoaded", function () {
-             document.addEventListener("submit", function (event) {
-                 event.preventDefault(); // 🚨 모든 폼 제출을 강제 중단!
-                 console.log("🚨 자동 제출 방지됨!");
-             }, true);
-         });
-         
-         document.getElementById("checkCodeBtn").addEventListener("click", function(event) {
-             event.preventDefault(); // 🚀 폼 자동 제출 방지!
-             checkVerificationCode();
-         });
-         
-         document.getElementById("verifyBtn").addEventListener("click", function (event) {
-             event.preventDefault(); // ✅ 폼 제출 방지
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+		<form>
+			<div class="col-auto">
+				<label for="name">이름</label>
+				<input type="text" name="name" id="name" placeholder="이름" class="form-control form-control-sm" />
+			</div>
+			<div class="col-auto">
+				<label for="nickname">닉네임</label>
+				<input type="text" name="nickname" id="nickname" placeholder="닉네임" class="form-control form-control-sm" />
+			</div>
+			<div class="col-auto">
+				<label for="b_number">사업자번호</label>
+				<input type="text" name="b_number" id="b_number" placeholder="사업자번호" class="form-control form-control-sm" />
+				<button type="button" id="bnBtn"class=" btn btn-primary btn-sm ">인증</button>
+				<input type="hidden" id="bNumberVerified" value="false" />
+			</div>
+			<div class="col-auto">
+				<label for="passwd">비밀번호</label>
+				<input type="password" id="passwd" name="passwd" placeholder="비밀번호" class="form-control form-control-sm" />
+			</div>
+			<div class="col-auto">
+				<label for="passwdcheck">비밀번호 확인</label>
+				<input type="password" id="passwdcheck" name="passwdcheck" placeholder="비밀번호 확인" class="form-control form-control-sm" />
+			</div>
+			<div class="col-auto">
+				<label for="phone">연락처</label>
+				<input type="text" name="phone" id="phone" placeholder="연락처" class="form-control form-control-sm" />
+			</div>
+			<div>
+    			<input type="email" id="email" placeholder="이메일 입력">
+    			<button id="verifyBtn" type="button">인증 메일 발송</button>
+    			<input type="hidden" id="emailVerified" value="false" />
+			</div>
+			<div>
+				<input type="text" id="verificationCode" placeholder="인증 코드 입력">
+				<button id="checkCodeBtn">코드 확인</button>
+	    	</div>	
+			<div class="col-auto">
+				<label>회원가입에 동의합니다</label>
+				<input type="checkbox" id="check" />
+			</div>
+			<div class="col-auto">
+				<button type="button" id="signupBtn" class="btn btn-primary btn-sm">회원 가입</button>
+			</div>
+		</form>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script>
+			$(document).ready(function () {
+			    $("#bnBtn").click(function () {
+				    var data = {
+				    b_no: [$("#b_number").val()], // 실제 존재하는 사업자 번호
+				    };
+				
+			        let serviceKey ="jEEUASAhUGj96H75IpTkbPCLORFLK3dhXoLFy9ApaJGIw65ZxLYGfSkcINdl3wy3gJ8XVQ64aKRHR1D6HGi6Cw%3D%3D";
+			        $.ajax({
+				        url: "https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=" + serviceKey,
+				        type: "POST",
+				        data: JSON.stringify(data),
+				        dataType: "JSON",
+				        contentType: "application/json",
+				        accept: "application/json",
+				        success: function (result) {
+							if(result.data[0].b_stt_cd == 1){
+					        	$("#bnBtn").val("사업자 인증이 완료되었습니다.").prop("disabled", true).css("color", "gray").html("인증완료");
+					        	$("#bNumberVerified").attr("value", "true"); // 🔹 확실히 값 변경
+						    }else if(result.data[0].b_stt_cd == 2 || result.data[0].b_stt_cd == 3){
+						   		alert("정상 사업자가 아닙니다.");
+						    }else{alert("사업자 번호가 잘못되었습니다.");}
+						},
+					    error: function (error) {
+					    console.log("에러: ", error);
+					    },
+					});
+			    });
+			
+			
+			document.addEventListener("DOMContentLoaded", function () {
+			    document.addEventListener("submit", function (event) {
+			        event.preventDefault(); // 🚨 모든 폼 제출을 강제 중단!
+			        console.log("🚨 자동 제출 방지됨!");
+			    }, true);
+			});
+			
+			document.getElementById("checkCodeBtn").addEventListener("click", function(event) {
+			    event.preventDefault(); // 🚀 폼 자동 제출 방지!
+			    checkVerificationCode();
+			});
+			
+			document.getElementById("verifyBtn").addEventListener("click", function (event) {
+			    event.preventDefault(); // ✅ 폼 제출 방지
 
-             var email = document.getElementById("email").value;
+			    var email = document.getElementById("email").value;
 
-             if (!email) {
-                 alert("이메일을 입력하세요.");
-                 return;
-             }
+			    if (!email) {
+			        alert("이메일을 입력하세요.");
+			        return;
+			    }
 
-             console.log("전송할 이메일:", email); // ✅ 확인용 로그
+			    console.log("전송할 이메일:", email); // ✅ 확인용 로그
 
-             fetch("/email/send-verification-email", {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json"
-                 },
-                 body: JSON.stringify({ email: email }) // ✅ JSON 변환
-             })
-             .then(response => response.text())
-             .then(data => {
-                 console.log("서버 응답:", data); // ✅ 서버 응답 확인
-                 alert("인증 메일이 전송되었습니다!");
-             })
-             .catch(error => {
-                 console.error("Error:", error);
-                 alert("인증 메일 전송 실패!");
-             });
-         });
-         });
-         function checkVerificationCode() {
-             var email = document.getElementById("email").value;
-             var code = document.getElementById("verificationCode").value;
-             var checkButton = document.getElementById("checkCodeBtn");
+			    fetch("/email/send-verification-email", {
+			        method: "POST",
+			        headers: {
+			            "Content-Type": "application/json"
+			        },
+			        body: JSON.stringify({ storeEmail: email }) // ✅ JSON 변환
+			    })
+			    .then(response => response.text())
+			    .then(data => {
+			        console.log("서버 응답:", data); // ✅ 서버 응답 확인
+			        alert("인증 메일이 전송되었습니다!");
+			    })
+			    .catch(error => {
+			        console.error("Error:", error);
+			        alert("인증 메일 전송 실패!");
+			    });
+			});
+			});
+			function checkVerificationCode() {
+			    var email = document.getElementById("email").value;
+			    var code = document.getElementById("verificationCode").value;
+			    var checkButton = document.getElementById("checkCodeBtn");
 
-             console.log("📩 전송할 이메일:", email);
-             console.log("🔑 전송할 인증 코드:", code);
+			    console.log("📩 전송할 이메일:", email);
+			    console.log("🔑 전송할 인증 코드:", code);
 
-             // 버튼 비활성화 (중복 요청 방지)
-             checkButton.disabled = true;
+			    // 버튼 비활성화 (중복 요청 방지)
+			    checkButton.disabled = true;
 
-             fetch("http://localhost:8080/email/verify-code", {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json"
-                 },
-                 body: JSON.stringify({ email: email, code: code })
-             })
-             .then(response => {
-                 console.log("📡 서버 응답 상태 코드:", response.status);
-                 return response.text();
-             })
-             .then(data => {
-                 console.log("📡 서버 응답 데이터:", data);
-                 if (data === "success") {
-                     alert("이메일 인증 완료!");
-                     document.getElementById("emailVerified").value = "true"; // ✅ 인증 완료 처리
-                 } else {
-                     alert("인증 코드가 틀렸습니다.");
-                 }
-             })
-             .catch(error => {
-                 console.error("🚨 요청 중 오류 발생:", error);
-                 alert("인증 실패!");
-             })
-             .finally(() => {
-                 // 요청이 끝나면 버튼 다시 활성화
-                 checkButton.disabled = false;
-             });
-         }
-         $("#signupBtn").click(function (event) {
-             event.preventDefault(); // 🔴 폼 자동 제출 방지
-             console.log("회원가입 버튼 클릭됨!"); // ✅ 콘솔 로그 확인
+			    fetch("http://localhost:8080/email/verify-code", {
+			        method: "POST",
+			        headers: {
+			            "Content-Type": "application/json"
+			        },
+			        body: JSON.stringify({ storeEmail: email, code: code })
+			    })
+			    .then(response => {
+			        console.log("📡 서버 응답 상태 코드:", response.status);
+			        return response.text();
+			    })
+			    .then(data => {
+			        console.log("📡 서버 응답 데이터:", data);
+			        if (data === "success") {
+			            alert("이메일 인증 완료!");
+			            document.getElementById("emailVerified").value = "true"; // ✅ 인증 완료 처리
+			        } else {
+			            alert("인증 코드가 틀렸습니다.");
+			        }
+			    })
+			    .catch(error => {
+			        console.error("🚨 요청 중 오류 발생:", error);
+			        alert("인증 실패!");
+			    })
+			    .finally(() => {
+			        // 요청이 끝나면 버튼 다시 활성화
+			        checkButton.disabled = false;
+			    });
+			}
+			$("#signupBtn").click(function (event) {
+			    event.preventDefault(); // 🔴 폼 자동 제출 방지
+			    console.log("회원가입 버튼 클릭됨!"); // ✅ 콘솔 로그 확인
 
-             var name = $("#name").val().trim();
-             var b_number = $("#b_number").val().trim();
-             var passwd = $("#passwd").val().trim();
-             var passwdCheck = $("#passwdcheck").val().trim();
-             var phone = $("#phone").val().trim();
-             var email = $("#email").val().trim();
-             var emailVerified = $("#emailVerified").val() === "true";
-             var bNumberVerified = $("#bNumberVerified").attr("value") === "true"; 
-             var termsChecked = $("#check").is(":checked");
+			    var name = $("#name").val().trim();
+			    var nickname = $("#nickname").val().trim();
+			    var b_number = $("#b_number").val().trim();
+			    var passwd = $("#passwd").val().trim();
+			    var passwdCheck = $("#passwdcheck").val().trim();
+			    var phone = $("#phone").val().trim();
+			    var email = $("#email").val().trim();
+			    var emailVerified = $("#emailVerified").val() === "true";
+			    var bNumberVerified = $("#bNumberVerified").attr("value") === "true"; 
+			    var termsChecked = $("#check").is(":checked");
 
-             console.log("🔍 사업자 번호 인증 상태:", bNumberVerified);
-             console.log("🔍 이메일 인증 상태:", emailVerified);
+			    console.log("🔍 사업자 번호 인증 상태:", bNumberVerified);
+			    console.log("🔍 이메일 인증 상태:", emailVerified);
 
-             var fields = [
-                 { id: "#name", message: "이름을 입력해 주세요." },
-                 { id: "#b_number", message: "사업자번호를 입력해 주세요." },
-                 { id: "#passwd", message: "비밀번호를 입력해 주세요." },
-                 { id: "#passwdcheck", message: "비밀번호 확인을 입력해 주세요." },
-                 { id: "#phone", message: "연락처를 입력해 주세요." },
-                 { id: "#email", message: "이메일을 입력해 주세요." }
-             ];
+			    var fields = [
+			        { id: "#name", message: "이름을 입력해 주세요." },
+			        { id: "#nickname", message: "닉네임을 입력해 주세요." },
+			        { id: "#b_number", message: "사업자번호를 입력해 주세요." },
+			        { id: "#passwd", message: "비밀번호를 입력해 주세요." },
+			        { id: "#passwdcheck", message: "비밀번호 확인을 입력해 주세요." },
+			        { id: "#phone", message: "연락처를 입력해 주세요." },
+			        { id: "#email", message: "이메일을 입력해 주세요." }
+			    ];
 
-             for (var field of fields) {
-                 if ($(field.id).val().trim() === "") {
-                     alert(field.message);
-                     return;
-                 }
-             }
+			    for (var field of fields) {
+			        if ($(field.id).val().trim() === "") {
+			            alert(field.message);
+			            return;
+			        }
+			    }
 
-             if (!name.match(/^[가-힣a-zA-Z]{2,10}$/)) {
-                 alert("이름은 2~10자의 한글 또는 영문만 입력 가능합니다.");
-                 return;
-             }
-             if (!bNumberVerified) {
-                 alert("사업자 번호 인증이 필요합니다.");
-                 return;
-             }
-             if (!passwd.match(/^.{8,20}$/)) {
-                 alert("비밀번호는 8~20자 사이여야 합니다.");
-                 return;
-             }
-             if (passwd !== passwdCheck) {
-                 alert("비밀번호가 일치하지 않습니다.");
-                 return;
-             }
-             if (!phone.match(/^\d+$/)) {
-                 alert("연락처는 숫자만 입력 가능합니다.");
-                 return;
-             }
-             if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-                 alert("이메일 형식이 올바르지 않습니다.");
-                 return;
-             }
-             if (!emailVerified) {
-                 alert("이메일 인증이 필요합니다.");
-                 return;
-             }
-             if (!termsChecked) {
-                 alert("회원가입 동의가 필요합니다.");
-                 return;
-             }
+			    if (!name.match(/^[가-힣a-zA-Z]{2,10}$/)) {
+			        alert("이름은 2~10자의 한글 또는 영문만 입력 가능합니다.");
+			        return;
+			    }
+			    if (!bNumberVerified) {
+			        alert("사업자 번호 인증이 필요합니다.");
+			        return;
+			    }
+			    if (!passwd.match(/^.{8,20}$/)) {
+			        alert("비밀번호는 8~20자 사이여야 합니다.");
+			        return;
+			    }
+			    if (passwd !== passwdCheck) {
+			        alert("비밀번호가 일치하지 않습니다.");
+			        return;
+			    }
+			    if (!phone.match(/^\d+$/)) {
+			        alert("연락처는 숫자만 입력 가능합니다.");
+			        return;
+			    }
+			    if (!email.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+			        alert("이메일 형식이 올바르지 않습니다.");
+			        return;
+			    }
+			    if (!emailVerified) {
+			        alert("이메일 인증이 필요합니다.");
+			        return;
+			    }
+			    if (!termsChecked) {
+			        alert("회원가입 동의가 필요합니다.");
+			        return;
+			    }
 
-             fetch("http://localhost:8080/store/register", {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json"
-                 },
-                 body: JSON.stringify({
-                     name: name,
-                     email: email,
-                     password: passwd,
-                     phone: phone,
-                     businessNumber: b_number,
-                     agree: termsChecked
-                 })
-             })
-             .then(response => response.text())  // 🟢 응답을 JSON이 아닌 `text()`로 먼저 받음
-             .then(text => {
-                 console.log("📡 서버 응답 원본:", text);  // 서버에서 온 응답을 로그로 확인
-                 return text ? JSON.parse(text) : {};  // 🟢 응답이 없으면 빈 객체({}) 반환
-             })
-             .then(data => {
-                 if (data.message) {
-                     alert(data.message); // 성공 메시지
-                 } else {
-                     alert(data.error || "회원가입 실패");
-                 }
-             })
-             .catch(error => {
-                 console.error("🚨 요청 중 오류 발생:", error);
-                 alert("회원가입 중 문제가 발생했습니다.");
-             });
-         });
-   </script>
-   </th:block>
+			    fetch("http://localhost:8080/store/register", {
+			        method: "POST",
+			        headers: {
+			            "Content-Type": "application/json"
+			        },
+			        body: JSON.stringify({
+			            storeName: name,
+			            storeNickname: nickname,
+			            storeEmail: email,
+			            storePassword: passwd,
+			            storePhone: phone,
+			            storeBusinessNumber: b_number,
+			            agree: termsChecked
+			        })
+			    })
+			    .then(response => response.text())  // 🟢 응답을 JSON이 아닌 `text()`로 먼저 받음
+			    .then(text => {
+			        console.log("📡 서버 응답 원본:", text);  // 서버에서 온 응답을 로그로 확인
+			        return text ? JSON.parse(text) : {};  // 🟢 응답이 없으면 빈 객체({}) 반환
+			    })
+			    .then(data => {
+			        if (data.message) {
+			            alert(data.message); // 성공 메시지
+			            window.location.href = "/main";
+			        } else {
+			            alert(data.error || "회원가입 실패");
+			        }
+			    })
+			    .catch(error => {
+			        console.error("🚨 요청 중 오류 발생:", error);
+			        alert("회원가입 중 문제가 발생했습니다.");
+			    });
+			});
+	</script>
+	</th:block>
 </html>

@@ -7,9 +7,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +53,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/customer")
 public class MemberController {
 
+	@Autowired
 	private final MemberService memberService;
+
 	private final EmailService emailService;
 	private final CustomerReserveRepository customerReserveRepository;
 
@@ -362,46 +366,68 @@ public class MemberController {
 
 	@PostMapping("/updateProfileImage")
 	public String updateProfileImage(@RequestParam("profileImage") MultipartFile file,
-			@AuthenticationPrincipal CustomUserDetails customUserDetails, RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) {
 
-		// 1. 파일 유효성 검사 (비어 있는지, 이미지 파일인지)
-		if (file.isEmpty()) {
-			redirectAttributes.addFlashAttribute("errorMessage", "업로드할 파일을 선택해주세요.");
+		// ✅ 현재 로그인한 사용자 정보 가져오기
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+			redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+			return "redirect:/login";
+		}
+
+		// ✅ 사용자 ID 가져오기
+		String customerId = null;
+		Object principal = authentication.getPrincipal();
+
+		if (principal instanceof UserDetails) {
+			customerId = ((UserDetails) principal).getUsername(); // 일반 로그인 사용자
+		} else if (principal instanceof String) {
+			customerId = (String) principal; // OAuth 로그인 사용자
+		}
+
+		if (customerId == null) {
+			redirectAttributes.addFlashAttribute("errorMessage", "사용자 정보를 찾을 수 없습니다.");
 			return "redirect:/customer/memberInfo";
 		}
 
-		if (!file.getContentType().startsWith("image")) {
-			redirectAttributes.addFlashAttribute("errorMessage", "이미지 파일만 업로드할 수 있습니다.");
+		Optional<Member> memberOptional = memberService.findById(customerId);
+		if (memberOptional.isEmpty()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "사용자 정보를 찾을 수 없습니다.");
 			return "redirect:/customer/memberInfo";
 		}
 
-		// 2. 파일 저장 경로 설정 및 생성 (상대 경로 사용)
-		File uploadDir = new File(uploadPath); // 상대 경로
+		Member member = memberOptional.get();
+
+		// 4. 파일 저장 경로 설정 및 생성
+		String uploadPath = "src/main/resources/static/upload"; // 상대 경로
+		File uploadDir = new File(uploadPath);
 		if (!uploadDir.exists()) {
 			uploadDir.mkdirs();
 		}
 
-		// 3. 파일 이름 생성 (중복 방지)
+		// 5. 파일 이름 생성 (중복 방지)
 		String originalFilename = file.getOriginalFilename();
 		String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
 		String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
 
-		// 4. 파일 저장 (상대 경로 사용)
-		Path savePath = Paths.get(uploadPath, uniqueFilename); // 상대경로
+		// 6. 파일 저장
+		Path savePath = Paths.get(uploadPath, uniqueFilename);
 		try {
 			Files.copy(file.getInputStream(), savePath, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			// 예외 처리 (로그 기록, 사용자에게 메시지)
 			redirectAttributes.addFlashAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
 			return "redirect:/customer/memberInfo";
 		}
 
-		// 5. DB에 프로필 이미지 경로 업데이트. 상대경로 저장 (/upload/파일명)
+		// 7. DB에 프로필 이미지 경로 업데이트 (상대경로 저장)
 		String imageUrl = "/upload/" + uniqueFilename;
-		memberService.updateProfileImage(customUserDetails.getMember().getCustomerId(), imageUrl);
+		member.setCustomerProfileImage(imageUrl); // 🔹 직접 Member 엔티티 업데이트
+		memberService.save(member); // 🔹 변경된 내용 저장
 
-		redirectAttributes.addFlashAttribute("updateSuccess", true);
-		return "redirect:/customer/mypage";
+		// ✅ 성공 메시지 추가
+		redirectAttributes.addFlashAttribute("updateSuccess", "프로필 이미지가 성공적으로 변경되었습니다.");
+		return "redirect:/customer/memberInfo"; // 🔹 같은 페이지 유지
 	}
 
 	@GetMapping("/withdrawalForm")

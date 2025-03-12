@@ -4,25 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/css/admin.css">
+	<script th:src="@{/js/admin.js}"></script> 
 </head> 
 <body>  
 <aside class="sidebar">
    <div class="profile">
-<img class="profile-img" th:src="${admin != null and admin.profileImagePath != null and admin.profileImagePath != '' ? admin.profileImagePath : '/images/default-profile.png'}">
-     <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
-    <div class="admin-info">
-    <p id="adminNameDisplay"><span th:text="${session.adminName} ?: '관리자'"></span> 관리자님</p>
-</div>
-</div>
+   <!-- ✅ 사진 클릭 시 파일 업로드 가능 -->
+        <img class="profile-img" id="profile-image"
+     th:src="${session.profileImagePath != null and session.profileImagePath != '' ? session.profileImagePath : '/images/default-profile.png'}"
+     alt="프로필 이미지">
+
+        <!-- ✅ 숨겨진 파일 업로드 input -->
+        <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
+
+        <div class="admin-info">
+            <p id="adminNameDisplay">
+                <span th:text="${session.adminName} ?: '관리자'"></span> 관리자님
+            </p>
+        </div>
+    </div> 
    
     <ul class="menu">
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">사용자 관리</a>
             <ul class="submenu">
-                <li><a href="#">회원</a></li>
+                <li><a href="/admin/sidebar/customers">회원</a></li>
                 <li><a href="#">사업자</a></li>
                 <li><a href="#">탈퇴회원</a></li>
                 <li><a href="#">탈퇴사업자</a></li>
+                 <li><a href="#">불량 사용자 관리</a></li>
             </ul>
         </li>
         <li class="menu-item"> 
@@ -31,7 +41,7 @@
                 <li><a href="#">예약내역</a></li>
                 <li><a href="#">예약취소내역</a></li>
                 <li><a href="#">폐점매장관리</a></li>
-            </ul>
+            </ul> 
         </li>
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">게시판 관리</a> 
@@ -44,12 +54,11 @@
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-toggle">Q&A 관리</a>
             <ul class="submenu">
-                <li><a href="#">Q&A로 이동</a></li>
+                <li><a href="#">Q&A로 이동</a></li> 
             </ul>
         </li>
     </ul> 
-</aside> 
-	<script th:src="@{/js/admin.js}"></script>
+</aside>  
 	<script>
 	document.addEventListener("DOMContentLoaded", function() {
 	    const adminName = sessionStorage.getItem("adminName");

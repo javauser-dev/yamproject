@@ -8,9 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import lombok.Getter;
-
-@Getter
 public class CustomOAuth2User implements OAuth2User {
 	private final OAuth2User oAuth2User;
 	private final String role;
@@ -27,7 +24,7 @@ public class CustomOAuth2User implements OAuth2User {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(new SimpleGrantedAuthority(role)); // 🔹 권한 부여
+		return Collections.singleton(new SimpleGrantedAuthority(role));
 	}
 
 	@Override

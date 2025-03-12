@@ -10,10 +10,11 @@ import lombok.ToString;
 @ToString
 @Builder
 public class StoreDTO {
-    private String name;
-    private String email;
-    private String password;
-    private String phone;
-    private String businessNumber;
-    private boolean agree;
+	private String storeName;
+	private String storeNickname;
+	private String storeEmail;
+	private String storePassword;
+	private String storePhone;
+	private String storeBusinessNumber;
+	private boolean agree;
 }

@@ -3,6 +3,7 @@ package com.yam.admin.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,17 @@ public class AdminService {
 		stats.put("newUsers", newUsers);
 		stats.put("deletedUsers", deletedUsers);
 		return stats;
+	}
+
+	// ✅ 관리자 ID (adminId) 기준으로 Admin 조회
+	public Optional<Admin> findByAdminId(String adminId) {
+		return adminRepository.findById(adminId);
+	}
+
+	// ✅ 관리자 정보 저장 (프로필 업데이트 시 필요)
+	@Transactional
+	public void save(Admin admin) {
+		adminRepository.save(admin);
 	}
 
 }

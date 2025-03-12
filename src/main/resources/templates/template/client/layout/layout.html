@@ -14,11 +14,12 @@
            <div class="container py-4">
              <header class="pb-3 mb-4">
                <th:block th:if="${session.userRole != 'ADMIN'}">
-                <div th:replace="template/client/fragments/block :: header"></div>
+               <th:block th:insert="~{template/client/fragments/block :: header}"/>
+
             </th:block>
             <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
             <th:block th:if="${session.userRole == 'ADMIN'}">
-                <div th:replace="template/client/fragments/adminblock :: header"></div>
+                <div th:replace="{template/client/fragments/adminblock :: header}"></div>
             </th:block>
              </header>
           

@@ -22,7 +22,7 @@ public interface MemberRepository extends JpaRepository<Member, String> { // <En
 	Page<Member> findByCustomerIdContainingOrCustomerNicknameContaining(String idKeyword, String nicknameKeyword,
 			Pageable pageable);
 
-	Optional<Member> findByCustomerIdEquals(String Id);
+	Optional<Member> findByCustomerIdEquals(String customerId);
 
 	// 메일로 회원 존재 여부 확인
 	boolean existsByCustomerNickname(String customerEmail);
