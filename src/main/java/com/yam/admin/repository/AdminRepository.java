@@ -32,4 +32,13 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 	// 전체 탈퇴 회원 수
 	@Query(value = "SELECT COUNT(*) FROM WITHDRAWN_CUSTOMER", nativeQuery = true)
 	int countDeletedUsers();
+
+	// ✅ 전체 사업자 수 조회
+	@Query(value = "SELECT COUNT(*) FROM yam_store", nativeQuery = true)
+	int countNewStores();
+
+	// ✅ 전체 탈퇴 사업자 수 조회
+	@Query(value = "SELECT COUNT(*) FROM withdrawn_store", nativeQuery = true)
+	int countDeletedStores();
+
 }

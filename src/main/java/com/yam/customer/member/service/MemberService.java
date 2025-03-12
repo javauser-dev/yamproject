@@ -227,4 +227,5 @@ public class MemberService {
 	public Optional<Member> findByCustomerEmail(String customerEmail) {
 		return memberRepository.findByCustomerId(customerEmail);
 	}
+
 }

@@ -76,6 +76,18 @@ public class AdminService {
 		return stats;
 	}
 
+	// ✅ 사업자 통계 가져오기
+	public Map<String, Integer> getStoreStatistics() {
+		Map<String, Integer> storeStats = new HashMap<>();
+
+		int newStores = adminRepository.countNewStores(); // 전체 사업자 수
+		int deletedStores = adminRepository.countDeletedStores(); // 탈퇴한 사업자 수
+
+		storeStats.put("newStores", newStores);
+		storeStats.put("deletedStores", deletedStores);
+		return storeStats;
+	}
+
 	// ✅ 관리자 ID (adminId) 기준으로 Admin 조회
 	public Optional<Admin> findByAdminId(String adminId) {
 		return adminRepository.findById(adminId);

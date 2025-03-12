@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yam.admin.dto.AdminDTO;
 import com.yam.admin.model.Admin;
 import com.yam.admin.service.AdminService;
+import com.yam.store.service.StoreService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -38,6 +39,9 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+
+	@Autowired
+	private StoreService storeService; // ✅ 사업자 서비스 추가
 
 	// 애플리케이션 실행 시 기본 경로로 접속하면 자동으로 "/dashboard"로 리다이렉트
 	@GetMapping("/")
@@ -67,6 +71,8 @@ public class AdminController {
 		return "dashboard";
 	}
 
+	// ----------------------------------------------------------------------------------
+	// ✅ 회원 & 사업자 통계 추가
 	@GetMapping("/stats")
 	public ResponseEntity<Map<String, Integer>> getMemberStats() {
 		try {
@@ -77,6 +83,20 @@ public class AdminController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyMap());
 		}
 	}
+
+	// ✅ 새로운 사업자 통계 API 추가
+	@GetMapping("/storeStats")
+	@ResponseBody
+	public ResponseEntity<Map<String, Integer>> getStoreStats() {
+		try {
+			Map<String, Integer> storeStats = adminService.getStoreStatistics();
+			return ResponseEntity.ok(storeStats);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyMap());
+		}
+	}
+	// ----------------------------------------------------------------------------------
 
 	@PostMapping("/admin/updateProfileImage")
 	@ResponseBody

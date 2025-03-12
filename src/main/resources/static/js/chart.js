@@ -34,16 +34,25 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 🔹 기존 차트 (사업자 관련)
-    let ctx3 = document.getElementById('chart3').getContext('2d');
-    new Chart(ctx3, {
-        type: 'doughnut',
-        data: {
-            labels: ['신규 사업자', '탈퇴 사업자'],
-            datasets: [{
-                data: [120, 50],
-                backgroundColor: ['purple', 'gray']
-            }]
-        }
-    });
-});
+	// 🔹 기존 사업자 통계 가져오기
+	    fetch("/storeStats")
+	        .then(response => response.json())
+	        .then(data => { 
+	            console.log("📊 전체 사업자 통계 데이터:", data);
+
+	            let newStores = data.newStores || 0;
+	            let deleteStores = data.deleteStores || 0;
+ 
+	            let ctx3 = document.getElementById('chart3').getContext('2d');
+	            new Chart(ctx3, {
+	                type: 'doughnut',
+	                data: { 
+	                    labels: [`전체 사업자 (${newStores}명)`, `탈퇴 사업자 (${deleteStores}명)`],
+	                    datasets: [{
+	                        data: [newStores, deleteStores],
+	                        backgroundColor: ['purple', 'gray']
+	                    }]
+	                }
+	            });
+	        }).catch(error => console.error("❌ 사업자 통계 데이터 불러오기 실패:", error));
+	});
