@@ -2,7 +2,7 @@
 	layout:decorate="~{template/client/layout/layout}">
 	
     <th:block layout:fragment="content">
-    	<form id="shopForm" action="#" th:action="@{/shop/save}" th:object="${shop}" method="post">
+    	<form id="shopForm" action="#" th:object="${shop}" method="post">
 		    <label for="shopName">매장명:</label>
 		    <input type="text" id="shopName" th:field="*{shopName}"><br>
 		
@@ -23,7 +23,7 @@
 		    <label for="shopAddress">매장주소:</label>
 		    <input type="text" id="shopAddress" th:field="*{shopAddress}"><br>
 		
-		    <button type="submit">매장 추가</button>
+		    <button type="button" id="addStore">매장 추가</button>
 		</form>
 
     </th:block>
@@ -66,10 +66,8 @@
 	                }
 	            });
 	        }
-
-	        // 매장 추가 함수
-	        function addStore() {
-	            const name = $('#shopName').val();
+		  $("#addStore").on("click", () => {
+	       	            const name = $('#shopName').val();
 	            const bname = $('#storeName').val();
 	            const businessNumber = $('#shopBusinessNumber').val();
 	            const subDate = $('#shopSubDate').val();
@@ -86,7 +84,7 @@
 	            };
 
 	            $.ajax({
-	                url: "/shop/addStore", // 서버의 매장 추가 엔드포인트
+	                url: "/shop/addShop", // 서버의 매장 추가 엔드포인트
 	                type: 'POST',
 	                contentType: 'application/json',
 	                data: JSON.stringify(payload),
@@ -99,7 +97,8 @@
 	                    console.error('요청 중 오류 발생:', error);
 	                }
 	            });
-	        }
+	        });
+		  
 		</script>
 	</th:block>
 </html>

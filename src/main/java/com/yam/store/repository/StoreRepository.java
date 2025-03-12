@@ -9,7 +9,7 @@ import com.yam.store.Store;
 public interface StoreRepository extends JpaRepository<Store, Long> {
 	Store findByVerificationToken(String token);
 
-	Optional<Store> findByStoreEmail(String storeEmail); // 🔹 이메일로 사용자 조회하는 메서드 추가
+	Optional<Store> findByStoreEmail(String storeEmail);
 
 	boolean existsByStoreEmail(String storeEmail); // ✅ 추가된 코드
 

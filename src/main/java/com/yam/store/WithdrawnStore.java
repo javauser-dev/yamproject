@@ -1,43 +1,38 @@
 package com.yam.store;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.yam.shop.Shop;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
+
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor 
-@Table(name = "yam_store")
-@SequenceGenerator(name = "yam_store_generator", sequenceName = "yam_store_seq", initialValue = 1, allocationSize = 1)
-public class Store {
+@AllArgsConstructor
+@Table(name = "withdrawn_store") 
+@EntityListeners(AuditingEntityListener.class)
+public class WithdrawnStore {
+
+	public WithdrawnStore() {}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "yam_store_generator")
 	private Long storeNo;
 	
 	@Column(length = 10, nullable = false)
@@ -90,8 +85,14 @@ public class Store {
 	@Column(nullable = false)
 	private boolean businessVerified = false;
 	
-	@OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-	
-	private List<Shop> shops;
+    @Column(nullable = false)
+    private LocalDateTime withdrawalRequestedAt; // 탈퇴 신청일
+
+    @Column(nullable = false)
+    private LocalDateTime withdrawalCompletedAt; // 탈퇴 완료일
+
+    @Column(nullable = false)
+    private String withdrawalReason; // 탈퇴 사유
+
 
 }

@@ -86,7 +86,7 @@ public class ShopService {
     
     // 매장 저장
     public void saveShop(Shop shop) {
-        shopRepository.save(shop);
+    	shopRepository.save(shop);
     }
     
     public void deleteShop(Long id) {
@@ -109,5 +109,3 @@ public class ShopService {
         return shopRepository.findByShopNo(shopNo);
     }
 }
-
-   

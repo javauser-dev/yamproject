@@ -28,9 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yam.shop.Shop;
 import com.yam.shop.repository.ShopRepository;
 import com.yam.shop.service.ShopService;
+import com.yam.store.Store;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/shop")
+@lombok.extern.slf4j.Slf4j
 public class ShopController {
 
     @Autowired
@@ -154,8 +158,18 @@ public class ShopController {
 
     // 매장 추가 처리 (POST 요청)
     @PostMapping("/addShop")
-    public String addShop(@ModelAttribute Shop shop) {
-        shopService.saveShop(shop); // 매장 저장 서비스 호출
-        return "redirect:/shop/myShopList"; // 매장 목록 페이지로 리다이렉트
+    public ResponseEntity<String> addShop(@RequestBody Shop shop, HttpSession session){
+    	log.info("-----------------------------------------");
+    	log.info(shop.toString());
+    	try {
+    		 Store store = (Store) session.getAttribute("loggedInStore");
+    		 shop.setStore(store);
+    		 shopService.saveShop(shop);
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body("매장이 성공적으로 추가되었습니다.");
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("매장 추가 중 오류가 발생했습니다.");
+        }
     }
-}
+}	

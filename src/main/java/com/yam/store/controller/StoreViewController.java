@@ -25,7 +25,9 @@ public class StoreViewController {
 	    System.out.println("로그인된 store: " + store.getStoreNickname());
 
 	    // 세션에서 storeNickname을 가져와서 모델에 추가
-	    model.addAttribute("storeNickname", store.getStoreNickname());
+	    model.addAttribute("storeNickname"	, store.getStoreNickname());
+	    model.addAttribute("storeNo", store.getStoreNo());
+	    model.addAttribute("storeEmail", store.getStoreEmail());
 
 	    // 마이페이지로 이동
 	    return "store/mypage"; // Thymeleaf 템플릿 파일 (mypage.html)

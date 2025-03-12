@@ -15,7 +15,10 @@ import lombok.RequiredArgsConstructor;
 public class CustomUserDetails implements UserDetails {
 
     private final Member member;
+    
 
+   
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // 권한 정보 (여기서는 간단하게 ROLE_USER로 설정)

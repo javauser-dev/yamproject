@@ -47,7 +47,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/shop")
 public class ShopViewController {
     
-	@Value("${file.upload.directory:static/upload}")
+	@Value("${file.upload.directory:upload}")
     private String uploadDirectory;
     
     @Autowired
@@ -142,7 +142,7 @@ public class ShopViewController {
         LocalDate now = LocalDate.now();
         shop.setShopSubDate(now);
         
-        shopService.saveShop(shop);
+        shopService.updateShop(shop);
         
         return "redirect:/shop/myShopList";
     }
@@ -202,7 +202,7 @@ public class ShopViewController {
     
     @GetMapping("/upload/{filename}")
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-        Path file = Paths.get("static/upload").resolve(filename);
+        Path file = Paths.get("upload").resolve(filename);
         Resource resource = new FileSystemResource(file.toFile());
         if (resource.exists() && resource.isReadable()) {
             return ResponseEntity.ok()
@@ -238,7 +238,7 @@ public class ShopViewController {
             return "shop/shopDetail";
         } else {
             System.out.println("Shop not found for id: " + id);
-            return "error/404";
+            return "에러";
         }
     }
     
@@ -302,19 +302,18 @@ public class ShopViewController {
     @PostMapping("/update-field")
     @ResponseBody
     public ResponseEntity<?> updateField(
-        @RequestParam("field") String field,
-        @RequestParam("value") String value,
-        @RequestParam(value = "shopNo", required = false) Long shopNo,  // shopNo 파라미터 추가
+    	@RequestParam(value = "field", required = false) String field,
+        @RequestParam(value = "value", required = false) String value,
+        @RequestParam(value = "shopNo", required = false) Long shopNo,
         Principal principal,
         HttpSession session) {
-
-        if (field == null || field.isEmpty() || value == null || value.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("message", "필드와 값은 필수입니다."));
-        }
 
         System.out.println("Field: " + field);
         System.out.println("Value: " + value);
         System.out.println("ShopNo: " + shopNo);
+        if (field == null || field.isEmpty() || value == null || value.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "필드와 값은 필수입니다."));
+        }
 
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "사용자가 인증되지 않았습니다."));
