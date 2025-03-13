@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">	
+	
+ 	<div class="container py-1">   		
+		<th:block layout:fragment="content" class="reserveForm">
+		<!-- ---------------------------------예약모달창부분------------------------------------- -->
+			<div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+			  <div class="modal-dialog modal-dialog-centered">
+			    <div class="modal-content">
+			    
+			      <div class="modal-header">
+			        <h1 class="modal-title fs-5" id="exampleModalToggleLabel"><span>Reservation</span></h1>
+			        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			      </div>
+			      
+			     <div class="modal-body">
+				    <div>
+				    <span>Name of Shop</span><br />
+				        <p>안녕하세요 회원님!<br /> 
+				        오늘도 YAM과 즐겁고<br />
+				        맛있는 저녁을 함께해요~! :></p>
+				    </div>
+				    <span>Date</span>
+				    <p>예약하실 날짜를 선택해 주세요.</p>
+				    <!-- ✅ 추가된 달력 -->
+					<input type="text" id="myDate" class="border-none">
+		
+				    <div class="d-flex gap-2 justify-content-center py-2">
+				        <button id="time12" class="btn btn-light rounded-pill px-3" type="button"><span>12:00</span></button>
+				        <button id="time13" class="btn btn-light rounded-pill px-3" type="button"><span>13:00</span></button>
+				        <button id="time14" class="btn btn-light gray rounded-pill px-3" type="button"><span>14:00</span></button>
+				        <button id="time15" class="btn btn-light rounded-pill px-3" type="button" disabled><span>15:00</span></button>
+				        <button id="time16" class="btn btn-light rounded-pill px-3" type="button" disabled><span>16:00</span></button>
+				        <button id="time17" class="btn btn-light rounded-pill px-3" type="button"><span>17:00</span></button>
+				        <button id="time18" class="btn btn-light rounded-pill px-3" type="button"><span>18:00</span></button>
+				        <button id="time19" class="btn btn-light rounded-pill px-3" type="button"><span>19:00</span></button>
+				        <button id="time20" class="btn btn-light rounded-pill px-3" type="button"><span>20:00</span></button>
+				    </div>
+				    <span>Time</span>
+				    <p>예약하실 시간을 선택해 주세요.</p>
+				    <input type="date"  />
+				 
+				    <div class="d-flex gap-2 justify-content-center py-2">
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>1</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>2</span></button>
+				        <button class="btn btn-success rounded-pill px-4" type="button"><span>3</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>4</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>5</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>6</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>7</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>8</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>9</span></button>
+				        <button class="btn btn-light rounded-pill px-4" type="button"><span>10</span></button>
+				    </div>
+				    <span>Number of people</span>
+				    <div><p>예약하실 인원수를 선택해 주세요.</p></div>
+				    <span>deposit</span>
+				    <div><p>예약금 &#92;5,000입니다.</p></div>
+				    <div><p></p></div>
+				</div>
+		      <div class="modal-footer">
+		        <button class="btn btn-light rounded-pill" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">확인</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">예약확인</h1>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      
+		      <div class="modal-body">
+		      	<!-- 예약확인 모달창 -->
+		      	<span>Name of Shop</span><br />
+		      	<span>No.reserveNumber(ex.2025003035)</span>
+				<div><p class="fw-bold">2025년 03월 04일</p></div>
+				<div><p id="reserveDetail">시간은 19:00 입니다.</p></div>
+				<div><p class="fw-bold">인원수는 명입니다.</p></div>
+		      </div>
+		      
+		      <div class="modal-footer"> 
+		      	<!-- 얘는 회원 예약에 보내는 버튼, 사업자도 볼 수 있는 예약 상세 화면. -->
+		        <!-- <button class="btn btn-light rounded-pill">확인!!</button> -->
+		        <button class="btn btn-light rounded-pill" data-bs-target="#exampleModalToggle3" data-bs-toggle="modal">확인!!</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<div class="modal fade" id="exampleModalToggle3" aria-hidden="true" aria-labelledby="exampleModalToggleLabel3" tabindex="-1">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h1 class="modal-title fs-5" id="exampleModalToggleLabel2">예약확인</h1>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		       <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+		      </div>
+		      
+		      <div class="modal-body">
+		      	<!-- 예약확인 모달창 -->
+		      	<span>Name of Shop</span><br />
+				<div><p class="fw-bold">예약이 완료되었습니다!<br />
+										즐거운 식사되세요.<br />
+										이메일을 확인하여 주세요!<br />
+										YAM 테이블링을 이용하여 주셔서 감사합니다.</p></div>
+		      </div>
+		      
+		      <div class="modal-footer"> 
+		      	<!-- 얘는 회원 예약에 보내는 버튼, 사업자도 볼 수 있는 예약 상세 화면. -->
+		        <button id="articleInsertBtn" class="btn btn-light rounded-pill" data-bs-dismiss="modal" aria-label="Close">확인!</button>
+		        <!-- <button class="btn btn-light rounded-pill" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">확인!!</button> -->
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<button class="btn btn-light" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">예약하기</button><br />
+		
+		<!-- ---------------------------------------------------------------------- -->
+	
+		</th:block>
+	</div>
+
+	<th:block layout:fragment="script">
+		<script src="/js/shopReserve/shopReserveControl.js"></script>
+		<script>
+		  $(function() {
+		    $("#myDate").datepicker({
+		      showOn: "button",  // 버튼을 클릭하면 달력이 표시
+		      buttonText: "날짜 선택",  // 버튼 텍스트 설정
+		      inline: true,  // 달력 항상 표시
+		    });
+		  });
+	</script>
+	</th:block>	
+</html>

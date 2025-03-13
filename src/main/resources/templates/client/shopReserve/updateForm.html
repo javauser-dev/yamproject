@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+
+	<th:block layout:fragment="content">
+		<div class="text-center"><h3>예약 수정</h3></div>	
+		<!-- 수정사항은 요청사항, 인원수만. -->
+		
+		
+		<div class="container"> 
+			<div class="board-table-height">
+				<form id="updateForm" th:object="${updateData}">
+					<input type="hidden" name="no" th:value="*{shopReserveNo}" />
+					<div class="mb-3 row">
+			
+					<th:block th:if="${not #lists.isEmpty(shopReserveList)}"> <!-- 리스트가 비어 있지 않을 경우 -->
+					    <div class="row g-3">
+					        <th:block th:each="shopReserve : ${shopReserveList}" th:object="${shopReserve}">
+					           
+					            <!-- 카드 하나씩 출력 -->
+					            <div class="container-f col-md-4">
+					                <div class="card">
+					                    <div class="card-header">
+					                        <h5 class="card-title"> reservation No. <span th:text="*{shopReserveNo}"></span></h5>
+					                    </div>
+					                    <div class="card-body">
+					                        <p class="card-text">
+					                            <strong>예약 날짜 및 시간:</strong> <span th:text="${#strings.concat(shopDate, ' ', shopTime)}"></span><br>
+					                            <strong>인원수:</strong> <span class="guestCount" th:text="*{shopGuestCount}"></span><br>
+					                            <strong>예약금:</strong> <span th:text="*{shopReserveDeposit}"></span><br>
+					                            <strong>요청사항:</strong> <span class="reserveRequest" th:text="*{shopReserveRequest}"></span>
+					                        </p>
+					                    </div>
+					                </div>
+					            </div>
+					        </th:block>
+					    </div>
+					</th:block>
+				    	<label class="col-sm-2 col-form-label">작성자</label>
+				    	<div class="col-sm-10">
+				    		<p class="form-control-static" th:text="*{name}"></p>
+				      		<!-- <input type="text" class="form-control" th:field="*{name}" readonly="readonly" /> -->
+				    	</div>
+				  	</div>
+				  	<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">글제목</label>
+				    	<div class="col-sm-10">
+				    		<input type="text" class="form-control" th:field="*{title}" />
+				    	</div>
+				    </div>
+				    <div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">글내용</label>
+				    	<div class="col-sm-10">
+				    		<textarea class="form-control board-textarea" rows="8" th:field="*{content}"></textarea>
+				    	</div>
+				    </div>
+				    <div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">비밀번호</label>
+				    	<div class="col-sm-10">
+				    		<input type="password" name="passwd" id="passwd" class="form-control" placeholder="변경할 비밀번호를 입력해 주세요" />
+				    	</div>
+				    </div>
+				    <div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">이미지</label>
+				    	<div class="col-sm-10">
+				    		<input type="password" name="passwd" id="passwd" class="form-control" placeholder="변경할 비밀번호를 입력해 주세요" />
+				    	</div>
+				    </div>
+				    <div class="mb-3 row" th:if="*{not #strings.isEmpty(filename)}">
+						<label class="col-sm-2 col-form-label">이미지</label>
+						<div class="col-sm-10">
+							<img th:src="@{/article/view/} + *{filename}" />
+						</div>
+						</div>
+					<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">이미지파일</label>
+				    	<div class="col-sm-10">
+							<input type="file" class="form-control" th:field="*{file}">
+						</div>
+					</div>
+				    
+				    <div class="text-end">
+						<button type="button" id="articleUpdateBtn" class="btn btn-primary btn-sm">글수정</button>
+						<button type="button" id="articleCancelBtn" class="btn btn-primary btn-sm">글취소</button>
+						<button type="button" id="articleListBtn" class="btn btn-primary btn-sm">글목록</button>
+					</div>	
+				</form>
+			</div>		
+		</div>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+		<script src="/js/shopReserve/shopReserveControl.js"></script>
+	</th:block>	
+	
+</html>

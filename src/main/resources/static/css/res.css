@@ -1,0 +1,10 @@
+@charset "UTF-8";
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.info-row p {
+    margin: 0;
+}
