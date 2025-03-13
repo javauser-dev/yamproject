@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.yam</groupId>
-	<artifactId>yamProject</artifactId>
+	<artifactId>YAM_Project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>yamProject</name>
-	<description>yamProject project for Spring Boot</description>
+	<name>YAM_Project</name>
+	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,9 +30,21 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+	<dependency>
+    <groupId>org.springframework.boot</groupId>
+    	<artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
+	<dependency>
+         <groupId>nz.net.ultraq.thymeleaf</groupId>
+         <artifactId>thymeleaf-layout-dialect</artifactId>
+      </dependency>
+	<dependency>
+   		 <groupId>org.springframework.boot</groupId>
+  	 	 <artifactId>spring-boot-starter-data-jpa</artifactId>
+	</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -41,6 +53,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>3.0.4</version>
 		</dependency>
 
 		<dependency>
@@ -64,7 +81,64 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter-test</artifactId>
+			<version>3.0.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+   			 <groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency> 
+    		<groupId>org.springframework.boot</groupId>
+    		<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+    <!-- ✅ JavaMailSender 사용을 위한 메일 전송 라이브러리 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    <!-- ✅ 이메일 입력값 검증을 위한 유효성 검사 라이브러리 -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+<!-- JJWT (JWT 토큰 생성 및 검증) -->
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency> 
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId> <!-- JSON 파싱 지원 -->
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+     <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>
+     <!-- api정보를 위해 의존성 추가 -->
+    <dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20230227</version>
+	</dependency>
+	<dependency>
+		<groupId>net.coobird</groupId>
+		<artifactId>thumbnailator</artifactId>
+		<version>0.4.20</version>
+	</dependency> 
+</dependencies>
 
 	<build>
 		<plugins>

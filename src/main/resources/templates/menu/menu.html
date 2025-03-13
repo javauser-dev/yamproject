@@ -1,0 +1,216 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+<main>
+    <!-- 카테고리 목록 -->
+<div class="category-list">
+    <h3>카테고리 목록</h3>
+    <div id="category-list">
+        <button class="category-button" onclick="filterMenu('all')">전체</button>
+        <!-- 동적으로 추가된 카테고리 버튼들이 여기에 표시됩니다 -->
+    </div>
+    <input type="text" id="newCategory" placeholder="새로운 카테고리 이름을 입력하세요" required>
+    <button type="button" onclick="addCategory()">카테고리 추가</button>
+</div>
+    
+
+    <!-- 메뉴 섹션 -->
+    <div class="menu-section">
+        <div class="section-row">
+            <!-- 메뉴 추가 폼 -->
+            <div class="menu-item">
+                <button class="section-button" onclick="toggleSection('section1-content')">메뉴 추가</button>
+                <div id="section1-content" class="section-content">
+                    <form th:action="@{/menu/save}" method="post" enctype="multipart/form-data">
+                        <input type="text" name="name" placeholder="메뉴명" required>
+                        <input type="text" name="simpleExp" placeholder="간단 설명" required>
+                        <textarea name="component" placeholder="메뉴 상세 설명"></textarea>
+                        <input type="text" name="price" placeholder="가격" required />
+                        <input type="text" name="category" id="category" placeholder="새로운 카테고리 이름" required>
+
+                        <!-- 카테고리 버튼을 동적으로 추가할 영역 -->
+                        <div id="category-buttons"></div>
+                        
+                        <!-- 메뉴 항목 -->
+                        <div id="menuItems"></div>
+                        
+                        <div class="image-upload-container">
+                            <label for="image1">메뉴 이미지 업로드</label>
+                            <input type="file" id="image1" name="image" accept="image/*" onchange="previewImage(this, 'preview1')">
+                            <div id="preview1" class="image-preview"></div>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="submit" class="save-btn">저장</button>
+                            <button type="button" onclick="closeEditMenuModal()">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 메뉴 항목 리스트 -->
+        <div class="item-list-container">
+            <h2>등록된 메뉴</h2>
+            <div class="item-list" id="menu-list">
+                <div th:each="menu : ${menus}" class="menu-card" th:classappend="${menu.category}">
+                    <div class="menu-image" th:if="${menu.filename}">
+                        <img th:src="@{'/upload/' + ${menu.filename}}" alt="메뉴 이미지">
+                    </div>
+                    <h3 th:text="${menu.name}"></h3>
+                    <p th:text="${menu.simpleExp}" class="simple-exp"></p>
+                    <p th:text="${menu.component}"></p>
+                    <p class="menu-price" th:text="${menu.price + '원'}"></p>
+                    <span class="category-tag" th:text="${menu.category}"></span>
+                    <div class="menu-actions">
+                        <button type="button" onclick="openEditMenuModal('${menu.no}')">수정</button>
+
+                        <a th:href="@{'/menu/delete/' + ${menu.no}}">삭제</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메뉴 수정 모달 (수정폼) -->
+<div id="editMenuModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeEditMenuModal()">&times;</span>
+        <h2>메뉴 수정</h2>
+        <form id="editMenuForm" th:action="@{/menu/save}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="menuNo" id="editMenuNo">
+            <input type="text" name="name" id="editMenuName" placeholder="메뉴명" required>
+            <input type="text" name="simpleExp" id="editMenuSimpleExp" placeholder="간단 설명" required>
+            <textarea name="component" id="editMenuComponent" placeholder="상세 설명"></textarea>
+            <input type="text" name="price" id="editMenuPrice" placeholder="가격" required>
+            <input type="text" name="category" id="editMenuCategory" placeholder="카테고리" required>
+            <div class="image-upload-container">
+                <label for="editImage">메뉴 이미지 업로드</label>
+                <input type="file" id="editImage" name="image" accept="image/*" onchange="previewImage(this, 'editPreview')">
+                <div id="editPreview" class="image-preview"></div>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="save-btn">저장</button>
+                <button type="button" onclick="closeEditMenuModal()">취소</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</main>
+
+
+
+    <link rel="stylesheet" th:href="@{/css/menu/menu.css}">
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	<script>
+	// 카테고리 추가 함수
+	function addCategory() {
+	    const categoryInput = document.getElementById('newCategory');
+	    const categoryName = categoryInput.value.trim();
+
+	    if (categoryName === '') {
+	        alert('카테고리명을 입력해주세요.');
+	        return;
+	    }
+
+	    // 카테고리 버튼 생성
+	    const categoryList = document.getElementById('category-list');
+	    const newCategoryButton = document.createElement('button');
+	    newCategoryButton.classList.add('category-button');
+	    newCategoryButton.textContent = categoryName;
+	    newCategoryButton.setAttribute('onclick', `filterMenu('${categoryName}')`);
+
+	    // 카테고리 버튼을 카테고리 목록에 추가
+	    categoryList.appendChild(newCategoryButton);
+
+	    // 입력 필드 초기화
+	    categoryInput.value = '';
+	}
+
+	// 필터링 함수
+	function filterMenu(category) {
+	    const menuItems = document.querySelectorAll('.menu-card');
+	    menuItems.forEach(item => {
+	        if (category === 'all' || item.classList.contains(category)) {
+	            item.style.display = 'block';
+	        } else {
+	            item.style.display = 'none';
+	        }
+	    });
+	}
+	// 섹션 콘텐츠 표시/숨김 전환 함수
+	function toggleSection(sectionId) {
+	    const section = document.getElementById(sectionId);
+	    if (section.style.display === 'none' || section.style.display === '') {
+	        section.style.display = 'block';
+	    } else {
+	        section.style.display = 'none';
+	    }
+	}
+
+	// 이미지 미리보기 함수
+	function previewImage(input, previewId) {
+	    const preview = document.getElementById(previewId);
+	    preview.innerHTML = '';
+	    
+	    if (input.files && input.files[0]) {
+	        const reader = new FileReader();
+	        
+	        reader.onload = function(e) {
+	            const img = document.createElement('img');
+	            img.src = e.target.result;
+	            img.alt = '메뉴 이미지 미리보기';
+	            img.className = 'preview-img';
+	            preview.appendChild(img);
+	        }
+	        
+	        reader.readAsDataURL(input.files[0]);
+	    }
+	}
+	function editMenu(menuNo) {
+	    // 서버에서 메뉴 데이터를 가져오는 요청
+	    fetch(`/menu/edit/${menuNo}`)
+	        .then(response => response.json())
+	        .then(data => {
+	            // 서버로부터 받은 데이터로 폼 필드 채우기
+	            document.getElementById('editMenuName').value = data.name;
+	            document.getElementById('editMenuSimpleExp').value = data.simpleExp;
+	            document.getElementById('editMenuComponent').value = data.component;
+	            document.getElementById('editMenuPrice').value = data.price;
+	            document.getElementById('editMenuCategory').value = data.category; // 카테고리 추가
+	            
+	            // 수정 폼 모달 열기
+	            openModal();
+	        })
+	        .catch(error => {
+	            console.error("메뉴 수정 데이터를 불러오는 중 오류가 발생했습니다.", error);
+	        });
+	}
+
+	// 모달 열기
+	function openEditMenuModal(menuNo) {
+	    document.getElementById('editMenuModal').style.display = 'block';
+	    console.log("Editing menu with ID: " + menuNo);
+	}
+
+	// 모달 닫기
+	function closeEditMenuModal() {
+	    document.getElementById('editMenuModal').style.display = 'none';
+	}
+
+
+	// 페이지 로드 시 이벤트 리스너 초기화
+	document.addEventListener('DOMContentLoaded', function() {
+	    // 모든 섹션 콘텐츠 초기에 숨기기
+	    document.querySelectorAll('.section-content').forEach(section => {
+	        section.style.display = 'none';
+	    });
+	});
+    </script>
+	</th:block>
+	
+</html>

@@ -1,0 +1,126 @@
+h2{
+	text-align:center;
+	margin-bottom:50px;
+}
+
+
+/* 게시글 작성 버튼 스타일 */
+.button-container {
+    text-align: right;
+    margin: 20px 0;
+}
+
+.write-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.write-button:hover {
+    background-color: #0056b3;
+}
+
+/* 테이블 스타일 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+
+/* 게시글 작성 폼 스타일 */
+.form-container { 
+    width: 50%;
+    margin: 80px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 입력 필드 스타일 */
+.form-group {
+	display :flex;
+	align-items:ceneter;
+    margin-bottom: 15px;
+    margin-right: 10px; /* 입력 필드와 간격 */
+     
+}
+
+label {
+	width: 80px;
+    font-weight: bold;
+    margin-bottom: 10px; 
+    text-align :left;
+    margin-right : 10px;
+    margin-left: 10px;
+}
+
+input[type="text"],
+textarea,
+select {
+	flex: 1; /* 남은 공간을 모두 차지 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+textarea {
+    height: 150px;
+    resize: none;
+}
+
+/* 버튼 스타일 */
+.button-group {
+    text-align: center;
+    margin-top: 20px;
+}
+ 
+.submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+  
+.cancel-button {
+	background-color: #808080;
+	 text-decoration: none;
+    color: white;
+    padding: 10px 20px;
+    border: none; 
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+	
+}

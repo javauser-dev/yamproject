@@ -1,0 +1,33 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+	 <div class="container">
+            <button onclick="history.back()">⬅</button>
+            <h2>내 매장 목록</h2>
+			 <!-- 매장 추가 버튼 (오른쪽 상단) -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="/shop/new" class="btn btn-primary">매장 추가</a>
+        </div>
+            <!-- 매장 리스트 -->
+           <div class="shop-list">
+    <div th:if="${#lists.isEmpty(shopList)}">
+        <p>매장이 없습니다.</p>
+    </div>
+    <div class="shop-item" th:each="shop : ${shopList}">
+    <a th:href="@{/shop/myShop(id=${shop.shopNo})}">
+    <img th:src="@{'/images/' + ${shop.filename != null && !shop.filename.isEmpty() ? shop.filename : 'default.jpg'}}" 
+         alt="매장 이미지" class="shop-image">
+         </a>
+    <h3 th:text="${shop.shopName}">매장명</h3>
+</div>
+
+            </div>
+        </div>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	
+	</th:block>
+	
+</html>

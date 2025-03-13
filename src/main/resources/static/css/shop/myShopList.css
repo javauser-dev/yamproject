@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+ .container {
+            text-align: center;
+            width: 80%;
+            margin: auto;
+        }
+        .shop-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .shop-item {
+            width: 200px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            transition: 0.3s;
+        }
+        .shop-item:hover {
+            background-color: #f8f8f8;
+        }
+        .shop-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+        }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<th:block layout:fragment="content">
+    <div class="container">
+    <h2>불량 사용자 목록</h2>
+    <table border="1">
+        <thead>
+            <tr> 
+                <th>회원 ID</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>벤 날짜</th>
+                <th>벤 사유</th>
+                <th>해제</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="blacklistedMember : ${blacklistedMembers}">
+                <td th:text="${blacklistedMember.customerId}"></td>
+                <td th:text="${blacklistedMember.customerName}"></td>
+                <td th:text="${blacklistedMember.customerEmail}"></td>
+                <td th:text="${blacklistedMember.bannedAt}"></td>
+                <td th:text="${blacklistedMember.reason}"></td>
+                <td>
+                        <!-- ✅ JavaScript 함수로 확인창 띄우기 -->
+                        <form th:action="@{/admin/unban}" method="post" onsubmit="return confirmUnban(this);">
+                            <input type="hidden" name="customerId" th:value="${blacklistedMember.customerId}">
+                            <button type="submit">해제</button>
+                        </form>
+                    </td> 
+            </tr>
+        </tbody>
+    </table>
+</div>
+  <th:block layout:fragment="script"> 
+   <script>
+        function confirmUnban(form) {
+            if (confirm("정말로 해당 사용자를 복구하시겠습니까?")) {
+                setTimeout(() => {
+                    alert("회원이 정상적으로 복구되었습니다.");
+                }, 500);
+                return true; // 폼 제출 (해제 진행)
+            }
+            return false; // 취소 시 폼 제출 방지 (아무 동작 안 함)
+        }
+
+        // ✅ 서버에서 전달된 성공 메시지가 있으면 알림창 띄우기
+        document.addEventListener("DOMContentLoaded", function() {
+            const successMessage = "[[${success}]]"; // Thymeleaf 메시지 읽기
+            if (successMessage && successMessage !== "null") {
+                alert(successMessage);
+            }
+        });
+    </script> 
+  </th:block>
+</th:block>
+</html>

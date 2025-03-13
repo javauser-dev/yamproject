@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+   		<link rel="stylesheet" href="/css/qna.css">
+		<title>메인화면</title>
+		 
+	</head> 
+	<body>
+		<main> 
+    <div class="container py-4">
+        <!-- 상단 헤더 -->
+        <th:block th:if="${session.userRole != 'ADMIN'}">
+            <div th:replace="template/client/fragments/block :: header"></div>
+        </th:block>
+
+        <th:block th:if="${session.userRole == 'ADMIN'}">
+            <div th:replace="template/client/fragments/adminblock :: header"></div>
+        </th:block>
+
+        <!-- ✅ QnA 상세 페이지 컨테이너 -->
+        <div class="qna-detail-container">
+            <h1 th:text="${qna.title}"></h1>
+
+            <!-- ✅ 카테고리, 작성자, 작성일 정보 -->
+            <p class="qna-meta">카테고리: <span th:text="${qna.category}"></span></p>
+            <p class="qna-meta">작성자: <span th:text="${qna.writer}"></span></p>
+            <p class="qna-meta">작성일: <span th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd')}"></span></p>
+
+            <!-- ✅ 내용 --> 
+            <p class="qna-content" th:text="${qna.content}"></p>
+ 
+            <!-- ✅ 관리자 답변 (있을 경우만 표시) -->
+            <th:block th:if="${qna.answer != null}">
+                <div class="qna-answer"> 
+                    <p class="titleanswer">관리자 답변</p> 
+                    <p th:text="${qna.answer}"></p>
+                </div>
+            </th:block> 
+
+            <!-- ✅ 목록으로 돌아가기 버튼 -->
+            <a href="/userqna" class="qna-back-btn">목록으로 돌아가기</a>
+        </div>
+    </div>
+</main>
+
+    <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/jquery-3.7.1.min.js"></script>
+		<script src="/js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f5f5f5;    
+}
+
+/* 로그인 컨테이너 */
+.login-container {
+    width: 500px;
+    background: white;
+    padding: 30px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+}
+
+/* 뒤로가기 버튼 */
+.back-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* 로그인 박스 */
+.login-box {
+    margin-top: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+h3 {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* 입력 필드 */
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 8px auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.back-btn{
+	color: #ddd;
+}
+
+
+button{
+font-weight : bold;
+	
+}
+
+/* 로그인 버튼 */
+.login-btn {
+    width: 60%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background-color: #0056b3;
+}
+
+/* 구분선 */
+.divider {
+    position: relative;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.divider span {
+    background: white;
+    padding: 0 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #ddd;
+    top: 50%;
+    left: 0;
+    z-index: 0;
+}
+
+/* 소셜 로그인 버튼 */
+.social-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 5px 0;
+    cursor: pointer;
+}
+
+.kakao {
+    background-color: #FEE500;
+    color: #3C1E1E;
+}
+
+.kakao:hover{
+    background-color: #dcce50; 
+}
+ 
+.naver {
+    background-color: #03C75A;
+    color: white;
+}
+
+.naver:hover{
+	    background-color: #008000;
+}
+
+/* 회원가입 링크 */
+.register-link {
+    display: block;
+    margin-top: 15px; 
+    color: #808080;
+    text-decoration: none;
+    font-weight :bold; 
+}
+
+.register-link:hover {
+/*     text-decoration: underline;
+ */    color :#000000;
+}

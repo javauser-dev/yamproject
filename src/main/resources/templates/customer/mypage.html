@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <title>마이페이지</title>
+</head>
+<body>
+ <th:block layout:fragment="content">
+ <div class="container">
+    <h1>마이페이지</h1>
+
+	<!-- 사용자 이름, 로그아웃 버튼 -->
+    <div class="top-right-container">
+        <p><span th:text="${#strings.substring(customerName, 0, 1) + #strings.repeat('*', #strings.length(customerName) - 1)}"></span>님 반갑습니다.</p>
+        <form th:action="@{/customer/logout}" method="post">
+            <button type="submit">로그아웃</button>
+        </form>
+    </div>
+    
+    <!-- 회원 정보 수정 성공 메시지 -->
+    <div th:if="${updateSuccess}">
+            <script>
+                alert("회원정보가 수정되었습니다.")
+            </script>
+    </div>
+
+
+    <div class = "profile-image-container">
+          <!-- <h2>프로필 이미지</h2> -->
+          <img th:src="${profileImageUrl}" alt="프로필 이미지" class="profile-image"/>
+     </div>
+     <br />
+
+    <div class = "content-box">
+        <h2>찜 목록
+        	<a th:href="@{/wishlist}" class="more-link">더보기</a>
+        </h2>
+        <br />
+          <div th:replace="/customer/mypageWishList :: content"></div>
+    </div>
+ 
+    <div class = "content-box">
+    	<h2>최근 예약 목록
+    		<a th:href="@{/customer/reserve/reserveInquiry}" class="more-link">더보기</a>
+    	</h2>
+    	<div class="reserve-list-container">
+	        <div th:replace="customer/reserve/mypageReserve :: content"></div>
+     	</div>
+    </div>
+
+    <a th:href="@{/customer/memberInfo}"><button type="button">회원 정보</button></a>
+
+ </div>
+ <link rel="stylesheet" type="text/css" th:href="@{/css/customer/myPage.css}">
+ <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/mypageReserve.css}">
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+ </th:block>
+ 
+<!-- myPage.html에서만 사용하는 JavaScript (필요한 경우)-->
+<th:block layout:fragment="script">
+   <script th:inline="javascript">
+    /*<![CDATA[*/
+    var message = /*[[${message}]]*/ null;  // 서버에서 전달된 message flash attribute 가져오기
+    if (message) {
+        alert(message); // message가 있으면 알림 창 표시
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // URL 파라미터나 세션 스토리지 등을 이용하여 새로고침 여부 확인
+        if (sessionStorage.getItem('reloaded') === null) {
+            // 0.5초 후 새로고침
+            setTimeout(function() {
+                sessionStorage.setItem('reloaded', 'true'); // 새로고침 했음을 표시
+                window.location.reload();
+            }, 500); // 0.5초 = 500ms
+        } else {
+            // 이미 새로고침된 경우, sessionStorage에서 표시 제거(다음번 myPage 방문을 위해)
+          sessionStorage.removeItem('reloaded');
+        }
+
+    });
+    /*]]>*/
+</script>
+</th:block>
+</body>
+</html>

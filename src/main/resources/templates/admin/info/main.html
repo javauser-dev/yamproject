@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <title>관리자 메인 페이지</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="main-container">
+        <h1>사용자 정보 조회</h1>
+
+        <div class="image-wrapper">
+            <div class="image-container">
+                <a th:href="@{/admin/info/members}">
+                    <img th:src="@{/upload/indi.png}" alt="개인 회원 정보">
+                </a>
+            </div>
+
+            <div class="image-container">
+                <a th:href="@{/admin/info/stores}">
+                    <img th:src="@{/upload/store.png}" alt="가게 회원 정보">
+                </a>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/main.css}">
+</th:block>
+</body>
+</html> 

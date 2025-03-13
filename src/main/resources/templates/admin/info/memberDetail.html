@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <title>회원 정보</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/memberDetail.css}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+    .error-message {
+        color : red;
+    }
+    </style>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <h1>회원 정보</h1>
+
+    <!-- 에러 메시지 표시 -->
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- 변경 완료 메시지 표시 -->
+	<div th:if="${message}" class="success-message">
+	    <th:block th:with="msg=${message}">
+	        <script>
+	            alert("[[${msg}]]");
+	        </script>
+	    </th:block>
+	</div>
+
+    <table>
+        <tr>
+            <th><label>회원 ID</label></th>
+            <td><span th:text="${member.customerId}"></span></td>
+        </tr>
+
+         <!-- 비밀번호 변경 -->
+        <tr>
+            <th><label>비밀번호</label></th>
+            <td>
+                <form th:action="@{/admin/info/updatePassword}" method="post">
+                    <input type="hidden" name="customerId" th:value="${member.customerId}" />
+                    <input type="password" name="newPassword" id="newPassword" required />
+                    <span id="passwordCheckResult" class="error-message"></span>
+                    <button type="submit" id="passwordSubmitBtn">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <!-- 닉네임 수정 -->
+        <tr>
+            <th><label>닉네임</label></th>
+            <td>
+                <form th:action="@{/admin/info/updateNickname}" method="post">
+                    <input type="hidden" name="customerId" th:value="${member.customerId}" />
+                    <input type="text" name="newNickname" id="newNickname" th:value="${member.customerNickname}" required />
+                    <span id="nicknameCheckResult" class="error-message"></span> <!-- 중복 검사 결과 표시 -->
+                    <button type="submit" id="nicknameSubmitBtn">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <!-- 이메일 수정 -->
+        <tr>
+           <th> <label>이메일</label></th>
+           <td>
+               <form th:action="@{/admin/info/updateEmail}" method="post">
+                   <input type="hidden" name="customerId" th:value="${member.customerId}" />
+                   <input type="email" name="newEmail"
+                   th:value="${member.customerEmail != null and #strings.length(member.customerEmail) > 4} ? ${#strings.substring(member.customerEmail, 0, 4) + #strings.repeat('*', #strings.length(member.customerEmail) - 4)} : (member.customerEmail?: '')"
+                   required />
+                   <button type="submit">변경하기</button>
+               </form>
+           </td>
+        </tr>
+
+        <tr>
+            <th><label>이름</label></th>
+            <td>
+                <span th:text="${member.customerName != null and #strings.length(member.customerName) > 1} ? ${#strings.substring(member.customerName, 0, 1) + #strings.repeat('*', #strings.length(member.customerName) - 1)} : (member.customerName?: '')"></span>
+            </td>
+        </tr>
+
+        <!-- 프로필 사진 수정 -->
+        <tr>
+            <th><label>프로필 사진</label></th>
+            <td>
+                <form th:action="@{/admin/info/updateProfileImage}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="customerId" th:value="${member.customerId}" />
+
+                    <!-- 프로필 사진 표시 -->
+                    <img th:src="${member.customerProfileImage != null ? member.customerProfileImage : '/upload/customer_image_default.png'}" alt="프로필 사진" width="100">
+                    <br>
+                    <input type="file" name="newProfileImage" accept="image/*" />
+                    <button type="submit">변경하기</button>
+                </form>
+            </td>
+        </tr>
+
+        <tr>
+           <th> <label>가입일</label></th>
+            <td><span th:text="${#temporals.format(member.customerCreateDate, 'yy년 MM월 dd일')}"></span></td>
+        </tr>
+
+    </table>
+
+    <!-- 회원 목록으로 돌아가는 버튼 -->
+    <div class = "list-button-div">
+        <a href="/admin/info/members" class="list-button">회원 목록</a>
+    </div>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            // 초기 상태: 변경 버튼 활성화
+            $('#nicknameSubmitBtn').prop('disabled', false);
+
+            $('#newNickname').on('focusout', function() { // focusout 이벤트
+                var newNickname = $(this).val();
+                var customerId = /*[[${member.customerId}]]*/ '';  // Thymeleaf 변수를 JavaScript로
+
+                // AJAX 요청
+                $.ajax({
+                    url: '/admin/info/checkNickname',
+                    type: 'GET',
+                    data: { nickname: newNickname , customerId : customerId},
+                    success: function(response) {
+                        if (response === 'duplicate') {
+                            $('#nicknameCheckResult').text('중복된 닉네임입니다.');
+                            $('#nicknameSubmitBtn').prop('disabled', true); // 버튼 비활성화
+                        } else {
+                            $('#nicknameCheckResult').text(''); // 중복이 아니면 메시지 지우기
+                             $('#nicknameSubmitBtn').prop('disabled', false); // 버튼 활성화
+                        }
+                    },
+                    error: function() {
+                        $('#nicknameCheckResult').text('서버 오류 발생.');
+                         $('#nicknameSubmitBtn').prop('disabled', true); //에러 발생시 버튼 비활성화
+                    }
+                });
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

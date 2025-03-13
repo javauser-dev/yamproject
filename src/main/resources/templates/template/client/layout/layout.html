@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+   <head>
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+   </head>
+   <body>
+      <main>
+           <div class="container py-4">
+             <header class="pb-3 mb-4">
+               <th:block th:if="${session.userRole != 'ADMIN'}">
+               <th:block th:insert="~{template/client/fragments/block :: header}"/>
+
+            </th:block>
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+             </header>
+          
+             <th:block layout:fragment="content"></th:block>
+          
+             <footer class="pt-3 mt-4 text-body-secondary border-top">
+               &copy; 2025 YAM
+            </footer>
+         </div>    
+      </main>
+      
+      <script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="/js/jquery-3.7.1.min.js"></script>
+      <script src="/js/common.js"></script>
+      <th:block layout:fragment="script"></th:block>
+   </body>
+</html>  

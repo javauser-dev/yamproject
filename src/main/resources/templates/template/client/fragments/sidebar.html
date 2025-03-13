@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/css/admin.css">
+	<script th:src="@{/js/admin.js}"></script> 
+</head> 
+<body>  
+<aside class="sidebar">
+   <div class="profile">
+   <!-- ✅ 사진 클릭 시 파일 업로드 가능 --> 
+        <img class="profile-img" id="profile-image"
+     th:src="${session.profileImagePath != null and session.profileImagePath != '' ? session.profileImagePath : '/images/default-profile.png'}"
+     alt="프로필 이미지">
+
+        <!-- ✅ 숨겨진 파일 업로드 input -->
+        <input type="file" id="profile-upload" accept="image/*" style="display: none;"> 
+
+        <div class="admin-info">
+            <p id="adminNameDisplay">
+                <span th:text="${session.adminName} ?: '관리자'"></span> 관리자님
+            </p>
+        </div>
+    </div> 
+   
+    <ul class="menu">
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">사용자 관리</a>
+            <ul class="submenu">
+                <li><a href="/admin/sidebar/customers">회원</a></li>
+                <li><a href="/admin/sidebar/stores">사업자</a></li>
+                <li><a href="/admin/info/main">조회 & 수정</a></li>
+                <li><a href="/admin/sidebar/withdrawncustomers">탈퇴회원</a></li>
+                <li><a href="/admin/sidebar/withdrawnstores">탈퇴사업자</a></li> 
+                <li><a href="/admin/blackcustomerList">불량 사용자 관리</a></li>
+                <li><a href="/admin/blackstoreList">불량 사업자 관리</a></li>
+            </ul> 
+        </li> 
+        <li class="menu-item"> 
+            <a href="javascript:void(0);" class="menu-toggle">매장 관리</a>
+            <ul class="submenu">
+                <li><a href="#">예약내역</a></li>
+                <li><a href="#">예약취소내역</a></li>
+                <li><a href="#">폐점매장관리</a></li>
+            </ul> 
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">게시판 관리</a> 
+            <ul class="submenu">
+                <li><a href="/noticeList">공지사항</a></li>
+                <li><a href="/board/freeboardList">자유게시판</a></li>
+                <li><a href="/storeCommunity/storeCommunityList">사업자게시판</a></li>
+            </ul> 
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-toggle">Q&A 관리</a>
+            <ul class="submenu">
+                <li><a href="/qna">Q&A로 이동</a></li> 
+            </ul>
+        </li>
+    </ul> 
+</aside>  
+	<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    const adminName = sessionStorage.getItem("adminName");
+	    if (adminName) {
+	        document.getElementById("adminNameDisplay").innerText = adminName;
+	    }
+	});
+</script>
+</body>
+</html>

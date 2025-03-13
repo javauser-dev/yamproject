@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<th:block layout:fragment="content">
+    <div class="container">
+        <h2>탈퇴 사업자 목록</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>사업자번호</th>
+                    <th>사업장 이름</th>
+                    <th>닉네임</th>
+                    <th>이메일</th>
+                    <th>전화번호</th>
+                    <th>가입 날짜</th> 
+                    <th>탈퇴 신청일</th>
+                    <th>탈퇴 완료일</th> 
+                    <th>탈퇴 사유</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="withdrawnStore : ${withdrawnStores}">
+                    <td th:text="${withdrawnStore.storeBusinessNumber}"></td>
+                    <td th:text="${withdrawnStore.storeName}"></td>
+                    <td th:text="${withdrawnStore.storeNickname}"></td>
+                    <td th:text="${withdrawnStore.storeEmail}"></td>
+                    <td th:text="${withdrawnStore.storePhone}"></td>
+                    <td th:text="${#temporals.format(withdrawnStore.storeSubDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#temporals.format(withdrawnStore.withdrawalRequestedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${#temporals.format(withdrawnStore.withdrawalCompletedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${withdrawnStore.withdrawalReason}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</html>

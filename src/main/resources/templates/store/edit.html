@@ -1,0 +1,128 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+	
+  <form id="updateForm" method="post" action="/store/update">
+            <!-- 🔙 뒤로가기 버튼 -->
+            <button type="button" onclick="window.location.href='/mypage'" style="position: absolute; top: 10px; left: 10px;">
+                ⬅ 뒤로가기
+            </button>
+
+            <h2>사업자 정보 수정</h2>
+
+            <!-- 🚨 경고 메시지 -->
+            <div id="errorMessage" style="color: red; display: none; font-weight: bold; margin-top: 10px;"></div>
+
+            <!-- 현재 비밀번호 -->
+            <div>
+                <label for="currentPassword">현재 비밀번호:</label>
+                <input type="password" id="currentPassword" name="currentPassword" required>
+            </div>
+
+            <!-- 새 비밀번호 -->
+            <div>
+                <label for="newPassword">새 비밀번호:</label>
+                <input type="password" id="newPassword" name="newPassword">
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div>
+                <label for="confirmPassword">비밀번호 확인:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword">
+            </div>
+
+            <!-- 닉네임 -->
+            <div>
+                <label for="nickname">닉네임:</label>
+                <input type="text" id="nickname" name="nickname">
+            </div>
+
+            <!-- 전화번호 -->
+            <div>
+                <label for="phone">전화번호:</label>
+                <input type="text" id="phone" name="phone" pattern="^\d{10,11}$" placeholder="10~11자리 숫자">
+            </div>
+
+            <!-- 정보 변경 버튼 -->
+            <div>
+                <button type="submit" id="updateBtn">정보 변경</button>
+            </div>
+        </form>
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	<script>
+
+    
+	 $(document).ready(function () {
+         $("#updateForm").submit(function (e) {
+             e.preventDefault();
+
+             // 현재 비밀번호, 새 비밀번호, 비밀번호 확인, 닉네임, 전화번호 값
+             let currentPassword = $("#currentPassword").val().trim();
+             let newPassword = $("#newPassword").val().trim();
+             let confirmPassword = $("#confirmPassword").val().trim();
+             let nickname = $("#nickname").val().trim();
+             let phone = $("#phone").val().trim();
+
+             let errorMessage = $("#errorMessage");
+             errorMessage.hide().text("");
+
+             // 현재 비밀번호 필수 체크
+             if (!currentPassword) {
+                 errorMessage.text("현재 비밀번호를 입력해야 합니다.").show();
+                 return;
+             }
+
+             // 새 비밀번호와 비밀번호 확인 일치 여부 체크
+             if (newPassword && newPassword !== confirmPassword) {
+                 errorMessage.text("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.").show();
+                 return;
+             }
+
+             // 전화번호 형식 체크 (10~11자리 숫자)
+             if (phone && !/^\d{10,11}$/.test(phone)) {
+                 errorMessage.text("전화번호는 숫자 10~11자리로 입력해야 합니다.").show();
+                 return;
+             }
+
+          // 전송할 데이터
+             let updateData = {
+                 currentPassword: currentPassword,
+                 newPassword: newPassword || null,
+                 confirmPassword: confirmPassword || null,
+                 nickname: nickname || null,
+                 phone: phone || null
+             };
+
+             console.log("전송할 데이터:", updateData);
+
+             // 서버로 데이터 전송
+             fetch("/store/update", {
+                 method: "POST",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify(updateData)
+             })
+             .then(response => {
+            	    if (response.ok) {
+            	        alert("정보가 성공적으로 변경되었습니다!");
+            	        window.location.href = "mypage"; // 성공 시 마이페이지로 리다이렉트
+            	    } else {
+            	        return response.json().then(error => {
+            	            console.error("서버 오류 메시지:", error);
+            	            alert("정보 변경 실패! 오류 메시지: " + error.message);
+            	        }).catch(err => {
+            	            // JSON 파싱 실패 시 텍스트로 처리
+            	            response.text().then(text => {
+            	                alert("정보 변경 실패! 오류 메시지: " + text);
+            	            });
+            	        });
+            	    }
+            	})
+            	.catch(() => alert("정보 변경 실패! 서버 상태를 확인하세요."));
+         });
+	 });
+	</script>
+	</th:block>
+</html>

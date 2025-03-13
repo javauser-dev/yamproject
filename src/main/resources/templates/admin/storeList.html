@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+    <script>
+        // ✅ 벤 사유 입력 필드 토글
+        function showBanReasonForm(storeNo) {
+            let form = document.getElementById("banForm-" + storeNo);
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none"; 
+            }
+        }
+    </script>
+</head>
+
+<th:block layout:fragment="content">
+    <div class="container">
+        <h2>사업자 목록</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>사업자 번호</th>
+                    <th>닉네임</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>휴대폰번호</th>
+                    <th>가입일</th>
+                    <th>사업자 인증 여부</th>
+                    <th>불량 사업자 등록</th>
+                    
+                </tr> 
+            </thead> 
+            <tbody>
+                <tr th:each="store : ${stores}">
+                    <td th:text="${store.storeBusinessNumber}"></td>
+                    <td th:text="${store.storeNickname}"></td>
+                    <td th:text="${store.storeName}"></td>
+                    <td th:text="${store.storeEmail}"></td>
+                    <td th:text="${store.storePhone}"></td>
+                    <td th:text="${#temporals.format(store.storeSubDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${store.businessVerified ? '인증됨' : '미인증'}"></td>
+                    <td>
+                        <!-- ✅ 불량 사업자 등록 버튼 -->
+                        <button type="button" class="btn btn-danger btn-sm"
+                            th:attr="onclick='showBanReasonForm(\'' + ${store.storeNo} + '\')'">
+                            불량 사업자 등록
+                        </button>
+
+                        <!-- ✅ 불량 사업자 등록 폼 (기본 숨김) -->
+                        <form th:id="'banForm-' + ${store.storeNo}" 
+                              th:action="@{/admin/banStore}" method="post" 
+                              style="display: none;">
+                            <input type="hidden" name="storeNo" th:value="${store.storeNo}">
+                            <input type="text" name="reason" placeholder="벤 사유 입력" required>
+                            <button type="submit">등록</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody> 
+        </table>
+    </div>
+</th:block>
+</html>

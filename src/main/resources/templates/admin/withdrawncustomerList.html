@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<th:block layout:fragment="content">
+    <div class="container">
+        <h2>탈퇴 회원 목록</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>회원 ID</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>닉네임</th>
+                    <th>성별</th>
+                    <th>가입 날짜</th>
+                    <th>탈퇴 신청일</th>
+                    <th>탈퇴 완료일</th> 
+                    <th>탈퇴 사유</th>
+                    <th>프로필 이미지</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ✅ 엔티티 필드명에 맞게 변경 -->
+                <tr th:each="withdrawnMember : ${withdrawnMembers}">
+                    <td th:text="${withdrawnMember.customerId}"></td>
+                    <td th:text="${withdrawnMember.customerName}"></td>
+                    <td th:text="${withdrawnMember.customerEmail}"></td>
+                    <td th:text="${withdrawnMember.customerNickname}"></td>
+                    <td th:text="${withdrawnMember.customerGender}"></td>
+                    <td th:text="${withdrawnMember.customerCreateDate}"></td>
+                    <td th:text="${withdrawnMember.withdrawalRequestedAt}"></td>
+                    <td th:text="${withdrawnMember.withdrawalCompletedAt}"></td>
+                    <td th:text="${withdrawnMember.withdrawalReason}"></td>
+                    <td>
+                        <img th:src="${withdrawnMember.customerProfileImage != null ? withdrawnMember.customerProfileImage : '/images/default-profile.png'}"
+                             alt="프로필 이미지" width="50">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</html>

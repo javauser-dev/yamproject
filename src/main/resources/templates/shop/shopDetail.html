@@ -1,0 +1,392 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{template/client/layout/layout}">
+
+<th:block layout:fragment="content">
+	<div class="container"
+		style="max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; min-height: 800px; position: relative;">
+		<!-- 뒤로가기 버튼 -->
+		<div style="position: absolute; top: 20px; left: 20px;">
+			<button id="back" th:onclick="|location.href='http://localhost:8080/shop/myShop?id=${shop.shopNo}'|"
+				style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ccc; background: #fff; cursor: pointer;">
+				<span>&lt;</span>
+			</button>
+		</div>
+		<input type="hidden" id="shopNoHidden" th:value="${shop.shopNo}" />
+<input type="hidden" id="storeEmail" th:text="${storeEmail}" />
+		<!-- 매장 소개 제목 -->
+		<div
+			style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+			<h2 style="color: #4CAF50;">매장 소개</h2>
+		</div>
+
+		<!-- 매장 이미지 -->
+		<div style="width: 80%; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; overflow: hidden; margin-bottom: 30px;">
+    <img id="shopImageTag"
+        th:src="${shop.filename != null && !shop.filename.isEmpty() ? '/upload/' + shop.filename : '/images/default.jpg'}"
+        alt="이미지" style="width: 100%; height: auto; max-height: 400px; object-fit: contain;">
+    <div style="text-align: center; padding: 10px; background: #f9f9f9;">이미지</div>
+</div>
+		<input type="file" id="shopImageInput" style="display: none;"
+			onchange="updateImage()" />
+	
+		<!-- 매장소개 버튼 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopShortDescBtn" onclick="editField('shopShortDesc')"
+				style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
+				매장 소개</button>
+		</div>
+		<div id="shopShortDesc" style="display: block;">
+    		<span th:text="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : '매장소개를 입력하세요.'}">매장소개를 입력하세요.</span>
+		</div>
+			<input type="text" id="shopShortDescInput" style="display:none; width: 80%; margin: 0 auto; padding: 8px;" 
+		      	   th:value="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : ''}" onchange="saveField('shopShortDesc')"/>
+		
+			
+					<!-- 매장정보 버튼 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopInfoBtn" onclick="editField('shopInfo')"
+				style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
+				매장 정보</button>
+		</div>
+		
+		<div id="shopInfo" style="display: none;">
+    <span th:text="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : '매장정보를 입력하세요.'}">매장정보를 입력하세요.</span>
+</div>
+
+<input type="text" id="shopInfoInput" style="display:none; width: 80%; margin: 0 auto; padding: 8px;" 
+       th:value="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : ''}" onchange="saveField('shopInfo')"/>
+		
+		<!-- 매장 상세 설명 버튼 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopLongDescBtn" onclick="editField('shopLongDesc')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
+				매장 상세 설명</button>
+		</div>
+		<div id="shopLongDesc" style="display: none;">
+			<span
+				th:text="${#strings.isEmpty(shop.shopLongDesc) ? '매장 상세 설명이 없습니다.' : shop.shopLongDesc}"></span>
+		</div>
+		<textarea id="shopLongDescInput"
+			style="display: none; width: 80%; margin: 0 auto; padding: 8px; min-height: 100px;"
+			th:text="${shop.shopLongDesc != null ? shop.shopLongDesc : ''}"
+			onchange="saveField('shopLongDesc')"></textarea>
+
+		<!-- 영업 시간 버튼 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopHoursBtn" onclick="editField('shopHours')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
+				영업 시간</button>
+		</div>
+		<div id="shopHours" style="display: none;">
+			<div>
+				개장시간: <span th:text="${shop.shopOpentime}">09:00</span>
+			</div>
+			<div>
+				폐장시간: <span th:text="${shop.shopClosetime}">22:00</span>
+			</div>
+		</div>
+		<div id="shopHoursInputContainer"
+			style="display: none; width: 80%; margin: 0 auto; text-align: center;">
+			<input type="time" id="shopOpentimeInput"
+				style="margin: 5px; padding: 8px;" th:value="${shop.shopOpentime}" />
+			<input type="time" id="shopClosetimeInput"
+				style="margin: 5px; padding: 8px;" th:value="${shop.shopClosetime}" />
+			<button onclick="saveField('shopHours')"
+				style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">저장</button>
+		</div>
+
+		<!-- 매장 주소 버튼 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopAddressBtn" onclick="editField('shopAddress')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
+				매장 주소</button>
+		</div>
+		<div id="shopAddress" style="display: none;">
+			<span th:text="${shop.shopAddress}">매장 주소</span>
+		</div>
+		<input type="text" id="shopAddressInput"
+			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
+			th:value="${shop.shopAddress != null && !shop.shopAddress.isEmpty() ? shop.shopAddress : ''}"
+			onchange="saveField('shopAddress')" />
+
+		<!-- 개장 시간 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<div
+				style="display: inline-block; margin-right: 20px; color: #f39c12; font-weight: bold;">개장시간</div>
+			<div
+				style="display: inline-block; margin-left: 20px; color: #3498db; font-weight: bold;">폐장시간</div>
+		</div>
+
+		<!-- 매장 전화 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopPhoneBtn" onclick="editField('shopPhone')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
+				매장 전화</button>
+		</div>
+		<div id="shopPhone" style="display: none;">
+			<span th:text="${shop.shopPhone}">매장 전화번호</span>
+		</div>
+		<input type="text" id="shopPhoneInput"
+			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
+			th:value="${shop.shopPhone != null && !shop.shopPhone.isEmpty() ? shop.shopPhone : ''}"
+			onchange="saveField('shopPhone')" />
+
+		<!-- 매장 홈페이지 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopWebsiteBtn" onclick="editField('shopWebsite')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
+				매장 홈페이지</button>
+		</div>
+		<div id="shopWebsite" style="display: none;">
+			<span th:text="${shop.shopWebsite}">매장 홈페이지</span>
+		</div>
+		<input type="text" id="shopWebsiteInput"
+			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
+			th:value="${shop.shopWebsite != null && !shop.shopWebsite.isEmpty() ? shop.shopWebsite : ''}"
+			onchange="saveField('shopWebsite')" />
+
+		<!-- 기타 편의시설 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<button id="shopFacilityBtn" onclick="editField('shopFacility')"
+				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
+				기타 편의시설</button>
+		</div>
+		<div id="shopFacility" style="display: none;">
+			<span th:text="${shop.shopFacilities}">기타 편의시설</span>
+		</div>
+		<input type="text" id="shopFacilityInput"
+			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
+			th:value="${shop.shopFacilities != null && !shop.shopFacilities.isEmpty() ? shop.shopFacilities : ''}"
+			onchange="saveField('shopFacility')" />
+	</div>
+</th:block>
+
+<th:block layout:fragment="script">
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script>
+	// 페이지 상단의 script 태그 시작 부분에 추가	
+const shopNo = document.getElementById("shopNoHidden").value;
+console.log("Shop No:", shopNo);
+//파일 또는 script 태그 상단에 배치
+//Axios 인터셉터 설정
+axios.interceptors.response.use(
+ response => response,
+ error => {
+     if (error.response && error.response.status === 401) {
+         alert("로그인 세션이 만료되었습니다. 다시 로그인해주세요.");
+         window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+         return Promise.reject(error);
+     }
+     return Promise.reject(error);
+ }
+);
+
+function checkLoginStatus() {
+    // 서버에 실제로 존재하는 API 경로로 변경
+    axios.get('/shop/check-auth')  // 또는 실제 구현된 경로
+    .then(response => {
+        console.log("인증 상태 확인 완료");
+    })
+    .catch(error => {
+        if (error.response && error.response.status === 401) {
+            alert("로그인이 필요합니다.");
+            window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        }
+    });
+}
+
+//Axios 기본 설정에 쿠키 전송 옵션 추가
+axios.defaults.withCredentials = true;
+
+//모든 HTTP 요청에 CSRF 토큰 추가
+const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+if (csrfToken && csrfHeader) {
+    axios.defaults.headers.common[csrfHeader] = csrfToken;
+}
+
+//페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
+	
+
+    // 필드 편집 시작
+    function editField(fieldId) {
+        var fieldElement = document.getElementById(fieldId);
+        var inputElement = document.getElementById(fieldId + "Input");
+        var inputContainer = document.getElementById(fieldId + "InputContainer");
+        
+        if (fieldId === 'shopHours') {
+            if (inputContainer) {
+                fieldElement.style.display = 'none';
+                inputContainer.style.display = 'block';
+            }
+        } else if (inputElement && fieldElement) {
+            fieldElement.style.display = 'none';
+            inputElement.style.display = 'block';
+            inputElement.focus();
+        }
+    }
+
+    // 이미지 수정
+    function editImage() {
+        document.getElementById("shopImageInput").click();
+    }
+
+    function updateImage() {
+        var imageInput = document.getElementById("shopImageInput");
+        var formData = new FormData();
+        formData.append("shopMainImage", imageInput.files[0]);
+
+        // 서버로 이미지 파일 전송 (Axios 사용)
+        axios.post('/shop/update-image', formData)
+            .then(response => {
+                alert("이미지가 성공적으로 업데이트 되었습니다.");
+                // 성공적인 응답 후 이미지 태그 업데이트
+                var imgElement = document.getElementById("shopImageTag");
+                imgElement.src = '/upload/' + response.data.filename;
+            })
+            .catch(error => {
+                alert("이미지 업데이트 중 오류가 발생했습니다.");
+                console.error("Error updating image", error);
+            });
+    }
+
+    function saveField(fieldId) {
+    	  var btnElement = document.getElementById(fieldId + "Btn");
+    	  var fieldElement = document.getElementById(fieldId);
+    	  var inputElement;
+    	  var inputContainer = document.getElementById(fieldId + "InputContainer");
+    	 
+    	  // shopNo 값을 가져오는 안전한 방법 (hidden input에서 가져오기)
+    	  var shopNoElement = document.getElementById('shopNoHidden');
+    	  var shopNo = shopNoElement ? shopNoElement.value : null;
+    	  
+    	  if (!shopNo) {
+    	    console.error("shopNo 값이 정의되지 않았습니다.");
+    	    alert("매장 정보를 찾을 수 없습니다. 페이지를 새로고침하거나 다시 로그인해주세요.");
+    	    return; // shopNo가 없으면 종료
+    	  }
+
+    	  inputElement = document.getElementById(fieldId + "Input");
+    	  
+    	  if (!inputElement || !fieldElement) {
+    	    console.error("필드 요소를 찾을 수 없습니다: " + fieldId);
+    	    return;
+    	  }
+    	  
+    	  // 빈 값 체크
+    	  if (inputElement.value.trim() === '') {
+    	    alert('빈 값을 저장할 수 없습니다.');
+    	    inputElement.focus();
+    	    return;
+    	  }
+    	  
+    	  var updatedValue = inputElement.value;
+    	  console.log("Updating field:", fieldId, "Value:", updatedValue, "ShopNo:", shopNo);
+    	        	
+    	  // UI 업데이트 전에 현재 값 백업 (에러 발생 시 복구를 위해)
+    	  var originalValue = fieldElement.querySelector('span') ? 
+    	    fieldElement.querySelector('span').textContent : '';
+    	  var originalButtonText = btnElement ? btnElement.textContent : '';
+    	  
+    	  // UI 업데이트
+    	  if (fieldElement.querySelector('span')) {
+    	    fieldElement.querySelector('span').textContent = updatedValue;
+    	  }
+    	  fieldElement.style.display = 'block';
+    	  inputElement.style.display = 'none';
+    	  
+    	  
+    	  /*axios.post('/shop/update-field', {
+    	    shopNo: shopNo,
+    	    field: fieldId,
+    	    value: updatedValue
+    	  }, {
+    	    headers: {
+    	      'Content-Type': 'application/x-www-form-urlencoded'
+    	    }
+    	  })
+    	  .then(response => {
+    	    console.log('성공:', response);
+    	    alert(fieldId + " 정보가 업데이트 되었습니다.");
+    	  })
+    	  .catch(error => {
+    	    console.error("에러 발생:", error);
+    	  */
+    	  
+  		$.ajax({
+			url : "/shop/update-field",
+			method : "post",
+			data : {
+	    	    shopNo: shopNo,
+	    	    field: fieldId,
+	    	    value: updatedValue
+	    	  },
+			dataType:"text"
+		}).done(function(response){	
+			if(response!=""){
+				 console.log('성공:', response);
+		    	    alert(fieldId + " 정보가 업데이트 되었습니다.");
+			}
+		}).fail(function(){
+    	  
+    	    // 실패한 경우 원래 값으로 복원
+    	    if (fieldElement.querySelector('span')) {
+    	      fieldElement.querySelector('span').textContent = originalValue;
+    	    }
+    	    if (btnElement) {
+    	      btnElement.textContent = originalButtonText;
+    	    }
+    	    
+    	    // 서버에서 보낸 자세한 오류 메시지 출력
+    	    if (error.response && error.response.data && error.response.data.error) {
+    	      console.error("서버 오류:", error.response.data.error);
+    	      alert("오류 메시지: " + error.response.data.error);
+    	    } else {
+    	      alert("정보 업데이트 중 오류가 발생했습니다.");
+    	    }
+    	  });
+    	}
+
+
+
+    // 삭제 기능
+    function deleteField(fieldId) {
+        if (confirm('이 정보를 삭제하시겠습니까?')) {
+            var fieldElement = document.getElementById(fieldId);
+            var inputElement = document.getElementById(fieldId + "Input");
+            
+            // 필드 내용 초기화
+            if (fieldElement) {
+                fieldElement.querySelector('span').textContent = '';
+            }
+            
+            if (inputElement) {
+                inputElement.value = '';
+            }
+            
+            // 서버에 삭제 요청
+            axios.post('/shop/delete-field', { fieldId: fieldId })
+                .then(response => {
+                    alert(fieldId + " 정보가 삭제되었습니다.");
+                })
+                .catch(error => {
+                    alert("정보 삭제 중 오류가 발생했습니다.");
+                    console.error("Error deleting field", error);
+                });
+        };
+    }
+
+    // 페이지 로드 시 이미지 클릭 이벤트 추가
+    window.onload = function() {
+        document.getElementById("shopImageTag").addEventListener("click", editImage);
+    };
+    
+    
+</script>
+
+</th:block>
+
+</html>

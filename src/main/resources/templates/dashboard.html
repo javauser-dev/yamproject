@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
+
+<head>
+    <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<th:block layout:fragment="content">
+    <div class="container">
+     
+     <div class="content-wrapper2">
+                <!-- 사이드바 -->
+     <aside class="sidebar" th:replace="template/client/fragments/sidebar :: aside"></aside>
+        <div class="content-wrapper">
+        <p>안녕하세요, <span th:text="${session.adminName} ?: '관리자'"></span>님!</p>
+            <!-- 메인 콘텐츠 -->
+                <h2>회원 가입/탈퇴 통계</h2>
+                <div class="charts"> 
+				    <canvas id="chart1"></canvas> 
+				    <canvas id="chart2"></canvas>
+				    <canvas id="chart3"></canvas> <!-- 🔹 추가된 도넛 차트 -->
+				</div>  
+ 
+                
+                <div class="stats-container">
+                    <div class="stat-circle">3,154 <br> 방문자 수</div>
+                    <div class="stat-circle">912 <br> 예약성사</div>
+                    <div class="stat-circle">150 <br> 예약취소 내역</div>
+                </div>
+        </div>
+        </div>
+    </div>
+	</th:block>
+	<th:block layout:fragment="script">
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	    <script th:src="@{/js/chart.js}"></script>
+	    <script th:src="@{/js/admin.js}"></script>
+	    </th:block>
+	</html>

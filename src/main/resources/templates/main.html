@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+	 <!-- 기본 레이아웃 (block.html) -->
+    <th:block th:if="${session.userRole != 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+    </th:block>
+    <!-- 관리자 로그인 시 adminblock.html 사용 -->
+    <th:block th:if="${session.userRole == 'ADMIN'}">
+        <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
+    </th:block>
+    
+		<title>메인화면</title>
+		
+	</head>
+	<body> 
+		<main class="mb-20">
+	  		<div class="container py-4">
+	  		<!-- 기본 레이아웃 (block.html) - 관리자 아닌 경우만 표시 -->
+            <th:block th:if="${session.userRole != 'ADMIN'}">
+                <div th:replace="template/client/fragments/block :: header"></div>
+            </th:block>
+
+            <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
+            <th:block th:if="${session.userRole == 'ADMIN'}">
+                <div th:replace="template/client/fragments/adminblock :: header"></div>
+            </th:block>
+
+			<!-- 메인 컨텐츠 -->
+	    		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+		    		<div class="ratio ratio-21x9">
+					  <div class="carousel-inner">
+					    <div class="carousel-item active" data-bs-interval="2000">
+					      <img src="images/f1.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f2.jpg" class="d-block w-100" alt="...">
+					    </div>
+					    <div class="carousel-item" data-bs-interval="2000">
+					      <img src="images/f3.jpg" class="d-block w-100" alt="...">
+					    </div>
+					  </div>
+					</div>
+					  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Previous</span>
+					  </button>
+					  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+					    <span class="visually-hidden">Next</span>
+					  </button>
+				</div>
+	    		<div class="mt-4 row align-items-md-stretch">
+                <div class="col-md-4">
+                   <div class="h-100 p-5 bg-body-tertiary border rounded-3 ">
+                      <h2>Winery Store</h2>
+                      <img class="height-70 w-100" alt="매장 매뉴2" src="images/f2.jpg">
+                      <h4>Wine Bar Promotion</h4>
+                      <p><strong>&#92; 150,000</strong></p>
+                      <div class="container-fluid py-1">
+                         <p>
+                        🍷 와인바 프로모션 안내 🍷<br />
+                        특별한 와인과 함께하는 한정 프로모션!<br /> 지금 방문하시면,
+                        
+                        와인 1+1: <br /> 지정된 와인 주문 시 동일한 와인 1잔 무료 제공!<br />
+                        할인 이벤트: 프리미엄 와인 최대 30% 할인<br />
+                        스페셜 플래터 세트: 와인 주문 시 치즈 &amp; 샤퀴테리 플래터 할인<br /><br />
+                        
+                        📅 기간: 2025년 03월 14일 ~ 30일<br />
+                        📍 장소: [와인바 이름]<br />
+                        
+                        ✨ 한정된 기간 동안만! 특별한 분위기에서 여유로운 시간을 즐겨보세요. 🍷✨
+                        </p>
+                     </div>
+                      <th:block th:insert="~{client/shopReserve/reserveForm}"></th:block>
+                   </div>
+                </div>
+                <div class="col-md-4">
+                   <div class="h-100 p-5 text-bg-dark rounded-3">
+                      <img class="height-70 w-100" alt="매장 매뉴1" src="images/f1.jpg">
+                      <h2 class="mt-1">Community</h2>
+                      <p>게시판에서 자유롭게 고민상담과 정보공유를 해요~!</p>
+                      <button class="btn btn-outline-light gallery" type="button" onclick="location.href='/board/freeboardList'">게시판 바로가기</button>
+                   </div>
+                </div>
+                
+                <!-- ✅ "추천받기" 버튼 -->
+				<div class="col-md-4">
+				    <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+				        <h2>🍽 오늘의 추천 메뉴</h2>
+				        <hr/>
+				        <p>오늘 뭐 먹지? 고민될 때! 추천을 받아보세요!</p>
+				        <img id="menuImage" class="h-70 w-100" alt="추천 메뉴" src="images/mainslot.jpg"> <!-- ✅ 고정된 이미지 -->
+				        <br/>
+				        <hr />
+				        <button class="btn btn-outline-secondary" id="randomMenuBtn" type="button">추천받기</button>
+				    </div>
+				</div>
+				
+				<!-- ✅ 추천 결과 모달 -->
+					<div class="modal fade" id="menuModal" tabindex="-1" aria-hidden="true">
+					  <div class="modal-dialog modal-dialog-centered">
+					    <div class="modal-content">
+					    
+					      <div class="modal-header">
+					        <h1 class="modal-title fs-5">✨ 오늘의 추천 메뉴 ✨</h1>
+					        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					      </div>
+					      
+					      <div class="modal-body text-center position-relative">  <!-- ✅ 상대 위치 지정 -->
+					        <div class="position-relative d-inline-block">
+					            <!-- ✅ 폭죽 캔버스를 메뉴 이미지 위에 겹쳐서 배치 -->
+					            <canvas id="fireworksCanvas" class="position-absolute top-0 start-50 translate-middle"></canvas>  
+					            
+					            <!-- ✅ 슬롯머신 애니메이션 공간 -->
+					            <h2 id="slotMenuTitle" class="mt-3">🎰 추천 중...</h2>
+					            <img id="slotMenuImage" class="h-50 w-50 rounded shadow-lg" alt="추천 중" src="images/mainslot.jpg"> 
+					        </div>
+					      </div>
+					      
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+					      </div>
+					      
+					    </div> 
+					  </div>
+					</div>
+
+	    		<!-- 푸터: 관리자와 사용자 모두 표시 -->
+	    		<div th:replace="template/client/fragments/adminblock :: footer"></div>
+
+			</div>     
+		</main> 
+		<script src="/js/jquery-3.7.1.min.js"></script>
+		<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="/js/slot.js"></script>
+		<script src="/js/common.js"></script>
+		
+    
+	</body>
+</html>

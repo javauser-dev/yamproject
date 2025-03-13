@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+
+	<th:block layout:fragment="content">
+		<div class="text-center"><h3>게시판 상세</h3></div>
+		
+		<div class="container" th:object="${storeCommunity}"> 
+			<div class="board-table-height">
+				<form id="dataForm">
+					<input type="hidden" name="storeListNo" th:value="*{storeListNo}" />	
+				</form>
+				
+				<table class="table table-bordered">
+					<tbody class="text-center">
+						<tr>
+							<td class="col-md-3">작성자</td>
+							<td class="col-md-3 text-start" th:text="*{name} + ' (조회수: ' + *{storeHit} + ')'"></td>
+							<td class="col-md-3">작성일</td>
+							<td class="col-md-3 text-start" th:text="*{#temporals.format(storeCreateAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</tr>
+						<tr>
+							<td class="col-md-3">대분류</td>
+							<td colspan="3" class="col-md-9 text-start" th:text="*{storeCategory}"></td>
+						</tr>
+						<tr>
+							<td class="col-md-3">글제목</td>
+							<td colspan="3" class="col-md-9 text-start" th:text="*{storeTitle}"></td>
+						</tr>
+						<!-- 글내용과 이미지가 함께 표시됨 -->
+						<tr class="board-table-tr-height">
+							<td class="col-md-3 align-middle">글내용</td>
+							<td colspan="3" class="col-md-9 text-start">
+								<p th:utext="${#strings.replace(storeCommunity.storeContent, '\n', '<br/>')}"></p>
+								<!-- 파일이 있을 경우 이미지 표시 -->
+								<th:block th:if="*{not #strings.isEmpty(filename)}">
+									<img th:src="@{/storeCommunity/view/} + *{filename}" width="200px" />
+								</th:block>
+							</td>
+						</tr>					
+					</tbody>
+				</table>	
+			</div>	  			
+
+			<div class="col-md-3 text-end">
+				<button type="button" id="updateFormBtn" class="btn btn-primary btn-sm">글수정</button>
+				<button type="button" id="boardDeleteBtn" class="btn btn-danger btn-sm">글삭제</button>
+				<button type="button" id="insertFormBtn" class="btn btn-success btn-sm">글쓰기</button>
+				<button type="button" id="boardListBtn" class="btn btn-secondary btn-sm">글목록</button>
+			</div>
+
+			<!-- 댓글 입력 폼 -->
+			<form id="commentForm">
+				<input type="hidden" name="id" id="id" value="0" />
+				<div class="row mb-3">
+					<label for="nickname" class="col-sm-1 col-form-label">작성자</label>
+					<div class="col-sm-3">
+						<input type="text" name="nickname" id="nickname" maxlength="8" class="form-control" th:value="*{name}" readonly />
+					</div>
+					<button type="button" id="commentInsertBtn" class="btn btn-secondary col-sm-1 sendBtn mx-2">저장</button>
+				</div>
+				<div class="row mb-3">
+					<label for="body" class="col-sm-1 col-form-label">댓글내용</label>
+					<div class="col-sm-11"> 
+						<textarea name="body" id="body" class="form-control" rows="3"></textarea>
+					</div> 
+				</div>
+			</form>
+
+			<!-- 댓글 리스트 --> 
+			<div id="commentList"> 
+				<!-- 댓글이 동적으로 추가됨 -->
+			</div>
+
+		</div>
+	</th:block>		
+		
+	<th:block layout:fragment="script">
+		<script src="/js/storeCommunity/storeCommunityDetail.js"></script>
+		<script> 
+			const dataReset = () => {
+				$("#commentForm").each(function(){
+					this.reset();
+				});
+			}
+			
+			const addCommentToList = (comment) => {
+			    let template = `
+			        <div class="card mb-2 comment" data-id="${comment.id}">
+			            <h5 class="card-header">
+			                <span class="name">${comment.nickname}</span>
+			                <span class="cdate">${new Date(comment.cdate).toLocaleString()}</span>
+			                <a href="#" class="btn btn-secondary btn-sm commentUpdateFormBtn">수정</a>
+			                <a href="#" class="btn btn-danger btn-sm commentDeleteBtn">삭제</a>
+			            </h5>
+			            <div class="card-body">
+			                <p class="card-text">${comment.body}</p>
+			            </div>
+			        </div>
+			    `;
+			    $("#commentList").append(template);
+			}
+
+			// 댓글 저장
+			$(document).on("click", "#commentInsertBtn", function(){ 
+				if (!checkForm("#nickname","작성자를"))  return; 
+				if (!checkForm("#body","내용을"))  return;
+				$.ajax({
+					url : "/comments/commentInsert",
+					method : "post",
+					headers : {"Content-Type":"application/json"},
+					data : JSON.stringify({
+						nickname: $("#nickname").val( ), 
+						body: $("#body").val(),
+						article: { storeListNo: $("#storeListNo").val() }
+					}),
+					dataType:"json"
+				}).done(function(data){	
+					alert("댓글 등록이 완료되었습니다.");
+					dataReset();
+					addCommentToList(data);
+				}).fail(function(){
+					alert("댓글 등록에 실패하였습니다.");
+				});	
+			});
+
+			// 댓글 수정 및 삭제 기능 추가
+		</script>
+	</th:block>	
+
+</html>		

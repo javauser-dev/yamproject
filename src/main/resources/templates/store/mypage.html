@@ -1,0 +1,107 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+	
+	<th:block layout:fragment="content">
+	 <div class="mypage-container" id="mypageContainer">
+        <div class="header">
+            <div class="back-button" onclick="history.back()">&lt;</div>
+            <div class="mypage-title">마이 페이지</div>
+        </div>
+        
+        <div class="profile-section">
+            <div class="name-text" th:text="${storeNickname}">닉네임</div>
+            <div class="name-text" th:text="${storeNo}"></div>
+            <div class="profile-container" onclick="openProfileFileDialog()">
+                <img id="profileImage" class="profile-img" src="/images/default-profile.png" 
+                     onerror="this.src='/images/default-profile.png'">
+                <div class="profile-text" id="profileText">프로필 사진 변경</div>
+            </div>
+            <input type="file" id="fileInputProfile" accept="image/*" onchange="changeProfileImage(event)">
+        </div>
+        
+        <button class="bg-setting-btn" onclick="openBackgroundFileDialog()">배경 설정</button>
+        <input type="file" id="fileInputBg" accept="image/*" onchange="changeBackground(event)">
+
+        <div class="menu-section">
+            <div class="menu-button my-store-btn" onclick="location.href='/shop/myShopList'">내 매장 보기</div>
+            <div class="menu-button edit-info-btn" onclick="location.href='/store/edit'">사업자 정보 수정</div>
+            <div class="menu-button withdraw-btn" onclick="confirmWithdrawal()">사업자 탈퇴</div>
+        </div>
+    </div>
+
+<link rel="stylesheet" th:href="@{/css/store/mypage.css}">
+	</th:block>
+	
+	<th:block layout:fragment="script">
+	 
+	 <script>
+	 
+	 window.onload = function() {
+		    const savedBg = localStorage.getItem('myPageBackground');
+		    if (savedBg) {
+		        document.getElementById('mypageContainer').style.backgroundImage = `url(${savedBg})`;
+		    }
+		    
+		    const savedProfile = localStorage.getItem('myPageProfile');
+		    if (savedProfile) {
+		        document.getElementById('profileImage').src = savedProfile;
+		        document.getElementById('profileText').style.display = 'none';
+		    }
+		};
+
+		function openBackgroundFileDialog() {
+		    document.getElementById('fileInputBg').click();
+		}
+
+		function openProfileFileDialog() {
+		    document.getElementById('fileInputProfile').click();
+		}
+
+		function changeBackground(event) {
+		    const file = event.target.files[0];
+		    if (file) {
+		        const reader = new FileReader();
+		        reader.onload = function(e) {
+		            document.getElementById('mypageContainer').style.backgroundImage = `url(${e.target.result})`;
+		            localStorage.setItem('myPageBackground', e.target.result);
+		        };
+		        reader.readAsDataURL(file);
+		    }
+		}
+
+		function changeProfileImage(event) {
+		    const file = event.target.files[0];
+		    if (file) {
+		        const reader = new FileReader();
+		        reader.onload = function(e) {
+		            document.getElementById('profileImage').src = e.target.result;
+		            document.getElementById('profileText').style.display = 'none';
+		            localStorage.setItem('myPageProfile', e.target.result);
+		        };
+		        reader.readAsDataURL(file);
+		    }
+		}
+
+		function confirmWithdrawal() {
+		    if (confirm('정말 회원 탈퇴하시겠습니까?')) {
+		        fetch('/store/remove', {
+		            method: 'DELETE',  // DELETE 요청으로 변경
+		            headers: {
+		                'Content-Type': 'application/json',
+		            },
+		        })
+		        .then(response => {
+		            if (response.ok) {
+		                alert('사업자 탈퇴가 완료되었습니다.');
+		                window.location.href = '/main';  // 탈퇴 후 리다이렉트
+		            } else {
+		                alert('탈퇴 처리에 실패했습니다.');
+		            }
+		        })
+		        .catch(() => alert("서버 상태를 확인해주세요."));
+		    }
+		}
+	 </script>
+	</th:block>
+	
+</html>

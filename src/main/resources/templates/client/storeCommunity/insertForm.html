@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{template/client/layout/layout}">
+
+	<th:block layout:fragment="content">
+		<div class="text-center"><h3>게시판 입력</h3></div>	
+		
+		<div class="container"> 
+			<div class="board-table-height">
+				<!-- ✅ 컨트롤러에서 storeCommunity 객체를 넘기므로 변경 -->
+				<form id="insertForm" th:action="@{/storeCommunity/boardInsert}" method="post" th:object="${storeCommunity}" enctype="multipart/form-data">
+					<div class="mb-3 row">
+    				<label class="col-sm-2 col-form-label">작성자</label>
+  					 <div class="col-sm-10">
+      					  <input type="text" class="form-control" th:field="*{name}" readonly />
+    				</div>
+					</div>
+				  	<!-- ✅ 대분류 Dropdown -->   
+				  	<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">대분류</label>
+				    	<div class="col-sm-10">
+							<select class="form-select" th:field="*{storeCategory}" required>
+								<option value="">카테고리 선택</option>
+								<option value="가입인사">가입인사</option>
+								<option value="고민상담">고민상담</option>
+								<option value="정보공유">정보공유</option>
+							</select>
+				    	</div>
+				  	</div>
+
+				  	<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">글제목</label>
+				    	<div class="col-sm-10">
+				    		<input type="text" class="form-control" th:field="*{storeTitle}" required />
+				    	</div>
+				    </div> 
+				    <div class="mb-3 row"> 
+				    	<label class="col-sm-2 col-form-label">글내용</label>
+				    	<div class="col-sm-10">
+				    		<textarea class="form-control board-textarea" rows="8" th:field="*{storeContent}" required></textarea>
+				    	</div>
+				    </div>
+				    <div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">비밀번호</label>
+				    	<div class="col-sm-10">
+				    		<input type="password" class="form-control" th:field="*{passwd}" required />
+				    	</div>
+				    </div>
+				    
+				    <!-- 파일 업로드 -->
+				    <div class="mb-3 row" th:if="*{not #strings.isEmpty(filename)}">
+						<label class="col-sm-2 col-form-label">현재 이미지</label>
+						<div class="col-sm-10">
+							<img th:src="@{/storeCommunity/view/} + *{filename}" width="200px" />
+						</div>
+					</div>
+					<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">이미지 업로드</label>
+				    	<div class="col-sm-10">
+							<input type="file" class="form-control" name="file">
+						</div>
+					</div>
+
+					<div class="text-end">
+						<button type="submit" class="btn btn-primary btn-sm">글저장</button>
+						<a th:href="@{/storeCommunity/storeCommunityList}" class="btn btn-secondary btn-sm">목록</a>
+					</div>
+				</form>
+			</div>   
+		</div>
+	</th:block>			
+		
+	<th:block layout:fragment="script">
+	</th:block>	
+
+</html>
