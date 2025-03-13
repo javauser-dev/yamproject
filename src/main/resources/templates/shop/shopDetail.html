@@ -82,13 +82,19 @@
 <!-- 영업 시간 표시 -->
 <div id="shopHours" style="display: block;">
     <div>
-        개장시간: <span id="opentime" th:text="${shop.shopOpentime}" style="color: #27ae60; font-weight: bold;">09:00</span>
+         <span id="opentime" th:text="${shop.shopOpentime}" style="color: #27ae60; font-weight: bold;">09:00</span>
     </div>
     <div>
-        폐장시간: <span id="closetime" th:text="${shop.shopClosetime}" style="color: #c0392b; font-weight: bold;">22:00</span>
+         <span id="closetime" th:text="${shop.shopClosetime}" style="color: #c0392b; font-weight: bold;">22:00</span>
     </div>
 </div>
-
+	<!-- 개장 시간 -->
+		<div style="text-align: center; margin-bottom: 20px;">
+			<div
+				style="display: inline-block; margin-right: 20px; color: #f39c12; font-weight: bold;">개장시간</div>
+			<div
+				style="display: inline-block; margin-left: 20px; color: #3498db; font-weight: bold;">폐장시간</div>
+		</div>
 <!-- 영업 시간 수정 입력 필드 -->
 <div id="shopHoursInputContainer" style="width: 80%; margin: 0 auto; text-align: center; display: none;">
     <input type="time" id="shopOpentimeInput" 
@@ -118,13 +124,7 @@
 			th:value="${shop.shopAddress != null && !shop.shopAddress.isEmpty() ? shop.shopAddress : ''}"
 			onchange="saveField('shopAddress')" />
 
-		<!-- 개장 시간 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<div
-				style="display: inline-block; margin-right: 20px; color: #f39c12; font-weight: bold;">개장시간</div>
-			<div
-				style="display: inline-block; margin-left: 20px; color: #3498db; font-weight: bold;">폐장시간</div>
-		</div>
+	
 
 		<!-- 매장 전화 -->
 		<div style="text-align: center; margin-bottom: 20px;">
@@ -168,6 +168,7 @@
 			th:value="${shop.shopFacilities != null && !shop.shopFacilities.isEmpty() ? shop.shopFacilities : ''}"
 			onchange="saveField('shopFacility')" />
 	</div>
+	 
 </th:block>
 
 <th:block layout:fragment="script">
@@ -360,24 +361,6 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
     	  fieldElement.style.display = 'block';
     	  inputElement.style.display = 'none';
     	  
-    	  
-    	  /*axios.post('/shop/update-field', {
-    	    shopNo: shopNo,
-    	    field: fieldId,
-    	    value: updatedValue
-    	  }, {
-    	    headers: {
-    	      'Content-Type': 'application/x-www-form-urlencoded'
-    	    }
-    	  })
-    	  .then(response => {
-    	    console.log('성공:', response);
-    	    alert(fieldId + " 정보가 업데이트 되었습니다.");
-    	  })
-    	  .catch(error => {
-    	    console.error("에러 발생:", error);
-    	  */
-    	  
   		$.ajax({
 			url : "/store/shop/update-field",
 			method : "post",
@@ -446,7 +429,43 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
         document.getElementById("shopImageTag").addEventListener("click", editImage);
     };
     
-    
+ // 이미지 수정
+    function editImage() {
+      document.getElementById("shopImageInput").click();
+    }
+
+    function updateImage() {
+      var imageInput = document.getElementById("shopImageInput");
+      
+      if (!imageInput.files || imageInput.files.length === 0) {
+        return; // 파일이 선택되지 않았으면 중단
+      }
+      
+      var formData = new FormData();
+      formData.append("shopMainImage", imageInput.files[0]);
+      
+      // 서버로 이미지 파일 전송 (Axios 사용)
+      axios.post('/store/shop/update-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(function(response) {
+        if (response.data && response.data.filename) {
+          // 성공적인 응답 후 이미지 태그 업데이트
+          var imgElement = document.getElementById("shopImageTag");
+          imgElement.src = '/upload/' + response.data.filename + '?t=' + new Date().getTime(); // 캐시 방지
+          alert("이미지가 성공적으로 업데이트 되었습니다.");
+        } else {
+          alert("이미지 업데이트에 실패했습니다. 서버 응답 확인이 필요합니다.");
+          console.log("서버 응답:", response);
+        }
+      })
+      .catch(function(error) {
+        alert("이미지 업데이트 중 오류가 발생했습니다.");
+        console.error("Error updating image", error);
+      });
+    }
 </script>
 
 </th:block>

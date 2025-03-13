@@ -2,50 +2,67 @@
 	layout:decorate="~{template/client/layout/layout}">
 	
 	<th:block layout:fragment="content">
-		<form>
-			<div class="col-auto">
-				<label for="name">이름</label>
-				<input type="text" name="name" id="name" placeholder="이름" class="form-control form-control-sm" />
-			</div>
-			<div class="col-auto">
-				<label for="nickname">닉네임</label>
-				<input type="text" name="nickname" id="nickname" placeholder="닉네임" class="form-control form-control-sm" />
-			</div>
-			<div class="col-auto">
-				<label for="b_number">사업자번호</label>
-				<input type="text" name="b_number" id="b_number" placeholder="사업자번호" class="form-control form-control-sm" />
-				<button type="button" id="bnBtn"class=" btn btn-primary btn-sm ">인증</button>
-				<input type="hidden" id="bNumberVerified" value="false" />
-			</div>
-			<div class="col-auto">
-				<label for="passwd">비밀번호</label>
-				<input type="password" id="passwd" name="passwd" placeholder="비밀번호" class="form-control form-control-sm" />
-			</div>
-			<div class="col-auto">
-				<label for="passwdcheck">비밀번호 확인</label>
-				<input type="password" id="passwdcheck" name="passwdcheck" placeholder="비밀번호 확인" class="form-control form-control-sm" />
-			</div>
-			<div class="col-auto">
-				<label for="phone">연락처</label>
-				<input type="text" name="phone" id="phone" placeholder="연락처" class="form-control form-control-sm" />
-			</div>
-			<div>
-    			<input type="email" id="email" placeholder="이메일 입력">
-    			<button id="verifyBtn" type="button">인증 메일 발송</button>
-    			<input type="hidden" id="emailVerified" value="false" />
-			</div>
-			<div>
-				<input type="text" id="verificationCode" placeholder="인증 코드 입력">
-				<button id="checkCodeBtn">코드 확인</button>
-	    	</div>	
-			<div class="col-auto">
-				<label>회원가입에 동의합니다</label>
-				<input type="checkbox" id="check" />
-			</div>
-			<div class="col-auto">
-				<button type="button" id="signupBtn" class="btn btn-primary btn-sm">회원 가입</button>
-			</div>
-		</form>
+  <!-- 폼 부분만 컨테이너로 감싸서 CSS 적용 -->
+<div class="signup-form-container">
+   <div class="back-icon" onclick="history.back()">&lt;</div>
+  <h2 class="form-title">사업자 회원 가입</h2>
+  
+  <form>
+    <div class="form-group">
+      <label for="name">이름</label>
+      <input type="text" name="name" id="name" placeholder="이름" class="form-control form-control-sm" />
+    </div>
+    
+    <div class="form-group">
+      <label for="nickname">닉네임</label>
+      <input type="text" name="nickname" id="nickname" placeholder="닉네임" class="form-control form-control-sm" />
+    </div>
+    
+    <div class="form-group">
+      <label for="b_number">사업자번호</label>
+      <input type="text" name="b_number" id="b_number" placeholder="사업자번호" class="form-control form-control-sm" />
+      <button type="button" id="bnBtn" class="btn-primary">인증</button>
+      <input type="hidden" id="bNumberVerified" value="false" />
+    </div>
+    
+    <div class="form-group">
+      <label for="passwd">비밀번호</label>
+      <input type="password" id="passwd" name="passwd" placeholder="비밀번호" class="form-control form-control-sm" />
+    </div>
+    
+    <div class="form-group">
+      <label for="passwdcheck">비밀번호 확인</label>
+      <input type="password" id="passwdcheck" name="passwdcheck" placeholder="비밀번호 확인" class="form-control form-control-sm" />
+    </div>
+    
+    <div class="form-group">
+      <label for="phone">연락처</label>
+      <input type="text" name="phone" id="phone" placeholder="연락처" class="form-control form-control-sm" />
+    </div>
+    
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input type="email" id="email" placeholder="이메일 입력">
+      <button id="verifyBtn" type="button">인증 보기</button>
+      <input type="hidden" id="emailVerified" value="false" />
+    </div>
+    
+    <div class="verification-section">
+      <input type="text" id="verificationCode" placeholder="인증 코드 입력">
+      <button id="checkCodeBtn" type="button">코드 확인</button>
+    </div>
+    
+    <div class="checkbox-group">
+      <input type="checkbox" id="check" />
+      <label for="check">회원가입에 동의합니다</label>
+    </div>
+    
+    <div class="submit-container">
+      <button type="button" id="signupBtn" class="btn-primary">회원 가입</button>
+    </div>
+  </form>
+</div>
+  <link rel="stylesheet" th:href="@{/css/store/signup.css}">
 	</th:block>
 	
 	<th:block layout:fragment="script">

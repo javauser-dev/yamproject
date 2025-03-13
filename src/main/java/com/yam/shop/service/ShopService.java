@@ -118,4 +118,6 @@ public class ShopService {
             throw new RuntimeException("매장을 찾을 수 없습니다.");
         }
     }
+    
+   
 }

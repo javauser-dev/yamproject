@@ -3,7 +3,7 @@
 	
 	<th:block layout:fragment="content">
 	 <div class="container">
-            <button onclick="history.back()">⬅</button>
+            <div class="back-button" onclick="history.back()">&lt;</div>
             <h2>내 매장 목록</h2>
 			 <!-- 매장 추가 버튼 (오른쪽 상단) -->
         <div style="text-align: right; margin-bottom: 20px;">
@@ -20,6 +20,7 @@
          alt="매장 이미지" class="shop-image">
          </a>
     <h3 th:text="${shop.shopName}">매장명</h3>
+    <link rel="stylesheet" th:href="@{/css/shop/myShopList.css}">
 </div>
 
             </div>
