@@ -1,36 +1,35 @@
 /* 전체 테이블 스타일 */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* 테두리가 겹치지 않도록 설정 */
     margin-top: 20px;
-    border-radius: 8px; /* 테두리 둥글게 */
-    overflow: hidden;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    border: none; /* 테이블 외곽 테두리 제거 */
+     
 }
 
 /* 테이블 헤더 스타일 */
 table th {
-    padding: 12px;
-    text-align: left;
+	text-align: center;
+    padding: 12px; 
     font-weight: bold;
+    border-bottom: 1px solid #444; /* 아래 테두리만 표시 */
 }
 
 /* 테이블 내용 스타일 */ 
 table td {
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #444; /* 아래 테두리만 표시 */
+    text-align: center; 
 }
 
-/* 행(Hover) 효과 */
-table tr:hover {
-    background-color: #c0c0c0;
-}
+
 
 /* 제목 링크 스타일 */
 table td a {
     text-decoration: none;
     font-weight: bold;
-}
+} 
 
 table td a:hover {
     text-decoration: underline;
@@ -76,11 +75,15 @@ table td a:hover {
 
 /* 공지사항 내용 스타일 */
 .notice-content {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.6;
-    margin: 10px 0;
+    margin: 30px 0;
     padding: 10px;
     border-radius: 5px;
+    border-top: 1px solid #444; /* 밑줄 추가 */
+    border-bottom: 1px solid #444; /* 밑줄 추가 */
+    height: 300px;
+    
 }
 
 /* 작성자, 날짜 스타일 */
@@ -92,7 +95,8 @@ table td a:hover {
 /* 관리자 버튼 스타일 */
 .notice-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: right; /* 버튼을 가운데 정렬 */
+    gap: 10px; /* 버튼 간격 조정 */
     margin-top: 20px;
 }
 
@@ -132,11 +136,18 @@ table td a:hover {
     margin-top: 30px;
 }
 
+
+h2{
+	 text-align: center; /* 제목(헤더) 가운데 정렬 */
+	 
+	
+}
 .comment-section h2 {
     font-size: 20px;
     text-align: left;
     border-bottom: 2px solid #ddd;
     padding-bottom: 5px;
+    
 }
 
 /* 댓글 입력 */
@@ -197,13 +208,15 @@ table td a:hover {
 .back-btn {
     display: block;
     text-align: center;
-    margin-top: 20px;
     text-decoration: none;
     background-color: #6c757d;
     color: white;
     padding: 10px 15px;
     border-radius: 5px;
     transition: 0.3s;
+    width: 500px;
+    margin: 20px auto; /* 버튼을 가운데 정렬 */
+    
 }
 
 .back-btn:hover {

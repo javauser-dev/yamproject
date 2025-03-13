@@ -1,5 +1,7 @@
 package com.yam.store.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,10 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.yam.store.Store;
+import com.yam.store.WithdrawnStore;
 import com.yam.store.dto.StoreDTO;
 import com.yam.store.dto.StoreUpdateDTO;
 import com.yam.store.email.service.EmailService2;
 import com.yam.store.repository.StoreRepository;
+import com.yam.store.repository.WithdrawnStoreRepository;
 import com.yam.store.security.JwtProvider;
 
 import jakarta.transaction.Transactional;
@@ -30,6 +34,9 @@ public class StoreService {
 
 	@Autowired
 	private EmailService2 emailService;
+
+	@Autowired
+	WithdrawnStoreRepository withdrawnStoreRepository;
 
 	// ✅ 사업자 회원가입 (이메일 인증 포함)
 	@Transactional
@@ -72,11 +79,11 @@ public class StoreService {
 	}
 
 	// ✅ 로그인
-	public String login(String stoereEmail, String storePassword) {
-		Store store = storeRepository.findByStoreEmail(stoereEmail)
+	public String login(String email, String password) {
+		Store store = storeRepository.findByStoreEmail(email)
 				.orElseThrow(() -> new RuntimeException("사업자 정보를 찾을 수 없습니다."));
 
-		if (!passwordEncoder.matches(storePassword, store.getStorePassword())) {
+		if (!passwordEncoder.matches(password, store.getStorePassword())) {
 			throw new RuntimeException("비밀번호가 틀렸습니다.");
 		}
 
@@ -137,6 +144,26 @@ public class StoreService {
 
 		storeRepository.save(store);
 		return true; // 정보가 성공적으로 업데이트됨
+	}
+
+	public void moveToWithdrawn(String storeEmail, String withdrawalReason) {
+		Store store = storeRepository.findByStoreEmail(storeEmail)
+				.orElseThrow(() -> new IllegalArgumentException("해당 ID의 사업자를 찾을 수 없습니다: " + storeEmail));
+
+		WithdrawnStore withdrawnStore = new WithdrawnStore();
+
+		withdrawnStore.setStoreName(store.getStoreName());
+		withdrawnStore.setStoreNickname(store.getStoreNickname());
+		withdrawnStore.setStoreEmail(store.getStoreEmail());
+		withdrawnStore.setStoreEmail(store.getStorePassword());
+		withdrawnStore.setStorePhone(store.getStorePhone());
+
+		// 탈퇴 관련 정보 설정
+		withdrawnStore.setWithdrawalRequestedAt(LocalDateTime.now());
+		withdrawnStore.setWithdrawalCompletedAt(LocalDateTime.now().plus(5, ChronoUnit.YEARS));
+		withdrawnStore.setWithdrawalReason(withdrawalReason);
+
+		withdrawnStoreRepository.save(withdrawnStore);
 	}
 
 	public void removeStore(String storeEmail) {
@@ -204,16 +231,4 @@ public class StoreService {
 		return phone != null && phone.matches("^[0-9]+$");
 	}
 
-	public Store findByEmail(String email) {
-		System.out.println("🔍 이메일로 Store 찾기: " + email);
-		Optional<Store> storeOptional = storeRepository.findByStoreEmail(email);
-
-		if (storeOptional.isPresent()) {
-			System.out.println("✅ Store 찾음: " + storeOptional.get().getStoreNickname());
-			return storeOptional.get();
-		} else {
-			System.out.println("❌ 해당 이메일로 Store를 찾지 못함!");
-			return null;
-		}
-	}
 }

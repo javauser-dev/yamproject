@@ -24,11 +24,13 @@
             <!-- 관리자 레이아웃 (adminblock.html) - 관리자일 때만 표시 -->
             <th:block th:if="${session.userRole == 'ADMIN'}">
                 <div th:replace="template/client/fragments/adminblock :: header"></div>
-            </th:block>
+            </th:block> 
             
         <h2 th:text="${notice.title}"></h2>
         <p class="notice-content" th:text="${notice.content}"></p>
-        <p class="notice-meta">작성자: <strong th:text="${notice.author}"></strong></p>
+       <p class="notice-meta">
+   			 작성자: <strong th:text="${session.userRole == 'ADMIN' ? '관리자' : (notice.author != null ? notice.author : '관리자')}"></strong>
+		</p>
         <p class="notice-meta">날짜: <span th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
 
         <!-- 관리자만 수정 & 삭제 가능 -->
@@ -48,16 +50,24 @@
                 <textarea name="content" required></textarea> 
                 <button type="submit">댓글 작성</button>
             </form>    
-  
             <ul class="comment-list"> 
-                <li th:each="comment : ${notice.comments}">
-                    <p><strong th:text="${comment.commenter}"></strong></p>
-                    <p th:text="${comment.content}"></p>
-                    <p th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
-                </li> 
-            </ul>
-        </div>
-
+			    <li th:each="comment : ${notice.comments}">
+			     <p><strong th:text="${comment.commenter}"></strong></p>
+			        <p th:text="${comment.content}"></p>
+			        <p th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+			       	<P>
+			             <!-- ✅ 본인이 작성한 댓글만 삭제 버튼 보이게 처리 -->
+            			<th:block th:if="${session.customerId == comment.commenter or session.storeId == comment.commenter}">
+              			<form th:if="${session.customerId == comment.commenter or session.storeId == comment.commenter}"
+				              th:action="@{/noticeList/{noticeId}/comment/{commentId}/delete(noticeId=${notice.noticeId}, commentId=${comment.commentId})}" 
+				              method="post" 
+				              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+				            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+				        </form>
+           			 </th:block>
+			       </P>
+			    </li> 
+			</ul>
         <a href="/noticeList" class="back-btn">목록으로 돌아가기</a>
     </div>
     </main>

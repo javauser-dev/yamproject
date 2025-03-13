@@ -10,7 +10,7 @@
         <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
     </th:block>
    		<link rel="stylesheet" href="/css/notice.css">
-		<title>메인화면</title>
+		<title>공지사항</title>
 		
 	</head>
 	<body>
@@ -34,7 +34,7 @@
         </tr>
         <tr th:each="notice : ${notices}"> 
 			<td><a th:href="@{/noticeList/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
-            <td th:text="${notice.author}"></td>
+            <td th:text="${session.userRole == 'ADMIN' ? '관리자' : (notice.author != null ? notice.author : '관리자')}"></td>
             <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
     </table>

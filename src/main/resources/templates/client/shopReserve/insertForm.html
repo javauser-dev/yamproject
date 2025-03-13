@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">
+
+	<th:block layout:fragment="content">
+		<div class="text-center"><h3>예약 입력</h3></div>	
+
+		<div class="container"> 
+			<div class="board-table-height">
+				<form id="insertForm" th:object="${shopReserve}">
+				  	<div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">글제목</label>
+				    	<div class="col-sm-10">
+				    		<input type="text" class="form-control" th:field="*{title}" />
+				    	</div>
+				    </div>
+				    <div class="mb-3 row">
+				    	<label class="col-sm-2 col-form-label">요청사항</label>
+				    	<div class="col-sm-10">
+				    		<textarea class="form-control board-textarea" rows="8" th:field="*{shopReserveRequest}"></textarea>
+				    	</div>
+				    </div>
+				</form>
+			</div>   
+			
+			<div class="text-end">
+				<button type="button" id="articleInsertBtn" class="btn btn-primary btn-sm">예약등록</button>
+				<button type="button" id="articleCancelBtn" class="btn btn-primary btn-sm">취소</button>
+				<button type="button" id="shopReserveListBtn" class="btn btn-primary btn-sm">예약목록</button>
+			</div>
+		</div>
+	</th:block>			
+		
+	<th:block layout:fragment="script">
+		<script src="/js/shopReserve/shopReserveControl.js"></script>
+	</th:block>	
+	
+</html>

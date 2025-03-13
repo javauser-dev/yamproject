@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.yam.admin.model.Admin;
 import com.yam.admin.repository.AdminRepository;
 import com.yam.customer.member.domain.Member;
+import com.yam.customer.member.repository.BlacklistedMemberRepository;
 import com.yam.customer.member.repository.MemberRepository;
 import com.yam.store.Store;
+import com.yam.store.repository.BlacklistedStoreRepository;
 import com.yam.store.repository.StoreRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -38,6 +40,11 @@ public class LoginController {
 	@Autowired
 	private StoreRepository storeRepository;
 
+	@Autowired
+	private BlacklistedMemberRepository blacklistedMemberRepository;
+	@Autowired
+	private BlacklistedStoreRepository blacklistedStoreRepository;
+
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@GetMapping("/login")
@@ -49,8 +56,16 @@ public class LoginController {
 	}
 
 	@PostMapping("/api/login")
-	public ResponseEntity<?> apiLogin(@RequestParam String id, @RequestParam String password, HttpSession session) {
+	public ResponseEntity<?> apiLogin(@RequestParam String id, String StoreEmail, @RequestParam String password,
+			HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
+
+		// ✅ 불량 사용자 체크
+		if (blacklistedMemberRepository.existsByCustomerId(id)) {
+			response.put("success", false);
+			response.put("message", "이 계정은 관리자에 의해 정지되었습니다. 고객센터로 문의하세요.");
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+		}
 
 		// ✅ 관리자 로그인
 		Optional<Admin> adminOpt = adminRepository.findByIdEquals(id);
@@ -96,6 +111,14 @@ public class LoginController {
 
 		// ✅ 사업자 로그인
 		Optional<Store> storeOpt = storeRepository.findByStoreEmail(id);
+		if (storeOpt.isPresent()) {
+			Store store = storeOpt.get();
+			if (blacklistedStoreRepository.existsByStoreEmail(store.getStoreEmail())) {
+				response.put("success", false);
+				response.put("message", "이 계정은 관리자에 의해 정지되었습니다. 고객센터로 문의하세요.");
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+			}
+		}
 		if (storeOpt.isPresent() && passwordEncoder.matches(password, storeOpt.get().getStorePassword())) {
 			Store store = storeOpt.get();
 			session.setAttribute("userRole", "STORE");

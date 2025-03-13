@@ -1,3 +1,9 @@
+h2{
+	text-align:center;
+	margin-bottom:50px;
+}
+
+
 /* 게시글 작성 버튼 스타일 */
 .button-container {
     text-align: right;

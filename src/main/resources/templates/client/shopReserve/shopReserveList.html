@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorate="~{template/client/layout/layout}">	
+<!-- <!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" class="h-100" data-bs-theme="auto">
+	<head>
+		<th:block th:insert="~{template/client/fragments/block :: config}"></th:block>
+		<link rel="stylesheet" href="/css/res.css" >
+	</head>
+	<body> 
+		<main>
+	  		<div class="container py-4">
+	    		<header class="pb-3 mb-2">
+	    			<th:block th:insert="~{template/client/fragments/block :: header}"></th:block>
+	    		</header> -->
+			
+		<th:block layout:fragment="content">
+			<div class="text-center mb-3"><h3>예약 리스트</h3></div>
+			
+			<div id="boardSearch" class="my-2">
+				<form id="searchForm">
+					<input type="hidden" name="page" id="page" th:value="${shopReserveList.pageRequestDTO.page}">
+					<input type="hidden" name="size" id="size" th:value="${shopReserveList.pageRequestDTO.size}">
+				</form>
+			</div>
+			
+			<th:block th:if="${not #lists.isEmpty(shopReserveList)}"> <!-- 리스트가 비어 있지 않을 경우 -->
+			    <div class="row g-3">
+			        <th:block th:each="shopReserve : ${shopReserveList}" th:object="${shopReserve}">
+			           
+			            <div class="container-f col-md-4">
+			                <div class="card">
+			                    <div class="card-header"> 
+								    <h5 class="card-title" style="display: inline; margin-right: 10px;">reservation No.</h5>
+								    <h5 style="display: inline;" th:text="*{shopReserveNo}"></h5>
+								</div>
+			                    <div class="card-body">
+								    <div class="info-row">
+								        <strong>예약 날짜 및 시간:</strong> <p th:text="${#strings.concat(shopDate, ' ', shopTime)}"></p>
+								    </div>
+								    <div class="info-row">
+								        <strong>인원수:</strong> <p th:text="*{shopGuestCount}"></p>
+								    </div>
+								    <div class="info-row">
+								        <strong>예약금:</strong> <p th:text="*{shopReserveDeposit}"></p>
+								    </div>
+								    <div class="info-row">
+								        <strong>요청사항:</strong> <p th:text="*{shopReserveRequest}"></p>
+								    </div>
+								</div>
+			                    <div class="card-footer text-center"> <!-- 상세보기말고 수정으로 바로가기 -->
+			                        <button type="button" class="goDetail btn btn-light btn-sm">상세보기</button>
+			                    </div>
+			                </div>
+			            </div>
+			        </th:block>
+			    </div>
+			</th:block>
+
+			<div class="text-end">
+				<button type="button" id="insertFormBtn" class="btn btn-primary btn-sm mb-2">예약등록</button>
+			</div>
+
+			<nav aria-label="Page navigation example">
+	  			<ul class="pagination justify-content-center">
+					<!--/* 이전 바로가기 10개 존재 여부를 prev 필드의 값으로 확인. */-->
+	           		<li class="page-item" th:if="${shopReserveList.prev}">
+	           			<a th:data-number="${shopReserveList.prevPage}" class="page-link">Previous</a>
+	           		</li>
+					
+					<!--/* 바로가기 번호 출력 */--> 
+					<li th:each="number : ${shopReserveList.pageNumList}" th:classappend="'page-item ' + ${(shopReserveList.current == number) ? 'active':''}">
+						<a class="page-link" th:text="${number}" th:data-number="${number}"></a>
+					</li>
+	
+					<!--/* 다음 바로가기 10개 존재 여부를 next 필드의 값으로 확인. */-->
+					<li class="page-item" th:if="${shopReserveList.next}">
+						<a th:data-number="${shopReserveList.nextPage}" class="page-link">Next</a>
+					</li> 
+				</ul>
+			</nav>
+		</th:block>
+		
+	<!-- 	<footer class="pb-3 mb-2">
+   			<th:block th:insert="~{template/client/fragments/block :: footer}"></th:block>
+   		</footer> -->
+
+		<th:block layout:fragment="script">
+			<script src="/js/shopReserve/shopReserveControl.js"></script>
+			<script src="/js/shopReserve/shopReserveList.js"></script>
+		</th:block>

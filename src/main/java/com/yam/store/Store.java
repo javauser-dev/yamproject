@@ -91,7 +91,6 @@ public class Store {
 	@OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
 
 	private List<Shop> shops;
-
 	@Column(nullable = true, length = 20)
 	private String storeRole = "ROLE_STORE"; // 🔹 기본값 "ROLE_STORE" 추가
 

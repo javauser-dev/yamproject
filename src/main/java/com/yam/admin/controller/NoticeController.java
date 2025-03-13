@@ -107,16 +107,71 @@ public class NoticeController {
 		return "redirect:/noticeList";
 	}
 
+	// ---------------------------------------------------------------
 	// 댓글 작성
+
 	@PostMapping("/{id}/comment")
 	public String addComment(@PathVariable Long id, @ModelAttribute NoticeComment comment, HttpSession session) {
 		Optional<Notice> notice = noticeService.getNoticeById(id);
 		if (notice.isPresent()) {
 			comment.setNotice(notice.get());
-			comment.setCommenter((String) session.getAttribute("customerId"));
-			comment.setCustomerNickname((String) session.getAttribute("customerNickname"));
+
+			// ✅ 회원(Member)과 사업자(Store)의 로그인 상태 확인
+			String customerId = (String) session.getAttribute("customerId");
+			String storeId = (String) session.getAttribute("storeId");
+			String commenterNickname = "알 수 없음"; // 기본값 설정
+
+			if (customerId != null) {
+				// ✅ 회원이 로그인한 경우
+				comment.setCommenter(customerId);
+				commenterNickname = (String) session.getAttribute("customerNickname");
+			} else if (storeId != null) {
+				// ✅ 사업자가 로그인한 경우
+				comment.setCommenter(storeId);
+				commenterNickname = (String) session.getAttribute("storeNickname");
+			}
+
+			// ✅ 댓글 작성자 닉네임 설정 (null 방지)
+			if (commenterNickname == null || commenterNickname.isEmpty()) {
+				commenterNickname = "알 수 없음";
+			}
+			comment.setCustomerNickname(commenterNickname);
+
 			noticeService.addComment(comment);
 		}
 		return "redirect:/noticeList/" + id;
+	}
+
+	// ✅ 댓글 삭제
+	@PostMapping("/{noticeId}/comment/{commentId}/delete")
+	public String deleteComment(@PathVariable Long noticeId, @PathVariable Long commentId, HttpSession session) {
+		Optional<NoticeComment> commentOpt = noticeService.getCommentById(commentId);
+
+		if (commentOpt.isPresent()) {
+			NoticeComment comment = commentOpt.get();
+
+			// ✅ 댓글 작성자 정보 확인
+			if (comment.getCommenter() == null) {
+				System.out.println("🚨 댓글 작성자 정보가 null입니다. commentId: " + commentId);
+				return "redirect:/noticeList/" + noticeId;
+			}
+
+			// ✅ 로그인한 사용자 확인
+			String customerId = (String) session.getAttribute("customerId");
+			String storeId = (String) session.getAttribute("storeId");
+
+			// ✅ 댓글 작성자가 로그인한 사용자와 일치하는 경우에만 삭제 허용
+			if (comment.getCommenter().equals(customerId) || comment.getCommenter().equals(storeId)) {
+				noticeService.deleteComment(commentId);
+				System.out.println("✅ 댓글이 삭제되었습니다. commentId: " + commentId);
+			} else {
+				System.out.println("🚨 삭제 권한이 없습니다! 작성자: " + comment.getCommenter() + ", 로그인 사용자: "
+						+ (customerId != null ? customerId : storeId));
+			}
+		} else {
+			System.out.println("🚨 해당 댓글을 찾을 수 없습니다. commentId: " + commentId);
+		}
+
+		return "redirect:/noticeList/" + noticeId;
 	}
 }

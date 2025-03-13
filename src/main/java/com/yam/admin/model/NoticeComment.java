@@ -25,8 +25,10 @@ public class NoticeComment {
 	private Long commentId;
 
 	private String commenter; // 댓글 작성자
-
+	@Column(nullable = true)
 	private String customerNickname; // ⭐ 추가된 필드 (사용자 닉네임)
+	@Column(nullable = true)
+	private String storeNickname; // ⭐ 추가된 필드 (사용자 닉네임)
 
 	@Column(columnDefinition = "varchar2(255)")
 	private String content;

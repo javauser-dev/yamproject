@@ -6,36 +6,60 @@
     <th:block th:insert="~{template/client/fragments/adminblock :: config}"></th:block>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/css/admin.css">
+    <script>
+        // ✅ 벤 사유 입력 필드 토글
+        function showBanReasonForm(customerId) {
+            let form = document.getElementById("banForm-" + customerId);
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+    </script>
 </head>
 
 <th:block layout:fragment="content">
     <div class="container">
-    <h2>회원 목록</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>회원 ID</th>
-                <th>이름</th>
-                <th>이메일</th>
-                <th>닉네임</th>
-                <th>가입 날짜</th>
-                <th>프로필 이미지</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="customer : ${customers}">
-                <td th:text="${customer.customerId}"></td>
-                <td th:text="${customer.customerName}"></td>
-                <td th:text="${customer.customerEmail}"></td>
-                <td th:text="${customer.customerNickname}"></td>
-                <td th:text="${customer.customerCreateDate}"></td>
-                <td>
-                    <img th:src="${customer.customerProfileImage != null ? customer.customerProfileImage : '/images/default-profile.png'}"
-                         alt="프로필 이미지" width="50">
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-	</th:block>
+        <h2>회원 목록</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>회원 ID</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>닉네임</th>
+                    <th>가입 날짜</th>
+                    <th>프로필 이미지</th>
+                    <th>불량 사용자 등록</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="customer : ${customers}">
+                    <td th:text="${customer.customerId}"></td>
+                    <td th:text="${customer.customerName}"></td>
+                    <td th:text="${customer.customerEmail}"></td>
+                    <td th:text="${customer.customerNickname}"></td>
+                    <td th:text="${customer.customerCreateDate}"></td>
+                    <td>
+                        <img th:src="${customer.customerProfileImage != null ? customer.customerProfileImage : '/images/default-profile.png'}"
+                             alt="프로필 이미지" width="50">
+                    </td>
+                    <td>
+                        <!-- ✅ 불량 사용자 등록 버튼 -->
+                        <button type="button" th:attr="onclick='showBanReasonForm(\'' + ${customer.customerId} + '\')'">
+                            불량 사용자 등록
+                        </button>
+                        <!-- ✅ 불량 사용자 등록 폼 (기본 숨김) -->
+                        <form th:id="'banForm-' + ${customer.customerId}" th:action="@{/admin/ban}" method="post" style="display: none;">
+                            <input type="hidden" name="customerId" th:value="${customer.customerId}">
+                            <input type="text" name="reason" placeholder="벤 사유 입력" required>
+                            <button type="submit">등록</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
 </html>

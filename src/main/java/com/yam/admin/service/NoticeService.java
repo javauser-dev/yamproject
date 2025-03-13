@@ -14,11 +14,11 @@ import com.yam.admin.repository.NoticeRepository;
 @Service
 public class NoticeService {
 	private final NoticeRepository noticeRepository;
-	private final NoticeCommentRepository commentRepository;
+	private final NoticeCommentRepository noticecommentRepository;
 
 	public NoticeService(NoticeRepository noticeRepository, NoticeCommentRepository commentRepository) {
 		this.noticeRepository = noticeRepository;
-		this.commentRepository = commentRepository;
+		this.noticecommentRepository = commentRepository;
 	}
 
 	// 공지사항 목록 조회
@@ -56,6 +56,16 @@ public class NoticeService {
 
 	// 댓글 추가 (누구나 가능)
 	public NoticeComment addComment(NoticeComment comment) {
-		return commentRepository.save(comment);
+		return noticecommentRepository.save(comment);
+	}
+
+	// ✅ 특정 댓글 조회
+	public Optional<NoticeComment> getCommentById(Long commentId) {
+		return noticecommentRepository.findById(commentId);
+	}
+
+	// ✅ 댓글 삭제
+	public void deleteComment(Long commentId) {
+		noticecommentRepository.deleteById(commentId);
 	}
 }
