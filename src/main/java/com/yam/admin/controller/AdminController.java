@@ -261,12 +261,4 @@ public class AdminController {
 		return "redirect:/admin/blackstoreList";
 	}
 
-	// ✅ 불량 사업자 목록 조회
-	@GetMapping("/admin/blackstoreList")
-	public String getBlacklistedStores(Model model) {
-		List<BlacklistedStore> blacklistedStores = blacklistedStoreRepository.findAll();
-		model.addAttribute("blacklistedStores", blacklistedStores);
-		return "admin/blackstoreList";
-	}
-
 }

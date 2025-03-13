@@ -15,14 +15,10 @@ import com.yam.store.BlacklistedStore;
 import com.yam.store.Store;
 import com.yam.store.WithdrawnStore;
 import com.yam.store.repository.BlacklistedStoreRepository;
-import com.yam.store.repository.StoreRepository;
 import com.yam.store.repository.WithdrawnStoreRepository;
 
 @Service
 public class SidebarService {
-
-	@Autowired
-	private StoreRepository storeRepository;
 
 	@Autowired
 	private SidebarRepository sidebarRepository;

@@ -47,7 +47,8 @@
                     </td>
                     <td>
                         <!-- ✅ 불량 사용자 등록 버튼 -->
-                        <button type="button" th:attr="onclick='showBanReasonForm(\'' + ${customer.customerId} + '\')'">
+                        <button type="button" class="btn btn-danger btn-sm"
+                         th:attr="onclick='showBanReasonForm(\'' + ${customer.customerId} + '\')'">
                             불량 사용자 등록
                         </button>
                         <!-- ✅ 불량 사용자 등록 폼 (기본 숨김) -->

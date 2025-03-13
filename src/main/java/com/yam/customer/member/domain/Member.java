@@ -55,7 +55,7 @@ public class Member {
 	private String customerProfileImage;
 
 	@CreatedDate
-	@Column(updatable = false)
+	@Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime customerCreateDate; // 가입일 필드 추가
 
 	@Column(nullable = true, length = 20)

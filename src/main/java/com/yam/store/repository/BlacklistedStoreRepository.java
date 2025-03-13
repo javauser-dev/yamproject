@@ -11,9 +11,6 @@ import com.yam.store.BlacklistedStore;
 @Repository
 public interface BlacklistedStoreRepository extends JpaRepository<BlacklistedStore, Long> {
 
-	// 특정 사업자 ID가 블랙리스트에 있는지 확인
-	boolean existsByStoreNo(Long storeNo);
-
 	boolean existsByStoreEmail(String storeEmail); // ✅ 이메일 존재 여부 확인
 
 	// 블랙리스트 사업자 ID 목록 가져오기

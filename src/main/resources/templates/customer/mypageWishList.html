@@ -1,0 +1,18 @@
+<div th:fragment="content">
+    <div th:if="${recentWishlists.isEmpty()}">
+        <p>찜한 가게가 없습니다.</p>
+    </div>
+
+    <div th:unless="${recentWishlists.isEmpty()}" class="row justify-content-center">
+        <div th:each="wishlist, shopStat : ${recentWishlists}" class="col-md-4 mb-3">
+            <div class="card">
+                <img th:src="${wishShops[shopStat.index].filename != null and wishShops[shopStat.index].filename != '' ? '/upload/' + wishShops[shopStat.index].filename : '/upload/shop_default.jpg'}" class="card-img-top" alt="가게 이미지" width="200" height="300">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${wishShops[shopStat.index].shopName}"></h5>
+                    <p class="card-text" th:text="${wishShops[shopStat.index].shopShortDesc}"></p>
+                    <a th:href="@{/shop/myShop(id=${wishShops[shopStat.index].shopNo})}" class="btn btn-primary">매장으로 이동</a>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div>

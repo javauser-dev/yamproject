@@ -16,4 +16,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
 	Optional<Store> findByStoreBusinessNumber(String storeBusinessNumber);
 
 	Optional<Store> findByStoreEmailEquals(String storeEmail);
+
+	// 닉네임으로 가게 존재 여부 확인
+	boolean existsByStoreNickname(String storeNickname);
 }

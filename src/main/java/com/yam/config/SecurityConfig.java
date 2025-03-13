@@ -50,6 +50,10 @@ public class SecurityConfig {
 
 						.requestMatchers("/store/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STORE")
 
+						.requestMatchers("/board/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_STORE") // 자유게시판
+																													// 접근
+																													// 권한
+
 						// ✅ storeCommunity 페이지는 ROLE_ADMIN과 ROLE_STORE만 접근 가능하도록 설정
 						.requestMatchers("/storeCommunity/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_STORE")
 
