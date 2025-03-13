@@ -387,21 +387,32 @@ public class ShopViewController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다."));
             }
 
-            String storeEmail = principal.getName();  // 현재 로그인한 사업자의 이메일 가져오기
-
-            // 🔹 이메일을 기준으로 매장 조회
-            Shop shop = shopService.findByStore_storeEmail(storeEmail);
-            if (shop == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "매장을 찾을 수 없습니다."));
-            }
-
-            // 요청에서 영업 시간 값 가져오기
+            // 요청에서 shopNo와 영업 시간 값 가져오기
+            String shopNoStr = request.get("shopNo");
             String opentime = request.get("opentime");
             String closetime = request.get("closetime");
 
-            if (opentime == null || closetime == null || opentime.isBlank() || closetime.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "영업 시간이 비어 있습니다."));
+            if (shopNoStr == null || opentime == null || closetime == null || 
+                shopNoStr.isBlank() || opentime.isBlank() || closetime.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "필수 정보가 비어 있습니다."));
+            }
+
+            // shopNo로 매장 조회
+            Long shopNo = Long.parseLong(shopNoStr);
+            Optional<Shop> shopOpt = shopService.findByShopNo(shopNo);
+            
+            if (!shopOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "매장을 찾을 수 없습니다."));
+            }
+            
+            Shop shop = shopOpt.get();
+            
+            // 현재 로그인한 사용자가 이 매장의 주인인지 확인
+            String storeEmail = principal.getName();
+            if (!shop.getStore().getStoreEmail().equals(storeEmail)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "해당 매장을 수정할 권한이 없습니다."));
             }
 
             // 매장의 영업 시간 업데이트
@@ -416,8 +427,7 @@ public class ShopViewController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "영업 시간 업데이트 중 오류 발생: " + e.getMessage()));
+                .body(Map.of("error", "영업 시간 업데이트 중 오류 발생: " + e.getMessage()));
         }
     }
-
 }

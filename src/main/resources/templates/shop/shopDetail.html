@@ -2,173 +2,155 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{template/client/layout/layout}">
 
+<!-- 기존 코드는 유지하면서 컨텐츠 영역 스타일을 개선 -->
 <th:block layout:fragment="content">
 	<div class="container"
-		style="max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; min-height: 800px; position: relative;">
+		style="max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; min-height: 800px; position: relative; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
 		<!-- 뒤로가기 버튼 -->
 		<div style="position: absolute; top: 20px; left: 20px;">
 			<button id="back" th:onclick="|location.href='http://localhost:8080/store/shop/myShop?id=${shop.shopNo}'|"
-				style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ccc; background: #fff; cursor: pointer;">
+				style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ccc; background: #fff; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
 				<span>&lt;</span>
 			</button>
 		</div>
 		<input type="hidden" id="shopNoHidden" th:value="${shop.shopNo}" />
-<input type="hidden" id="storeEmail" th:text="${storeEmail}" />
-		<!-- 매장 소개 제목 -->
-		<div
-			style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
-			<h2 style="color: #4CAF50;">매장 소개</h2>
+        <input type="hidden" id="storeEmail" th:text="${storeEmail}" />
+		
+        <!-- 매장 소개 제목 -->
+		<div style="text-align: center; margin-top: 20px; margin-bottom: 40px;">
+			<h2 style="color: #4CAF50; font-weight: bold; padding-bottom: 10px; border-bottom: 2px solid #4CAF50; display: inline-block;">매장 소개</h2>
 		</div>
 
-		<!-- 매장 이미지 -->
-		<div style="width: 80%; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; overflow: hidden; margin-bottom: 30px;">
-    <img id="shopImageTag"
-        th:src="${shop.filename != null && !shop.filename.isEmpty() ? '/upload/' + shop.filename : '/images/default.jpg'}"
-        alt="이미지" style="width: 100%; height: auto; max-height: 400px; object-fit: contain;">
-    <div style="text-align: center; padding: 10px; background: #f9f9f9;">이미지</div>
-</div>
-		<input type="file" id="shopImageInput" style="display: none;"
-			onchange="updateImage()" />
+		<!-- 매장 이미지 - 중앙 정렬 및 테두리 개선 -->
+		<div style="width: 70%; margin: 0 auto 30px; border: 1px solid #ddd; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <img id="shopImageTag"
+                th:src="${shop.filename != null && !shop.filename.isEmpty() ? '/upload/' + shop.filename : '/images/default.jpg'}"
+                alt="이미지" style="width: 100%; height: auto; max-height: 350px; object-fit: contain;">
+            <div style="text-align: center; padding: 10px; background: #f9f9f9; border-top: 1px solid #eee; font-weight: bold; color: #555;">이미지</div>
+        </div>
+		<input type="file" id="shopImageInput" style="display: none;" onchange="updateImage()" />
 	
 		<!-- 매장소개 버튼 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopShortDescBtn" onclick="editField('shopShortDesc')"
-				style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
-				매장 소개</button>
+		<div class="info-section">
+		  <button id="shopShortDescBtn" onclick="editField('shopShortDesc')" class="info-button">
+		    매장 소개
+		  </button>
+		  <div id="shopShortDesc" class="info-content">
+		    <span th:text="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : '매장소개를 입력하세요.'}">매장소개를 입력하세요.</span>
+		  </div>
+		  <input type="text" id="shopShortDescInput" class="info-input" style="display:none;" 
+		    th:value="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : ''}" onchange="saveField('shopShortDesc')"/>
 		</div>
-		<div id="shopShortDesc" style="display: block;">
-    		<span th:text="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : '매장소개를 입력하세요.'}">매장소개를 입력하세요.</span>
-		</div>
-			<input type="text" id="shopShortDescInput" style="display:none; width: 80%; margin: 0 auto; padding: 8px;" 
-		      	   th:value="${shop.shopShortDesc != null && !shop.shopShortDesc.isEmpty() ? shop.shopShortDesc : ''}" onchange="saveField('shopShortDesc')"/>
-		
 			
-					<!-- 매장정보 버튼 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopInfoBtn" onclick="editField('shopInfo')"
-				style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
-				매장 정보</button>
+      	<!-- 매장정보 버튼 -->
+		<div class="info-section">
+		  <button id="shopInfoBtn" onclick="editField('shopInfo')" class="info-button">
+		    매장 정보
+		  </button>
+		  <div id="shopInfo" class="info-content" style="display: none;">
+		    <span th:text="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : '매장정보를 입력하세요.'}">매장정보를 입력하세요.</span>
+		  </div>
+		  <input type="text" id="shopInfoInput" class="info-input" style="display:none;" 
+		    th:value="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : ''}" onchange="saveField('shopInfo')"/>
 		</div>
 		
-		<div id="shopInfo" style="display: none;">
-    <span th:text="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : '매장정보를 입력하세요.'}">매장정보를 입력하세요.</span>
+		<!-- 매장 상세 설명 섹션 -->
+<div class="info-section">
+  <button id="shopLongDescBtn" onclick="editField('shopLongDesc')" class="info-button">
+    매장 상세 설명
+  </button>
+  <div id="shopLongDesc" class="info-content" style="display: none;">
+    <span th:text="${shop.shopLongDesc != null && !shop.shopLongDesc.isEmpty() ? shop.shopLongDesc : '매장 상세 설명이 없습니다.'}">매장 상세 설명이 없습니다.</span>
+  </div>
+  <textarea id="shopLongDescInput" class="info-input" style="display: none;"
+    th:text="${shop.shopLongDesc != null ? shop.shopLongDesc : ''}"
+    onchange="saveField('shopLongDesc')"></textarea>
 </div>
 
-<input type="text" id="shopInfoInput" style="display:none; width: 80%; margin: 0 auto; padding: 8px;" 
-       th:value="${shop.shopInfo != null && !shop.shopInfo.isEmpty() ? shop.shopInfo : ''}" onchange="saveField('shopInfo')"/>
-		
-		<!-- 매장 상세 설명 버튼 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopLongDescBtn" onclick="editField('shopLongDesc')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
-				매장 상세 설명</button>
-		</div>
-		<div id="shopLongDesc" style="display: none;">
-			<span
-				th:text="${#strings.isEmpty(shop.shopLongDesc) ? '매장 상세 설명이 없습니다.' : shop.shopLongDesc}"></span>
-		</div>
-		<textarea id="shopLongDescInput"
-			style="display: none; width: 80%; margin: 0 auto; padding: 8px; min-height: 100px;"
-			th:text="${shop.shopLongDesc != null ? shop.shopLongDesc : ''}"
-			onchange="saveField('shopLongDesc')"></textarea>
-
-		<!-- 영업 시간 버튼 -->
-<div style="display:block; display: block; width: 80%; margin: 0 auto; text-align: center; margin-bottom: 20px; width:150px;">
-    <div style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
-        영업 시간
-    </div>
-</div>
-
-<!-- 영업 시간 표시 -->
-<div id="shopHours" style="display: block;">
+	<!-- 영업 시간 섹션 -->
+<div class="info-section">
+  <button id="shopHoursBtn" onclick="toggleHoursEdit()" class="info-button">
+    영업 시간
+  </button>
+  
+  <!-- 영업 시간 표시 영역 -->
+  <div id="shopHours" class="info-content">
+    <span>오픈 시간: <span id="opentime" th:text="${shop.shopOpentime != null && !shop.shopOpentime.isEmpty() ? shop.shopOpentime : '09:00'}">09:00</span></span>
+    <span>마감 시간: <span id="closetime" th:text="${shop.shopClosetime != null && !shop.shopClosetime.isEmpty() ? shop.shopClosetime : '18:00'}">18:00</span></span>
+  </div>
+  
+  <!-- 영업 시간 입력 영역 -->
+  <div id="shopHoursInputContainer" class="info-input" style="display: none;">
     <div>
-         <span id="opentime" th:text="${shop.shopOpentime}" style="color: #27ae60; font-weight: bold;">09:00</span>
+      <label for="shopOpentimeInput">오픈 시간:</label>
+      <input type="time" id="shopOpentimeInput" 
+             th:value="${shop.shopOpentime != null && !shop.shopOpentime.isEmpty() ? shop.shopOpentime : '09:00'}" />
     </div>
     <div>
-         <span id="closetime" th:text="${shop.shopClosetime}" style="color: #c0392b; font-weight: bold;">22:00</span>
+      <label for="shopClosetimeInput">마감 시간:</label>
+      <input type="time" id="shopClosetimeInput" 
+             th:value="${shop.shopClosetime != null && !shop.shopClosetime.isEmpty() ? shop.shopClosetime : '18:00'}" />
     </div>
-</div>
-	<!-- 개장 시간 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<div
-				style="display: inline-block; margin-right: 20px; color: #f39c12; font-weight: bold;">개장시간</div>
-			<div
-				style="display: inline-block; margin-left: 20px; color: #3498db; font-weight: bold;">폐장시간</div>
-		</div>
-<!-- 영업 시간 수정 입력 필드 -->
-<div id="shopHoursInputContainer" style="width: 80%; margin: 0 auto; text-align: center; display: none;">
-    <input type="time" id="shopOpentimeInput" 
-        style="margin: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" 
-        th:value="${shop.shopOpentime}" />
-    <input type="time" id="shopClosetimeInput" 
-        style="margin: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" 
-        th:value="${shop.shopClosetime}" />
-    <!-- 저장 버튼 추가 -->
-    <button onclick="saveShopHours()"
-        style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">
-        저장
-    </button>
+    <button onclick="saveShopHours()" class="save-button">저장</button>
+    <button onclick="cancelHoursEdit()" class="cancel-button">취소</button>
+  </div>
+  
+  <!-- shopNo 숨김 필드 -->
+  <input type="hidden" id="shopNoHidden" th:value="${shop.shopNo}" />
 </div>
 
-		<!-- 매장 주소 버튼 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopAddressBtn" onclick="editField('shopAddress')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
-				매장 주소</button>
-		</div>
-		<div id="shopAddress" style="display: none;">
-			<span th:text="${shop.shopAddress}">매장 주소</span>
-		</div>
-		<input type="text" id="shopAddressInput"
-			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
-			th:value="${shop.shopAddress != null && !shop.shopAddress.isEmpty() ? shop.shopAddress : ''}"
-			onchange="saveField('shopAddress')" />
+		<!-- 매장 주소 섹션 -->
+<div class="info-section">
+  <button id="shopAddressBtn" onclick="editField('shopAddress')" class="info-button">
+    매장 주소
+  </button>
+  <div id="shopAddress" class="info-content" style="display: none;">
+    <span th:text="${shop.shopAddress != null && !shop.shopAddress.isEmpty() ? shop.shopAddress : '매장 주소를 입력하세요.'}">매장 주소를 입력하세요.</span>
+  </div>
+  <input type="text" id="shopAddressInput" class="info-input" style="display: none;"
+    th:value="${shop.shopAddress != null && !shop.shopAddress.isEmpty() ? shop.shopAddress : ''}"
+    onchange="saveField('shopAddress')" />
+</div>
 
-	
+<!-- 매장 전화 섹션 -->
+<div class="info-section">
+  <button id="shopPhoneBtn" onclick="editField('shopPhone')" class="info-button">
+    매장 전화
+  </button>
+  <div id="shopPhone" class="info-content" style="display: none;">
+    <span th:text="${shop.shopPhone != null && !shop.shopPhone.isEmpty() ? shop.shopPhone : '매장 전화번호를 입력하세요.'}">매장 전화번호를 입력하세요.</span>
+  </div>
+  <input type="text" id="shopPhoneInput" class="info-input" style="display: none;"
+    th:value="${shop.shopPhone != null && !shop.shopPhone.isEmpty() ? shop.shopPhone : ''}"
+    onchange="saveField('shopPhone')" />
+</div>
 
-		<!-- 매장 전화 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopPhoneBtn" onclick="editField('shopPhone')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
-				매장 전화</button>
-		</div>
-		<div id="shopPhone" style="display: none;">
-			<span th:text="${shop.shopPhone}">매장 전화번호</span>
-		</div>
-		<input type="text" id="shopPhoneInput"
-			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
-			th:value="${shop.shopPhone != null && !shop.shopPhone.isEmpty() ? shop.shopPhone : ''}"
-			onchange="saveField('shopPhone')" />
+<!-- 매장 홈페이지 -->
+<div class="info-section">
+  <button id="shopWebsiteBtn" onclick="editField('shopWebsite')" class="info-button">
+    매장 홈페이지
+  </button>
+  <div id="shopWebsite" class="info-content" style="display: none;">
+    <span th:text="${shop.shopWebsite}">매장 홈페이지</span>
+  </div>
+  <input type="text" id="shopWebsiteInput" class="info-input" style="display: none;"
+    th:value="${shop.shopWebsite != null && !shop.shopWebsite.isEmpty() ? shop.shopWebsite : ''}"
+    onchange="saveField('shopWebsite')" />
+</div>
 
-		<!-- 매장 홈페이지 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopWebsiteBtn" onclick="editField('shopWebsite')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
-				매장 홈페이지</button>
-		</div>
-		<div id="shopWebsite" style="display: none;">
-			<span th:text="${shop.shopWebsite}">매장 홈페이지</span>
-		</div>
-		<input type="text" id="shopWebsiteInput"
-			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
-			th:value="${shop.shopWebsite != null && !shop.shopWebsite.isEmpty() ? shop.shopWebsite : ''}"
-			onchange="saveField('shopWebsite')" />
-
-		<!-- 기타 편의시설 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopFacilityBtn" onclick="editField('shopFacility')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
-				기타 편의시설</button>
-		</div>
-		<div id="shopFacility" style="display: none;">
-			<span th:text="${shop.shopFacilities}">기타 편의시설</span>
-		</div>
-		<input type="text" id="shopFacilityInput"
-			style="display: none; width: 80%; margin: 0 auto; padding: 8px;"
-			th:value="${shop.shopFacilities != null && !shop.shopFacilities.isEmpty() ? shop.shopFacilities : ''}"
-			onchange="saveField('shopFacility')" />
-	</div>
-	 
+<!-- 기타 편의시설 -->
+<div class="info-section">
+  <button id="shopFacilityBtn" onclick="editField('shopFacility')" class="info-button">
+    기타 편의시설
+  </button>
+  <div id="shopFacility" class="info-content" style="display: none;">
+    <span th:text="${shop.shopFacilities}">기타 편의시설</span>
+  </div>
+  <input type="text" id="shopFacilityInput" class="info-input" style="display: none;"
+    th:value="${shop.shopFacilities != null && !shop.shopFacilities.isEmpty() ? shop.shopFacilities : ''}"
+    onchange="saveField('shopFacility')" />
+</div>
+	     <link rel="stylesheet" th:href="@{/css/shop/shopDetail.css}">
 </th:block>
 
 <th:block layout:fragment="script">
@@ -261,60 +243,83 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
                 console.error("Error updating image", error);
             });
     }
- // **새로 만든 독립적인 함수** - 영업 시간 저장
+ // 영업 시간 편집 모드 전환 함수
+    function toggleHoursEdit() {
+      var shopHoursDisplay = document.getElementById('shopHours');
+      var shopHoursInputContainer = document.getElementById('shopHoursInputContainer');
+      
+      // 표시 영역 숨기고 입력 영역 표시
+      shopHoursDisplay.style.display = 'none';
+      shopHoursInputContainer.style.display = 'block';
+      
+      // 기존 값으로 입력 필드 초기화
+      var openTimeText = document.getElementById('opentime').textContent;
+      var closeTimeText = document.getElementById('closetime').textContent;
+      
+      document.getElementById('shopOpentimeInput').value = openTimeText;
+      document.getElementById('shopClosetimeInput').value = closeTimeText;
+    }
+
+    // 영업 시간 편집 취소 함수
+    function cancelHoursEdit() {
+      document.getElementById('shopHoursInputContainer').style.display = 'none';
+      document.getElementById('shopHours').style.display = 'block';
+    }
+
+    // 영업 시간 저장 함수 (기존 코드에서 수정된 부분)
     function saveShopHours() {
-        var shopOpentimeInput = document.getElementById('shopOpentimeInput');
-        var shopClosetimeInput = document.getElementById('shopClosetimeInput');
-        var shopHoursElement = document.getElementById('shopHours');  // 기존 텍스트가 있는 div
+      var shopOpentimeInput = document.getElementById('shopOpentimeInput');
+      var shopClosetimeInput = document.getElementById('shopClosetimeInput');
+      var shopHoursElement = document.getElementById('shopHours');
 
-        // shopNo 값을 가져오는 안전한 방법 (hidden input에서 가져오기)
-        var shopNoElement = document.getElementById('shopNoHidden');
-        var shopNo = shopNoElement ? shopNoElement.value : null;
+      // shopNo 값을 가져오는 안전한 방법 (hidden input에서 가져오기)
+      var shopNoElement = document.getElementById('shopNoHidden');
+      var shopNo = shopNoElement ? shopNoElement.value : null;
 
-        if (!shopNo) {
-            console.error("shopNo 값이 정의되지 않았습니다.");
-            alert("매장 정보를 찾을 수 없습니다. 페이지를 새로고침하거나 다시 로그인해주세요.");
-            return; // shopNo가 없으면 종료
-        }
+      if (!shopNo) {
+        console.error("shopNo 값이 정의되지 않았습니다.");
+        alert("매장 정보를 찾을 수 없습니다. 페이지를 새로고침하거나 다시 로그인해주세요.");
+        return; // shopNo가 없으면 종료
+      }
 
-        // 빈 값 체크
-        if (shopOpentimeInput.value.trim() === '' || shopClosetimeInput.value.trim() === '') {
-            alert('빈 값을 저장할 수 없습니다.');
-            return;
-        }
+      // 빈 값 체크
+      if (shopOpentimeInput.value.trim() === '' || shopClosetimeInput.value.trim() === '') {
+        alert('빈 값을 저장할 수 없습니다.');
+        return;
+      }
 
-        var updatedOpentime = shopOpentimeInput.value;
-        var updatedClosetime = shopClosetimeInput.value;
+      var updatedOpentime = shopOpentimeInput.value;
+      var updatedClosetime = shopClosetimeInput.value;
 
-        // UI 업데이트 (input 필드 값으로 변경)
-        var opentimeSpan = shopHoursElement.querySelector('#opentime');
-        var closetimeSpan = shopHoursElement.querySelector('#closetime');
-        
-        if (opentimeSpan) opentimeSpan.textContent = updatedOpentime;
-        if (closetimeSpan) closetimeSpan.textContent = updatedClosetime;
+      // UI 업데이트 (input 필드 값으로 변경)
+      var opentimeSpan = shopHoursElement.querySelector('#opentime');
+      var closetimeSpan = shopHoursElement.querySelector('#closetime');
 
-        // 서버로 업데이트된 값 보내기
-        $.ajax({
-            url: "/store/shop/update-field",  // 서버의 저장 URL
-            method: "POST",
-            data: {
-                shopNo: shopNo,
-                opentime: updatedOpentime,
-                closetime: updatedClosetime
-            },
-            dataType: "text"
-        }).done(function(response) {
-            if (response !== "") {
-                console.log('성공:', response);
-                alert("영업 시간이 업데이트 되었습니다.");
-            }
-        }).fail(function() {
-            alert("정보 업데이트 중 오류가 발생했습니다.");
-        });
+      if (opentimeSpan) opentimeSpan.textContent = updatedOpentime;
+      if (closetimeSpan) closetimeSpan.textContent = updatedClosetime;
 
-        // 인풋 숨기고, 텍스트 필드로 전환
-        document.getElementById('shopHoursInputContainer').style.display = 'none';
-        document.getElementById('shopHours').style.display = 'block';
+      // 서버로 업데이트된 값 보내기
+      $.ajax({
+        url: "/store/shop/update-hours", // 컨트롤러 경로 수정 (중요!)
+        method: "POST",
+        contentType: "application/json", // JSON 형식으로 보내기 위해 추가
+        data: JSON.stringify({  // 데이터를 JSON 문자열로 변환
+          shopNo: shopNo,
+          opentime: updatedOpentime,
+          closetime: updatedClosetime
+        }),
+        dataType: "json"  // 응답 데이터 타입을 json으로 설정
+      }).done(function(response) {
+        console.log('성공:', response);
+        alert("영업 시간이 업데이트 되었습니다.");
+      }).fail(function(xhr, status, error) {
+        console.error('실패:', error);
+        alert("정보 업데이트 중 오류가 발생했습니다.");
+      });
+
+      // 인풋 숨기고, 텍스트 필드로 전환
+      document.getElementById('shopHoursInputContainer').style.display = 'none';
+      document.getElementById('shopHours').style.display = 'block';
     }
     function saveField(fieldId) {
     	  var btnElement = document.getElementById(fieldId + "Btn");

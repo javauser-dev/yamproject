@@ -1,0 +1,67 @@
+@charset "UTF-8";
+
+  /* 항목 공통 스타일 */
+  .info-section {
+    width: 70%;
+    margin: 15px auto;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  
+  /* 버튼 스타일 통일 */
+  .info-button {
+    display: block;
+    width: 200px;
+    padding: 10px 0;
+    margin: 0 auto 10px;
+    background: #fff;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* 내용 표시 영역 */
+  .info-content {
+    padding: 10px;
+    margin: 0 auto;
+    text-align: center;
+    min-height: 30px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  /* 입력 필드 스타일 */
+  .info-input {
+    width: 80%;
+    margin: 10px auto;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block;
+  }
+  
+  /* 정보 행 스타일 */
+  .info-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .info-row strong {
+    min-width: 120px;
+    text-align: right;
+    margin-right: 10px;
+  }
+  
+  .info-row p {
+    margin: 0;
+    text-align: left;
+    flex-grow: 1;
+  }
