@@ -66,31 +66,39 @@
 	                }
 	            });
 	        }
-		  $("#addStore").on("click", () => {
-	       	            const name = $('#shopName').val();
-	            const bname = $('#storeName').val();
-	            const businessNumber = $('#shopBusinessNumber').val();
-	            const subDate = $('#shopSubDate').val();
-	            const phone = $('#shopPhone').val();
-	            const address = $('#shopAddress').val();
-
-	            const payload = {
-	                shopName: name,
-	                storeName: bname,
-	                shopBusinessNumber: businessNumber,
-	                shopSubDate: subDate,
-	                shopPhone: phone,
-	                shopAddress: address
-	            };
+		
+          $("#addStore").on("click", () => {
+        	    const name = $('#shopName').val();
+        	    const bname = $('#storeName').val();
+        	    const businessNumber = $('#shopBusinessNumber').val();
+        	    const subDate = $('#shopSubDate').val();
+        	    const phone = $('#shopPhone').val();
+        	    const address = $('#shopAddress').val();
+        	    
+        	    // 기본적인 유효성 검사 추가
+        	    if (!name || !bname || !businessNumber || !subDate || !phone || !address) {
+        	        alert("모든 필드를 입력해주세요.");
+        	        return;
+        	    }
+        	    
+        	    const payload = {
+        	        shopName: name,
+        	        storeName: bname,
+        	        shopBusinessNumber: businessNumber,
+        	        shopSubDate: subDate,
+        	        shopPhone: phone,
+        	        shopAddress: address
+        	    };
 
 	            $.ajax({
-	                url: "/shop/addShop", // 서버의 매장 추가 엔드포인트
+	                url: "/store/shop/addShop", // 서버의 매장 추가 엔드포인트
 	                type: 'POST',
 	                contentType: 'application/json',
 	                data: JSON.stringify(payload),
 	                success: function(response) {
 	                    alert("매장이 성공적으로 추가되었습니다.");
 	                    console.log(response);
+	                    window.location.href = "/store/shop/myShopList";
 	                },
 	                error: function(error) {
 	                    alert("매장 추가 중 오류가 발생했습니다.");

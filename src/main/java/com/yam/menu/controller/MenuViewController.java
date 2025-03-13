@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yam.menu.Menu;
 import com.yam.menu.service.MenuService;
 
 @Controller
-@RequestMapping("/menu")
+@RequestMapping("/store/shop/menu")
 public class MenuViewController {
 
     @Autowired
@@ -35,6 +36,65 @@ public class MenuViewController {
         List<Menu> menus = menuService.getAllMenus();
         model.addAttribute("menus", menus);
         return "menu/menu";
+    }
+    
+    @GetMapping("/edit/{id}")
+    @ResponseBody
+    public Menu getMenuForEdit(@PathVariable Long id) {
+        return menuService.getMenuById(id);
+    }
+    
+    @PostMapping("/update/{id}")
+    public String updateMenu(@PathVariable Long id,
+                             @RequestParam("name") String name,
+                             @RequestParam("simpleExp") String simpleExp,
+                             @RequestParam("component") String component,
+                             @RequestParam("price") String price,
+                             @RequestParam("category") String category,
+                             @RequestParam(value = "image", required = false) MultipartFile imageFile) throws IOException {
+        
+        Menu menu = menuService.getMenuById(id);
+        if (menu == null) {
+            // 에러 처리
+            return "redirect:/store/shop/menu/menu";
+        }
+        
+        menu.setName(name);
+        menu.setSimpleExp(simpleExp);
+        menu.setComponent(component);
+        menu.setPrice(price);
+        menu.setCategory(category);
+        menu.setUpdatedAt(LocalDateTime.now());
+
+        // 이미지 파일 처리
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // 기존 파일 삭제
+            if (menu.getFilename() != null && !menu.getFilename().isEmpty()) {
+                File oldFile = new File(uploadDirectory + File.separator + menu.getFilename());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+            
+            // 새 파일 저장
+            String originalFilename = imageFile.getOriginalFilename();
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            String newFilename = UUID.randomUUID().toString() + extension;
+
+            File uploadDir = new File(uploadDirectory);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            File destFile = new File(uploadDir.getAbsolutePath() + File.separator + newFilename);
+            imageFile.transferTo(destFile);
+
+            menu.setFilename(newFilename);
+        }
+
+        menuService.saveMenu(menu);
+        
+        return "redirect:/store/shop/menu/menu";
     }
     
     @PostMapping("/menu/add")
@@ -52,7 +112,7 @@ public class MenuViewController {
 
         menuService.saveMenu(menu);
 
-        return "redirect:/menu/list";
+        return "redirect:/store/shop/menu/list";
     }
     
     @PostMapping("/save")
@@ -92,7 +152,7 @@ public class MenuViewController {
 
         menuService.saveMenu(menu);
 
-        return "redirect:/menu/menu";
+        return "redirect:/store/shop/menu/menu";
     }
 
 
@@ -112,6 +172,6 @@ public class MenuViewController {
         // Delete from database
         menuService.deleteMenu(id);
         
-        return "redirect:/menu/menu";
+        return "redirect:/store/shop/menu/menu";
     }
 }

@@ -29,11 +29,12 @@ import com.yam.shop.Shop;
 import com.yam.shop.repository.ShopRepository;
 import com.yam.shop.service.ShopService;
 import com.yam.store.Store;
+import com.yam.store.service.StoreService;
 
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/store/shop")
 @lombok.extern.slf4j.Slf4j
 public class ShopController {
 
@@ -42,6 +43,9 @@ public class ShopController {
     
     @Autowired
     private ShopService shopService;
+    
+    @Autowired
+    private StoreService storeService;  // StoreService를 통해 로그인한 사업자 정보를 가져옴
 
     @PostMapping("/verify")
     public ResponseEntity<Map<String, String>> verifyBusiness(@RequestBody Map<String, String> data) {
@@ -130,13 +134,13 @@ public class ShopController {
                     shopService.save(shop);
                 }
 
-                return "redirect:/shop/myShop";
+                return "redirect:/store/shop/myShop";
             } catch (IOException e) {
                 e.printStackTrace();
                 return "error";
             }
         }
-        return "redirect:/shop/myShop";
+        return "redirect:/store/shop/myShop";
     }
 
     private String getExtension(String filename) {
@@ -153,7 +157,7 @@ public class ShopController {
 
         shopService.registerShop(shop);
 
-        return "redirect:/shop/list";
+        return "redirect:/store/shop/list";
     }
 
     // 매장 추가 처리 (POST 요청)
@@ -172,4 +176,5 @@ public class ShopController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("매장 추가 중 오류가 발생했습니다.");
         }
     }
+    
 }	

@@ -89,9 +89,9 @@ public class ShopService {
     	shopRepository.save(shop);
     }
     
-    public void deleteShop(Long id) {
-        shopRepository.deleteById(id);
-    }
+//    public void deleteShop(Long id) {
+//        shopRepository.deleteById(id);
+//    }
     
     public Shop getShopById(Long id) {
         return shopRepository.findById(id).orElse(null); // ID로 샵 찾기, 없으면 null 반환
@@ -107,5 +107,15 @@ public class ShopService {
     
     public Optional<Shop> findByShopNo(Long shopNo) {
         return shopRepository.findByShopNo(shopNo);
+    }
+    
+    // 매장 삭제
+    public void deleteShop(Long shopNo) {
+        Optional<Shop> shop = shopRepository.findById(shopNo);
+        if (shop.isPresent()) {
+            shopRepository.delete(shop.get());
+        } else {
+            throw new RuntimeException("매장을 찾을 수 없습니다.");
+        }
     }
 }

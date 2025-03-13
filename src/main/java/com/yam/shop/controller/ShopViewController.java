@@ -22,10 +22,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +43,7 @@ import com.yam.store.repository.StoreRepository;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/shop")
+@RequestMapping("/store/shop")
 public class ShopViewController {
     
 	@Value("${file.upload.directory:upload}")
@@ -63,7 +62,7 @@ public class ShopViewController {
     @GetMapping("/new")
     public String newShop(Model model) {
         model.addAttribute("shop", new Shop());
-        return "shop/newShop";
+        return "/shop/newShop";
     }
     
     
@@ -72,7 +71,7 @@ public class ShopViewController {
         List<Shop> shopList = shopService.getAllShops();
         System.out.println(shopList);
         model.addAttribute("shopList", shopList);
-        return "shop/myShopList";
+        return "/shop/myShopList";
     }
 
     @PostMapping("/save")
@@ -89,14 +88,12 @@ public class ShopViewController {
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String newFilename = UUID.randomUUID().toString() + extension;
             
-            // Create directory if it doesn't exist
             File uploadDir = new File(uploadDirectory);
             if (!uploadDir.exists()) {
                 boolean created = uploadDir.mkdirs();
                 System.out.println("디렉토리 생성 여부: " + created);
-            }
-            
-            // Save main image
+            }     
+
             File destFile = new File(uploadDir.getAbsolutePath() + File.separator + newFilename);
             try {
                 mainImage.transferTo(destFile);
@@ -144,13 +141,13 @@ public class ShopViewController {
         
         shopService.updateShop(shop);
         
-        return "redirect:/shop/myShopList";
+        return "redirect:/store/shop/myShopList";
     }
     
-    @GetMapping("/delete/{id}")
-    public String deleteShop(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteShop(@PathVariable Long id) {
         Shop shop = shopService.getShopById(id);
-        
+
         // Delete image file if exists
         if (shop != null && shop.getFilename() != null && !shop.getFilename().isEmpty()) {
             File imageFile = new File(uploadDirectory + File.separator + shop.getFilename());
@@ -158,11 +155,10 @@ public class ShopViewController {
                 imageFile.delete();
             }
         }
-        
-        // Delete from database
+
         shopService.deleteShop(id);
-        
-        return "redirect:/shop/myShopList";
+
+        return ResponseEntity.ok().build();
     }
     
     @GetMapping("/myShop")
@@ -176,7 +172,7 @@ public class ShopViewController {
         if (id != null) {
             shop = shopService.findShopByNo(id);
             if (shop == null) {
-                return "redirect:/shop/myShopList";
+                return "redirect:/store/shop/myShopList";
             }
         } else {
             if (principal == null) {
@@ -196,7 +192,7 @@ public class ShopViewController {
         }
         
         model.addAttribute("shop", shop);
-        return "shop/myShop";
+        return "/shop/myShop";
     }
 
     
@@ -235,7 +231,7 @@ public class ShopViewController {
         if (shop != null) {
             System.out.println("Shop found: " + shop);
             model.addAttribute("shop", shop);
-            return "shop/shopDetail";
+            return "/shop/shopDetail";
         } else {
             System.out.println("Shop not found for id: " + id);
             return "에러";
@@ -385,18 +381,13 @@ public class ShopViewController {
 
     
     @PostMapping("/update-hours")
-    public ResponseEntity<?> updateShopHours(@RequestBody Map<String, String> request,
-                                             @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateShopHours(@RequestBody Map<String, String> request, Principal principal) {
         try {
-            String opentime = request.get("opentime");
-            String closetime = request.get("closetime");
-
-            if (opentime == null || closetime == null || opentime.isBlank() || closetime.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "영업 시간이 비어 있습니다."));
+            if (principal == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "로그인이 필요합니다."));
             }
 
-            // 🔹 현재 로그인한 사업자의 이메일 가져오기
-            String storeEmail = userDetails.getUsername();
+            String storeEmail = principal.getName();  // 현재 로그인한 사업자의 이메일 가져오기
 
             // 🔹 이메일을 기준으로 매장 조회
             Shop shop = shopService.findByStore_storeEmail(storeEmail);
@@ -405,11 +396,19 @@ public class ShopViewController {
                         .body(Map.of("error", "매장을 찾을 수 없습니다."));
             }
 
-            // 🔹 매장의 영업 시간 업데이트
+            // 요청에서 영업 시간 값 가져오기
+            String opentime = request.get("opentime");
+            String closetime = request.get("closetime");
+
+            if (opentime == null || closetime == null || opentime.isBlank() || closetime.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "영업 시간이 비어 있습니다."));
+            }
+
+            // 매장의 영업 시간 업데이트
             shop.setShopOpentime(opentime);
             shop.setShopClosetime(closetime);
 
-            // 🔹 변경 사항 저장
+            // 변경 사항 저장
             shopService.save(shop);
 
             return ResponseEntity.ok(Map.of("message", "영업 시간이 성공적으로 업데이트되었습니다."));
@@ -421,5 +420,4 @@ public class ShopViewController {
         }
     }
 
-    
 }

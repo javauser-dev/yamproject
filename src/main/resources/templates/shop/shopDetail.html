@@ -7,7 +7,7 @@
 		style="max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; min-height: 800px; position: relative;">
 		<!-- 뒤로가기 버튼 -->
 		<div style="position: absolute; top: 20px; left: 20px;">
-			<button id="back" th:onclick="|location.href='http://localhost:8080/shop/myShop?id=${shop.shopNo}'|"
+			<button id="back" th:onclick="|location.href='http://localhost:8080/store/shop/myShop?id=${shop.shopNo}'|"
 				style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #ccc; background: #fff; cursor: pointer;">
 				<span>&lt;</span>
 			</button>
@@ -73,28 +73,36 @@
 			onchange="saveField('shopLongDesc')"></textarea>
 
 		<!-- 영업 시간 버튼 -->
-		<div style="text-align: center; margin-bottom: 20px;">
-			<button id="shopHoursBtn" onclick="editField('shopHours')"
-				style="padding: 10px 20px; background: #fff; color: #000; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; min-width: 150px;">
-				영업 시간</button>
-		</div>
-		<div id="shopHours" style="display: none;">
-			<div>
-				개장시간: <span th:text="${shop.shopOpentime}">09:00</span>
-			</div>
-			<div>
-				폐장시간: <span th:text="${shop.shopClosetime}">22:00</span>
-			</div>
-		</div>
-		<div id="shopHoursInputContainer"
-			style="display: none; width: 80%; margin: 0 auto; text-align: center;">
-			<input type="time" id="shopOpentimeInput"
-				style="margin: 5px; padding: 8px;" th:value="${shop.shopOpentime}" />
-			<input type="time" id="shopClosetimeInput"
-				style="margin: 5px; padding: 8px;" th:value="${shop.shopClosetime}" />
-			<button onclick="saveField('shopHours')"
-				style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">저장</button>
-		</div>
+<div style="display:block; display: block; width: 80%; margin: 0 auto; text-align: center; margin-bottom: 20px; width:150px;">
+    <div style="padding: 10px 20px; background: #fff; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 5px; cursor: pointer; font-weight: bold; min-width: 150px;">
+        영업 시간
+    </div>
+</div>
+
+<!-- 영업 시간 표시 -->
+<div id="shopHours" style="display: block;">
+    <div>
+        개장시간: <span id="opentime" th:text="${shop.shopOpentime}" style="color: #27ae60; font-weight: bold;">09:00</span>
+    </div>
+    <div>
+        폐장시간: <span id="closetime" th:text="${shop.shopClosetime}" style="color: #c0392b; font-weight: bold;">22:00</span>
+    </div>
+</div>
+
+<!-- 영업 시간 수정 입력 필드 -->
+<div id="shopHoursInputContainer" style="width: 80%; margin: 0 auto; text-align: center; display: none;">
+    <input type="time" id="shopOpentimeInput" 
+        style="margin: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" 
+        th:value="${shop.shopOpentime}" />
+    <input type="time" id="shopClosetimeInput" 
+        style="margin: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 5px;" 
+        th:value="${shop.shopClosetime}" />
+    <!-- 저장 버튼 추가 -->
+    <button onclick="saveShopHours()"
+        style="padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">
+        저장
+    </button>
+</div>
 
 		<!-- 매장 주소 버튼 -->
 		<div style="text-align: center; margin-bottom: 20px;">
@@ -184,7 +192,7 @@ axios.interceptors.response.use(
 
 function checkLoginStatus() {
     // 서버에 실제로 존재하는 API 경로로 변경
-    axios.get('/shop/check-auth')  // 또는 실제 구현된 경로
+    axios.get('/store/shop/check-auth')  // 또는 실제 구현된 경로
     .then(response => {
         console.log("인증 상태 확인 완료");
     })
@@ -240,7 +248,7 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
         formData.append("shopMainImage", imageInput.files[0]);
 
         // 서버로 이미지 파일 전송 (Axios 사용)
-        axios.post('/shop/update-image', formData)
+        axios.post('/store/shop/update-image', formData)
             .then(response => {
                 alert("이미지가 성공적으로 업데이트 되었습니다.");
                 // 성공적인 응답 후 이미지 태그 업데이트
@@ -252,7 +260,61 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
                 console.error("Error updating image", error);
             });
     }
+ // **새로 만든 독립적인 함수** - 영업 시간 저장
+    function saveShopHours() {
+        var shopOpentimeInput = document.getElementById('shopOpentimeInput');
+        var shopClosetimeInput = document.getElementById('shopClosetimeInput');
+        var shopHoursElement = document.getElementById('shopHours');  // 기존 텍스트가 있는 div
 
+        // shopNo 값을 가져오는 안전한 방법 (hidden input에서 가져오기)
+        var shopNoElement = document.getElementById('shopNoHidden');
+        var shopNo = shopNoElement ? shopNoElement.value : null;
+
+        if (!shopNo) {
+            console.error("shopNo 값이 정의되지 않았습니다.");
+            alert("매장 정보를 찾을 수 없습니다. 페이지를 새로고침하거나 다시 로그인해주세요.");
+            return; // shopNo가 없으면 종료
+        }
+
+        // 빈 값 체크
+        if (shopOpentimeInput.value.trim() === '' || shopClosetimeInput.value.trim() === '') {
+            alert('빈 값을 저장할 수 없습니다.');
+            return;
+        }
+
+        var updatedOpentime = shopOpentimeInput.value;
+        var updatedClosetime = shopClosetimeInput.value;
+
+        // UI 업데이트 (input 필드 값으로 변경)
+        var opentimeSpan = shopHoursElement.querySelector('#opentime');
+        var closetimeSpan = shopHoursElement.querySelector('#closetime');
+        
+        if (opentimeSpan) opentimeSpan.textContent = updatedOpentime;
+        if (closetimeSpan) closetimeSpan.textContent = updatedClosetime;
+
+        // 서버로 업데이트된 값 보내기
+        $.ajax({
+            url: "/store/shop/update-field",  // 서버의 저장 URL
+            method: "POST",
+            data: {
+                shopNo: shopNo,
+                opentime: updatedOpentime,
+                closetime: updatedClosetime
+            },
+            dataType: "text"
+        }).done(function(response) {
+            if (response !== "") {
+                console.log('성공:', response);
+                alert("영업 시간이 업데이트 되었습니다.");
+            }
+        }).fail(function() {
+            alert("정보 업데이트 중 오류가 발생했습니다.");
+        });
+
+        // 인풋 숨기고, 텍스트 필드로 전환
+        document.getElementById('shopHoursInputContainer').style.display = 'none';
+        document.getElementById('shopHours').style.display = 'block';
+    }
     function saveField(fieldId) {
     	  var btnElement = document.getElementById(fieldId + "Btn");
     	  var fieldElement = document.getElementById(fieldId);
@@ -317,7 +379,7 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
     	  */
     	  
   		$.ajax({
-			url : "/shop/update-field",
+			url : "/store/shop/update-field",
 			method : "post",
 			data : {
 	    	    shopNo: shopNo,
@@ -368,7 +430,7 @@ document.addEventListener('DOMContentLoaded', checkLoginStatus);
             }
             
             // 서버에 삭제 요청
-            axios.post('/shop/delete-field', { fieldId: fieldId })
+            axios.post('/store/shop/delete-field', { fieldId: fieldId })
                 .then(response => {
                     alert(fieldId + " 정보가 삭제되었습니다.");
                 })
