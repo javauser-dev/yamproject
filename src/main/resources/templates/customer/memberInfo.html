@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template/client/layout/layout}">
 <head>
     <meta charset="UTF-8">
     <title>회원 정보</title>
@@ -8,6 +11,7 @@
     <script th:src="@{/js/customer/memberInfo.js}"></script>
     <link rel="stylesheet" type="text/css" th:href="@{/css/customer/memberInfo.css}">
 </head>
+<th:block layout:fragment="content">
 <body>
     <div class="container">
         <h1>회원 정보</h1>
@@ -154,4 +158,5 @@
         </div>
     </div>
 </body>
+</th:block>
 </html>
