@@ -13,8 +13,8 @@ $(document).ready(function() {
 
     var oPay = Naver.Pay.create({
         "mode": "development",
-        "clientId": "HN3GGCMDdTgGUfl0kFCo",
-        "chainId": "b1NiUjJIcGlIZ3B"
+        "clientId": "11111",
+        "chainId": "11111"
     });
 
 	$("#naverPayBtn").click(function() {
