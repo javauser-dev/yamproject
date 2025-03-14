@@ -3,52 +3,57 @@
 	
 	<th:block layout:fragment="content">
 	
+<!-- 기존 헤더는 그대로 유지 -->
+
+<div class="update-form-container">
   <form id="updateForm" method="post" action="/store/update">
-            <!-- 🔙 뒤로가기 버튼 -->
-            <button type="button" onclick="window.location.href='/mypage'" style="position: absolute; top: 10px; left: 10px;">
-                ⬅ 뒤로가기
-            </button>
+    <!-- 뒤로가기 버튼 -->
+    <button type="button" class="back-button" onclick="window.location.href='/store/mypage'">&lt;</button>
 
-            <h2>사업자 정보 수정</h2>
+    <h2>회원 정보 수정</h2>
 
-            <!-- 🚨 경고 메시지 -->
-            <div id="errorMessage" style="color: red; display: none; font-weight: bold; margin-top: 10px;"></div>
+    <!-- 경고 메시지 -->
+    <div id="errorMessage" class="error-message"></div>
 
-            <!-- 현재 비밀번호 -->
-            <div>
-                <label for="currentPassword">현재 비밀번호:</label>
-                <input type="password" id="currentPassword" name="currentPassword" required>
-            </div>
+    <!-- 현재 비밀번호 -->
+    <div class="form-group">
+      <label for="currentPassword">현재 비밀번호:</label>
+      <input type="password" id="currentPassword" name="currentPassword" required>
+    </div>
 
-            <!-- 새 비밀번호 -->
-            <div>
-                <label for="newPassword">새 비밀번호:</label>
-                <input type="password" id="newPassword" name="newPassword">
-            </div>
+    <!-- 새 비밀번호 -->
+    <div class="form-group">
+      <label for="newPassword">새 비밀번호:</label>
+      <input type="password" id="newPassword" name="newPassword">
+    </div>
 
-            <!-- 비밀번호 확인 -->
-            <div>
-                <label for="confirmPassword">비밀번호 확인:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword">
-            </div>
+    <!-- 비밀번호 확인 -->
+    <div class="form-group">
+      <label for="confirmPassword">비밀번호 확인:</label>
+      <input type="password" id="confirmPassword" name="confirmPassword">
+    </div>
 
-            <!-- 닉네임 -->
-            <div>
-                <label for="nickname">닉네임:</label>
-                <input type="text" id="nickname" name="nickname">
-            </div>
+    <!-- 닉네임 -->
+    <div class="form-group">
+      <label for="nickname">닉네임:</label>
+      <input type="text" id="nickname" name="nickname">
+    </div>
 
-            <!-- 전화번호 -->
-            <div>
-                <label for="phone">전화번호:</label>
-                <input type="text" id="phone" name="phone" pattern="^\d{10,11}$" placeholder="10~11자리 숫자">
-            </div>
+    <!-- 전화번호 -->
+    <div class="form-group">
+      <label for="phone">전화번호:</label>
+      <input type="text" id="phone" name="phone" pattern="^\d{10,11}$" placeholder="10~11자리 숫자">
+    </div>
 
-            <!-- 정보 변경 버튼 -->
-            <div>
-                <button type="submit" id="updateBtn">정보 변경</button>
-            </div>
-        </form>
+    <!-- 정보 변경 버튼 -->
+    <div class="button-container">
+      <button type="submit" id="updateBtn" class="submit-button">회원 정보 수정</button>
+    </div>
+  </form>
+</div>
+
+<!-- 기존 푸터는 그대로 유지 -->
+<link rel="stylesheet" th:href="@{/css/store/edit.css}">
 	</th:block>
 	
 	<th:block layout:fragment="script">

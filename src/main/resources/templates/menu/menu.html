@@ -22,7 +22,7 @@
             <div class="menu-item">
                 <button class="section-button" onclick="toggleSection('section1-content')">메뉴 추가</button>
                 <div id="section1-content" class="section-content">
-                    <form th:action="@{/menu/save}" method="post" enctype="multipart/form-data">
+                    <form th:action="@{/store/shop/menu/save}" method="post" enctype="multipart/form-data">
                         <input type="text" name="name" placeholder="메뉴명" required>
                         <input type="text" name="simpleExp" placeholder="간단 설명" required>
                         <textarea name="component" placeholder="메뉴 상세 설명"></textarea>
@@ -43,7 +43,7 @@
                         
                         <div class="button-group">
                             <button type="submit" class="save-btn">저장</button>
-                            <button type="button" onclick="closeEditMenuModal()">취소</button>
+                           <button type="button" onclick="closeEditMenuModal()">취소</button>
                         </div>
                     </form>
                 </div>
@@ -64,9 +64,9 @@
                     <p class="menu-price" th:text="${menu.price + '원'}"></p>
                     <span class="category-tag" th:text="${menu.category}"></span>
                     <div class="menu-actions">
-                        <button type="button" onclick="openEditMenuModal('${menu.no}')">수정</button>
+                        <button type="button" th:onclick="'openEditMenuModal(' + ${menu.no} + ')'">수정</button>
 
-                        <a th:href="@{'/menu/delete/' + ${menu.no}}">삭제</a>
+                        <a th:href="@{'/store/shop/menu/delete/' + ${menu.no}}">삭제</a>
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@
     <div class="modal-content">
         <span class="close-btn" onclick="closeEditMenuModal()">&times;</span>
         <h2>메뉴 수정</h2>
-        <form id="editMenuForm" th:action="@{/menu/save}" method="post" enctype="multipart/form-data">
+        <form id="editMenuForm" th:action="@{/store/shop/menu/save}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="menuNo" id="editMenuNo">
             <input type="text" name="name" id="editMenuName" placeholder="메뉴명" required>
             <input type="text" name="simpleExp" id="editMenuSimpleExp" placeholder="간단 설명" required>
@@ -194,7 +194,39 @@
 	// 모달 열기
 	function openEditMenuModal(menuNo) {
 	    document.getElementById('editMenuModal').style.display = 'block';
-	    console.log("Editing menu with ID: " + menuNo);
+	    
+	    // menuNo가 문자열 템플릿으로 제대로 치환되지 않는 문제 수정
+	    // 현재: '${menu.no}' -> 변경 후: 실제 ID 값
+	    
+	    // 서버에서 메뉴 데이터를 가져오는 요청
+	    fetch(`/store/shop/menu/edit/${menuNo}`)
+	        .then(response => response.json())
+	        .then(data => {
+	            // 폼의 action 속성 변경
+	            document.getElementById('editMenuForm').action = `/store/shop/menu/update/${menuNo}`;
+	            
+	            // 서버로부터 받은 데이터로 폼 필드 채우기
+	            document.getElementById('editMenuNo').value = menuNo;
+	            document.getElementById('editMenuName').value = data.name;
+	            document.getElementById('editMenuSimpleExp').value = data.simpleExp;
+	            document.getElementById('editMenuComponent').value = data.component;
+	            document.getElementById('editMenuPrice').value = data.price;
+	            document.getElementById('editMenuCategory').value = data.category;
+	            
+	            // 이미지가 있으면 미리보기 설정
+	            if (data.filename) {
+	                const preview = document.getElementById('editPreview');
+	                preview.innerHTML = '';
+	                const img = document.createElement('img');
+	                img.src = `/upload/${data.filename}`;
+	                img.alt = '메뉴 이미지 미리보기';
+	                img.className = 'preview-img';
+	                preview.appendChild(img);
+	            }
+	        })
+	        .catch(error => {
+	            console.error("메뉴 수정 데이터를 불러오는 중 오류가 발생했습니다.", error);
+	        });
 	}
 
 	// 모달 닫기

@@ -1,43 +1,48 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
     <th:block layout:fragment="content">
-    <div class="container">
-        <button onclick="history.back()">⬅</button>
-        
-        <!-- 에러 메시지 출력 부분 -->
-        <div th:if="${errorMessage != null}">
-            <p style="color: red;" th:text="${errorMessage}"></p> <!-- 에러 메시지 출력 -->
-        </div>
+<div class="container">
+    <button class="back-button" onclick="backbutton()"><</button>
+    <button class="delete-button" onclick="deleteShop()">매장 삭제</button>
 
-        <h2 th:text="${shop != null ? shop.shopName : '매장명이 없습니다.'}">매장명</h2>
-        <!-- 기본 이미지와 사용자 업로드된 이미지 처리 -->
-        <img th:src="@{'/images/' + ${shop.filename != null && !shop.filename.isEmpty() ? shop.filename : 'default.jpg'}}" alt="Shop Image">
+    <!-- 에러 메시지 출력 부분 -->
+    <div th:if="${errorMessage != null}">
+        <p style="color: red;" th:text="${errorMessage}"></p> <!-- 에러 메시지 출력 -->
+    </div>
 
-        <div class="button" onclick="editSignatureMenu()" th:text="${shop != null ? shop.shopSignatureMenu : '시그니처 메뉴가 없습니다.'}">시그니처 대표 메뉴</div>
+    <h2 th:text="${shop != null ? shop.shopName : '매장명이 없습니다.'}">매장명</h2>
+    
+    <!-- 기본 이미지와 사용자 업로드된 이미지 처리 -->
+    <img th:src="@{'/images/' + ${shop.filename != null && !shop.filename.isEmpty() ? shop.filename : 'default.jpg'}}" alt="Shop Image">
 
-        <th:block th:if="${shop.filename != null and shop.filename != ''}">
-            <img th:src="@{/upload/{filename}(filename=${shop.filename})}" alt="매장 이미지" width="100%">
-        </th:block>
+    <th:block th:if="${shop.filename != null and shop.filename != ''}">
+        <img th:src="@{/upload/{filename}(filename=${shop.filename})}" alt="매장 이미지" width="100%">
+    </th:block>
 
-        <input type="file" id="fileUpload" name="file" style="display: none;" onchange="uploadImage()">
+    <input type="file" id="fileUpload" name="file" style="display: none;" onchange="uploadImage()">
 
-        <div class="button" onclick="editDescription()" th:text="${shop != null ? shop.shopShortDesc : '매장 설명이 없습니다.'}">매장 간단 설명</div>
+    <div>
+                    
 
-        <div>
-            <p th:text="${shop.shopNo}"></p>  <!-- shopNo가 제대로 출력되는지 확인 -->            
-
-<!-- 조건부 링크 -->
-<a th:if="${shop != null && shop.shopNo != null}" 
-   th:href="@{/shop/shopDetail/{id}(id=${shop.shopNo})}">
-   매장 상세 보기 <span th:text="${shop.shopNo}"></span>)
-</a>
-
-
-
-            <a class="button" href="/menu/menu">메뉴 보기</a>
-            <a class="button" href="/shop/review">리뷰</a>
-            <a class="button" href="/shop/reservation">예약하기</a>
+        <!-- 버튼들을 위아래로 배치하기 위한 컨테이너 -->
+        <div class="buttons-container">
+            <!-- 위쪽 버튼들 -->
+            <div class="top-buttons">
+                <a class="button" th:if="${shop != null && shop.shopNo != null}" 
+                   th:href="@{/store/shop/shopDetail/{id}(id=${shop.shopNo})}">매장 상세 보기
+                </a>
+                <a class="button" href="/store/shop/menu/menu">메뉴 보기</a>
+            </div>
+            
+            <!-- 아래쪽 버튼들 -->
+            <div class="bottom-buttons">
+                <a class="button" href="/store/shop/comment">리뷰</a>
+                <a class="button" href="/store/shop/reserve">예약</a>
+            </div>
         </div>
     </div>
+</div>
+
+    <link rel="stylesheet" th:href="@{/css/shop/myShop.css}">
     </th:block>
 
     <th:block layout:fragment="script">
@@ -49,7 +54,7 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                axios.post('/shop/uploadImage', formData)
+                axios.post('/store/shop/uploadImage', formData)
                     .then(response => {
                         alert('이미지 업로드 성공');
                         // 업로드된 이미지를 갱신할 수 있는 로직 추가
@@ -66,7 +71,7 @@
             let newMenu = prompt("새로운 시그니처 메뉴를 입력하세요:");
             if (newMenu) {
                 // AJAX 또는 폼 전송을 통해 서버에 업데이트 요청
-                axios.post('/shop/updateSignatureMenu', { signatureMenu: newMenu })
+                axios.post('/store/shop/updateSignatureMenu', { signatureMenu: newMenu })
                     .then(response => {
                         alert("시그니처 메뉴가 변경되었습니다.");
                         location.reload();  // 페이지 새로고침
@@ -76,6 +81,34 @@
                     });
             }
         }
+        
+      
+        function deleteShop() {
+          const confirmDelete = confirm("정말로 이 매장을 삭제하시겠습니까?");
+          if (confirmDelete) {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const shopId = urlParams.get('id');
+            
+            if (!shopId) {
+              alert("매장 ID를 찾을 수 없습니다.");
+              return;
+            }
+            
+            axios.delete(`/store/shop/delete/${shopId}`)
+              .then(response => {
+                alert("매장이 삭제되었습니다.");
+                window.location.href = "/store/shop/myShopList";
+              })
+              .catch(error => {
+                alert("매장 삭제 중 오류가 발생했습니다.");
+                console.error(error);
+              });
+          }
+        }
+        function backbutton(){
+        window.location.href = "/store/shop/myShopList";
+        };
         </script>
     </th:block>
 </html>

@@ -1,0 +1,126 @@
+@charset "UTF-8";
+
+/* 폼 컨테이너 스타일 */
+.update-form-container {
+  background-color: rgba(255, 255, 255, 0.9);
+  background-image: linear-gradient(#e0e0e0 1px, transparent 1px),
+                    linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 뒤로가기 버튼 스타일 */
+.update-form-container .back-button {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  line-height: 1;
+}
+
+/* 제목 스타일 */
+.update-form-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+}
+
+/* 입력 필드 그룹 스타일 */
+.update-form-container .form-group {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* 라벨 스타일 */
+.update-form-container .form-group label {
+  width: 120px;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: right;
+  padding-right: 15px;
+}
+
+/* 입력 필드 스타일 */
+.update-form-container .form-group input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* 버튼 컨테이너 스타일 */
+.update-form-container .button-container {
+  text-align: center;
+  margin-top: 200px;
+}
+
+/* 제출 버튼 스타일 */
+.update-form-container .submit-button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.update-form-container .submit-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* 에러 메시지 스타일 */
+.update-form-container .error-message {
+  color: red;
+  font-weight: bold;
+  margin: 10px 0;
+  text-align: center;
+  display: none;
+}
+
+/* 점선 구분선 스타일 (이미지에서 보이는 중앙 세로 점선) */
+.update-form-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px dashed #ccc;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 576px) {
+  .update-form-container .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .update-form-container .form-group label {
+    width: 100%;
+    text-align: left;
+    padding-right: 0;
+    margin-bottom: 5px;
+  }
+}
