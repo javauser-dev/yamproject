@@ -3,7 +3,7 @@ package com.yam.customer.member.vo;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
+ 
 @Data
 public class EmailVerificationRequest {
 

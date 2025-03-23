@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 목록</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/admin/info/memberList.css}">
+</head>
+<body>
+    <h1>회원 목록</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>회원ID</th>
+                <th>닉네임</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>가입일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--/* Thymeleaf 반복문 */-->
+            <tr th:each="member : ${members}">
+                <td th:text="${member.customerId}"></td>
+                <td th:text="${member.customerNickname}"></td>
+                <td th:text="${member.customerName}"></td>
+                <td th:text="${member.customerEmail}"></td>
+                <td th:text="${#temporals.format(member.customerCreateDate, 'yy년 M월 d일')}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+     <!-- 페이징 처리 -->
+     <div class="pagination" th:if="${members.totalPages > 1}">
+        <!--/*  첫 페이지 */-->
+        <a th:if="${members.number > 0}" th:href="@{/admin/info/members(page=0, size=${members.size}, sort=${param.sort})}">처음</a>
+        <span th:unless="${members.number > 0}">처음</span>
+
+        <!--/* 이전 페이지 */-->
+        <a th:if="${members.hasPrevious()}" th:href="@{/admin/info/members(page=${members.number - 1}, size=${members.size}, sort=${param.sort})}">이전</a>
+        <span th:unless="${members.hasPrevious()}">이전</span>
+
+        <!--/* 페이지 번호 목록 (10개씩) */-->
+        <span th:with="start=${(members.number / 10) * 10}, end=${members.totalPages > 10 ? (((members.number / 10) * 10 + 9) > members.totalPages - 1 ? members.totalPages -1 : (members.number / 10) * 10 + 9) : members.totalPages - 1}">
+            <span th:each="page : ${#numbers.sequence(start, end)}">
+                <a th:if="${page != members.number}" th:href="@{/admin/info/members(page=${page}, size=${members.size}, sort=${param.sort})}" th:text="${page + 1}"></a>
+                <span th:if="${page == members.number}" th:text="${page + 1}" class="current-page"></span>
+            </span>
+        </span>
+
+        <!--/* 다음 페이지 */-->
+        <a th:if="${members.hasNext()}" th:href="@{/admin/info/members(page=${members.number + 1}, size=${members.size}, sort=${param.sort})}">다음</a>
+        <span th:unless="${members.hasNext()}">다음</span>
+
+        <!--/* 마지막 페이지 */-->
+        <a th:if="${members.number < members.totalPages -1}" th:href="@{/admin/info/members(page=${members.totalPages - 1}, size=${members.size}, sort=${param.sort})}">마지막</a>
+        <span th:unless="${members.number < members.totalPages -1}">마지막</span>
+    </div>
+    
+    <div class="button-container">
+        <a href="/admin/info/main" class="main-button">메인화면으로</a>
+    </div>
+</body>
+</html>

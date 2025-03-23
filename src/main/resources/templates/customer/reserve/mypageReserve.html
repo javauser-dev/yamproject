@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 예약 내역</title>
+    <!-- CSS 파일 링크 (경로 확인) -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/mypageReserve.css}">
+</head>
+<body>
+
+<div class="reserve-list-container"> <!-- CSS 적용을 위한 컨테이너 -->
+    <div th:fragment="content">
+        <div th:if="${not #lists.isEmpty(recentReserves)}">
+            <table class="reserve-table">
+                <thead>
+                    <tr>
+                    	<th>예약 번호</th>
+                        <th>가게 이름</th>
+                        <th>예약 날짜</th>
+                        <th>예약 시간</th>
+                        <th>인원 수</th>
+                        <th>예약금</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reserve : ${recentReserves}">
+                    	<td>
+                			<a th:href="@{/customer/reserve/detail(id=${reserve.id})}" th:text="${reserve.id}"></a>
+                		</td>
+                        <td th:text="${reserve.shop.shopName}"></td>
+                        <td th:text="${#temporals.format(reserve.reserveDate, 'yyyy.MM.dd')}"></td>
+                        <td th:text="${#temporals.format(reserve.reserveTime, 'HH:mm')}"></td>
+                        <td th:text="${reserve.guestCount} + '명'"></td>
+                        <td th:text="${reserve.deposit} + '원'"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${not #lists.isEmpty(recentReserves)}">
+            <p>예약 내역이 없습니다.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

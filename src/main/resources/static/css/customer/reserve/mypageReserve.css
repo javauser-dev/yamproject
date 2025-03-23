@@ -1,0 +1,60 @@
+/* 전체 컨테이너 스타일 */
+.reserve-list-container {
+    width: 80%; /* 원하는 너비로 조절 (또는 max-width) */
+    max-width: 1200px; /* 최대 너비 제한 (선택 사항) */
+    margin: 20px auto; /* 가운데 정렬 */
+    padding: 20px;
+    border: 1px solid #ddd; /* 연한 테두리 */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    background-color: #fff; /* 흰색 배경 */
+}
+
+/* 테이블 스타일 */
+.reserve-table {
+    width: 100%; /* 컨테이너에 꽉 차게 */
+    border-collapse: collapse; /* 셀 간격 없애기 */
+    margin: 0 auto;       /* 가운데 정렬 (추가) */
+}
+
+.reserve-table th,
+.reserve-table td {
+    border: 1px solid #ddd; /* 테두리 */
+    padding: 12px; /* 패딩 늘림 */
+    text-align: center; /* 가운데 정렬 */
+}
+
+.reserve-table th {
+    background-color: #f2f2f2; /* 헤더 배경색 */
+    font-weight: bold; /* 헤더 글꼴 굵게 */
+}
+
+/* 짝수 행 배경색 (선택 사항) */
+.reserve-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* 마우스 오버 시 행 배경색 (선택 사항) */
+.reserve-table tbody tr:hover {
+    background-color: #e9e9e9;
+}
+
+/* 예약 내역이 없을 때 메시지 스타일 */
+.reserve-list-container p {
+    text-align: center;
+    color: #888;
+    font-style: italic; /* 이탤릭체 (선택 사항) */
+}
+
+/* 반응형 (선택 사항): 작은 화면에서는 테이블 가로 스크롤 */
+@media (max-width: 768px) {
+    .reserve-list-container {
+        width: 95%; /* 더 좁게 */
+        padding: 10px;
+        overflow-x: auto; /* 가로 스크롤 허용 */
+    }
+    .reserve-table{
+        display: block; /* 블록 레벨 요소로 변경. 가로로 길어짐 */
+        overflow-x: auto;
+    }
+}

@@ -2,7 +2,10 @@ package com.yam.customer.member.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,7 @@ import com.yam.customer.member.vo.MemberSignupRequest;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
+ 
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -153,4 +156,12 @@ public class MemberService {
 
         lastDeletionCheckTime = now; // 마지막 확인 시간 업데이트
     }
+ 	
+ 	public List<Member> findAllMembers() {
+        return memberRepository.findAll();
+    }
+ 	
+ 	public Page<Member> findAllMembersSortById(Pageable pageable) { // 반환 타입 변경, 파라미터 추가
+        return memberRepository.findAll(pageable);
+     }
 }

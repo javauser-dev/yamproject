@@ -78,9 +78,27 @@ $(document).ready(function() {
             }
         });
     });
+	
+	// 비밀번호 실시간 검증(keyup)
+     $("#customerPassword").keyup(function(){
+        let customerPassword = $(this).val().trim();
+        let passwordMsg =  $("#customerPasswordError");
+        let passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@$!%*?&])[a-zA-Z0-9@$!%*?&]{8,15}$/;
+
+        if(customerPassword === ""){
+            passwordMsg.text("");
+            return;
+        }
+
+        if(!passwordRegex.test(customerPassword)){
+            passwordMsg.text("비밀번호는 영문자, 숫자, 특수문자를 포함하여 8~15글자여야 합니다.");
+        } else{
+            passwordMsg.text("");
+        }
+    });
 
     // 비밀번호 실시간 검증(keyup)
-     $("#customerPassword").keyup(function(){
+     /*$("#customerPassword").keyup(function(){
         let customerPassword = $(this).val().trim();
         let passwordMsg =  $("#customerPasswordError");
         let passwordRegex = /^(?:[a-zA-Z]{8,15}|[0-9]{8,15}|[@$!%*?&]{8,15})$/;
@@ -95,7 +113,7 @@ $(document).ready(function() {
         } else{
             passwordMsg.text("");
         }
-    });
+    });*/
 
    // 이름 실시간 검증(keyup, signupForm에서만)
     if ($("#signupForm").length > 0) {
