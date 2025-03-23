@@ -1,12 +1,11 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    display: flex; /* body 내용을 중앙 정렬하기 위해 flex 사용 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    min-height: 100vh; /* body 높이를 최소 화면 높이로 */
 }
 
 .main-container {
@@ -14,32 +13,41 @@ body {
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 800px;
+    max-width: 1000px; /* 최대 너비 제한 */
     text-align: center;
+    margin: 0 auto; /* .main-container를 가로 중앙에 배치 (body가 flex가 아니어도 됨) */
 }
 
 h1 {
     color: #333;
-    margin-bottom: 50px; /* 원하는 간격으로 조절 */
+    margin-bottom: 30px;
 }
 
 .image-wrapper {
     display: flex;
-    justify-content: center;
-    gap: 20px;
+    justify-content: center; /* 이미지들을 가로 중앙에 정렬 */
+    gap: 40px;             /* 이미지 사이의 간격 */
+    flex-wrap: wrap;        /* 이미지들이 .main-container를 벗어나면 다음 줄로 */
+    width: 100%;            /* .main-container의 너비를 채우도록 */
 }
 
 .image-container {
-    /* 필요한 스타일 (현재는 없음) */
+    /* 필요에 따라 스타일 추가 */
 }
 
 .image-container img {
     width: 250px;
     height: 250px;
     border-radius: 8px;
+    object-fit: cover;  /* 이미지 비율 유지, 지정된 크기 채움 */
+    cursor: pointer;     /* 마우스 오버 시 포인터 모양 변경 */
+    transition: transform 0.2s; /* 부드러운 확대 효과 */
+}
+
+.image-container img:hover {
+    transform: scale(1.05); /* 마우스 오버 시 살짝 확대 */
 }
 
 .image-container a {
-    display: block;
+    display: block; /* 이미지 전체를 클릭 가능하게 */
 }

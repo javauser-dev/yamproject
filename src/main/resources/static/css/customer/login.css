@@ -4,9 +4,19 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center;    /* 수직 중앙 정렬 */
+    min-height: 100vh; /* 화면 높이의 최소 100%  (뷰포트 높이) */
+    /* 개선: body의 배경색이 전체 화면에 채워지도록 */
+    width: 100%;
+}
+
+/* login-wrapper에 flexbox 적용 (추가) */
+.login-wrapper {
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center;    /* 수직 중앙 정렬 */
+    width: 100%;          /* 너비 100% */
 }
 
 .login-container {
@@ -14,8 +24,10 @@ body {
     padding: 30px 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 350px; /* 로그인 폼 너비 조절 */
+    width: 600px;
     max-width: 90%; /* 최대 너비 (모바일 반응형) */
+    /*height : 300px;  <--  내용에 따라 높이가 자동으로 조절되도록 제거하거나, min-height로 변경 */
+    min-height: 300px; /* 최소 높이.  내용이 적어도 이 높이는 유지 */
 }
 
 h1 {

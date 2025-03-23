@@ -1,0 +1,92 @@
+/* 전체 컨테이너 */
+.reserve-form-container { /* 클래스 이름 reserve-form-container가 없어서, 이 스타일은 적용되지 않고 있었음.  div에 클래스 추가해야함 */
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto; /* 상하 마진 20px, 좌우는 auto로 가운데 정렬 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa;
+}
+
+/* 제목 */
+.reserve-form-container h1 {
+    text-align: center;
+    color: #343a40;
+    margin-bottom: 20px;
+    font-size: 2em; /* 좀 더 크게 */
+}
+
+/* 폼 그룹 (각 입력 필드와 레이블) */
+.reserve-form-container form div {
+    margin-bottom: 15px;
+}
+
+/* 레이블 */
+.reserve-form-container label {
+    display: block;  /* 블록 레벨 요소로 만들어 한 줄 차지 */
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #495057;
+}
+
+/* 입력 필드 (text, date, time, number) */
+.reserve-form-container input[type="text"],
+.reserve-form-container input[type="date"],
+.reserve-form-container input[type="time"],
+.reserve-form-container input[type="number"],
+.reserve-form-container textarea
+ {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* padding과 border를 width에 포함 */
+    font-size: 1em;
+}
+
+/* 읽기 전용 입력 필드 */
+.reserve-form-container input[readonly] {
+    background-color: #e9ecef;
+    color: #495057;
+    cursor: not-allowed;
+}
+
+/* 요청사항 textarea */
+.reserve-form-container textarea {
+     resize: vertical; /* 수직으로만 크기 조절 가능하도록 */
+    min-height: 80px; /* 최소 높이 */
+}
+
+/* 버튼 */
+.reserve-form-container button {
+    padding: 10px 15px;
+    margin-right: 10px; /* 버튼 사이 간격 */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+#naverPayBtn{
+    background-color: #19ce60; /* 네이버페이 버튼 배경색 */
+    color: white;
+}
+#submitBtn{
+  background-color: #007bff; /* 파란색 배경 */
+  color: white;
+}
+
+/* 버튼 hover 효과 */
+.reserve-form-container button:hover {
+   filter: brightness(0.9); /* 살짝 어둡게 */
+}
+
+/* 에러 메시지 */
+#errorMessage {
+    color: red;
+    display: block; /* 블록 레벨 요소로 */
+    margin-top: 10px; /* 위쪽 여백 */
+    font-weight: bold;
+}

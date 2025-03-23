@@ -1,0 +1,38 @@
+@charset "UTF-8";
+
+/* 공통 적용 스타일 */
+teaxtarea{resize:none; }
+
+/* 게시판 적용 스타일 */
+.board-table-tr-height{ height:300px; } 
+/*.board-table-height{ height:500px; } */
+.board-textarea{ resize: none; } 
+.board-msg-default-color{ color:#000099; }
+.board-msg-error-color{ color:red; }  
+.board-required{ color:red; }
+
+/* 댓글 적용 스타일 */
+#item-template{ display:none; }
+.reply-count{color:red; font-size:12px; }
+
+/* open api 적용 스타일*/
+#map{ height: 500px; }
+h3.tour-title{
+	font-family: 'Nanum Gothic', sans-serif; 
+	padding-left:5px;
+}
+
+#media-template{display: none;}
+
+.container{
+	width: 100%;
+}
+
+h2{
+	font-family:"Rowdies", sans-serif;
+}
+
+span{
+	font-family:"Rowdies", sans-serif;
+	
+}

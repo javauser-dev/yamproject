@@ -1,0 +1,49 @@
+.payment-error-container {
+    width: 80%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.payment-error-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #dc3545; /* 빨간색 제목 */
+}
+
+.payment-error-container p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.error-message {
+    color: #dc3545; /* 빨간색 오류 메시지 */
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.retry-button {
+    background-color: #007bff; /* 파란색 배경 */
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.retry-button:hover {
+    background-color: #0056b3; /* 마우스 오버 시 더 진한 파란색 */
+}
+
+.retry-button:active {
+   background-color: #003d82;
+}

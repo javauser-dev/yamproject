@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{template/client/layout/layout}">
 <head>
-    <meta charset="UTF-8">
     <title>예약 상세 정보</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/customer/reserve/reserveInquiryDetail.css}">
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7889ae8e7bccb3ae39749e54079e3019&libraries=services"></script>
-    <script th:src="@{/js/customer/reserve/reserveInquiryDetail.js}"></script>
     <!-- Google Fonts (선택 사항) -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+<th:block layout:fragment="content">
+    <div class="reserve-detail-container">  <!-- 전체 컨테이너 -->
         <h1 class="page-title">예약 상세 정보</h1>
 
         <section class="shop-image-section">
-            <img th:src="@{/upload/shop_default.jpg}" alt="매장 사진" class="shop-image">
+            <!--/*@thymesVar id="reserve" type="com.yam.customer.reserve.domain.CustomerReserve"*/-->
+            <img th:src="@{/upload/shop_default.jpg}" alt="매장 사진" class="shop-image">  <!-- 경로 수정 필요 -->
         </section>
 
         <section class="reserve-info-section">
@@ -33,7 +32,7 @@
                <tbody>
                 <tr>
                     <td th:text="${reserve.id}"></td>
-                    <td th:text="${reserve.shop.shopName}"></td>
+                    <td th:text="${reserve.shop.shopName}"></td>  <!-- 수정된 부분 -->
                     <td th:text="${#temporals.format(reserve.reserveDate, 'yyyy.MM.dd')}"></td>
                     <td th:text="${#temporals.format(reserve.reserveTime, 'HH:mm')}"></td>
                     <td th:text="${reserve.guestCount} + '명'"></td>
@@ -66,7 +65,12 @@
             <a th:href="@{/customer/reserve/reserveInquiry}" class="btn btn-secondary">목록으로</a>
         </div>
     </div>
+</th:block>
 
+<th:block layout:fragment="script">
+    <!-- 카카오 지도 API -->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7889ae8e7bccb3ae39749e54079e3019&libraries=services"></script>
+    <script th:src="@{/js/customer/reserve/reserveInquiryDetail.js}"></script> <!-- js 파일 로드-->
     <script th:inline="javascript">
     /*<![CDATA[*/
         window.onload = function() {
@@ -74,5 +78,6 @@
         };
     /*]]>*/
     </script>
+</th:block>
 </body>
 </html>
